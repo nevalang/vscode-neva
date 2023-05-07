@@ -12,9 +12,6 @@
       "include": "#comments"
     },
     {
-      "include": "#comments"
-    },
-    {
       "comment": "Interpreted string literals",
       "begin": "\"",
       "beginCaptures": {

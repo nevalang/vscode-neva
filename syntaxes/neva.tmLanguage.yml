@@ -5,6 +5,29 @@ fileTypes:
   - .neva
 patterns:
   - include: "#comments"
+  - comment: component definition
+    match: ^(\bcmp\b)(?:\s+(\([^\)]+\)\s+)?(\w+)(?=\())?
+    captures:
+      1:
+        name: keyword.function
+      2:
+        patterns:
+          - include: "#brackets"
+          - include: "#operators"
+      3:
+        patterns:
+          - match: \d\w*
+            name: invalid.illegal.identifier
+          - match: \w+
+            name: entity.name.function
+  - comment: Builtin constants
+    match: \btrue|false
+  - include: "#numeric_literals"
+  - include: "#brackets"
+  - include: "#delimeters"
+  - include: "#keywords"
+  - include: "#operators"
+  - include: "#storage_types"
   - begin: \b(use)\s+
     beginCaptures:
       1:
@@ -22,12 +45,6 @@ patterns:
         name: invalid.illegal.identifier
       - match: \w+
         name: entity.name.type
-  - name: keyword.io
-    match: io
-  - name: keyword.const
-    match: const
-  - name: keyword.cmp
-    match: cmp
 repository:
   comments:
     patterns:
@@ -51,23 +68,114 @@ repository:
       - match: ((?!\s+)[^\s]*)?\s*([^]*)
         captures:
           1:
-            name: "entity.alias.import.go"
+            name: "entity.alias.import"
           2:
-            name: "string.quoted.double.go"
-          3:
-            name: "punctuation.definition.string.begin.go"
-          4:
-            name: "entity.name.import.go"
-          5:
-            name: "punctuation.definition.string.end.go"
-      - begin: "\\{"
+            name: "entity.name.import"
+      - begin: \{
+        end: \}
         beginCaptures:
           0:
             name: "punctuation.definition.imports.begin.bracket.curly"
-        end: "\\}"
         endCaptures:
           0:
             name: "punctuation.definition.imports.end.bracket.curly"
         patterns:
           - include: "#comments"
           - include: "#imports"
+    "brackets": {
+      "patterns": [
+        {
+          "begin": "{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.begin.bracket.curly"
+            }
+          },
+          "end": "}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.end.bracket.curly"
+            }
+          },
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        },
+        {
+          "begin": "\\(",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.begin.bracket.round"
+            }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.end.bracket.round"
+            }
+          },
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        },
+        {
+          "match": "\\[|\\]",
+          "name": "punctuation.definition.bracket.square"
+        }
+      ]
+    }
+    "delimiters": {
+      "patterns": [
+        {
+          "match": ",",
+          "name": "punctuation.other.comma.go"
+        },
+        {
+          "match": "\\.(?!\\.\\.)",
+          "name": "punctuation.other.period.go"
+        }
+      ]
+    }
+    keywords:
+      patterns: [
+        {
+          "match": "\\bconst\\b",
+          "name": "keyword.const"
+        },
+        {
+          "match": "\\bcmp\\b",
+          "name": "keyword.function"
+        },
+        {
+          "match": "\\bio\\b",
+          "name": "keyword.interface"
+        },
+        {
+          "match": "\\bmap\\b",
+          "name": "keyword.map"
+        },
+        {
+          "match": "\\brec\\b",
+          "name": "keyword.struct"
+        }
+      ]
+    operators:
+      patterns:
+        - match: -\>
+          name: keyword.operator.channel
+        - match: =
+          name: keyword.operator.assignment
+    storage_types:
+      patterns:
+        - match: \bbool\b
+          name: storage.type.boolean
+        - match: \berror\b
+          name: storage.type.error
+        - match: \b(f(32|64)|u|i(8|16|32|64)?)\b
+          name: "storage.type.numeric.go"
+        - "match": \bstring\b"
+          "name": storage.type.string.go
