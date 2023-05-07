@@ -1,0 +1,72 @@
+// comments
+
+use {
+	std_pkg
+	imported/from/elsewhere
+	with_alias another/imported/from/elsewhere
+}
+
+type {
+    MyFloat f32
+    MyVec<T> []T
+    MyArr<T> [512]T
+    MyRec<T> {
+        foo int
+        bar str
+        baz MyArr<T>
+    }
+    MyEnum {
+        First
+        Second
+    }
+    MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
+}
+
+io {
+    IMyInterface<T MyUnion>(x, y int) (z T)
+    pub IMyInterface2<T MyUnion>(x, y int) (z T)
+}
+
+const {
+    PI MyFloat = 3.14
+    MY_VEC MyVec<MyFloat> = [PI, PI]
+    pub MY_FRIEND MyRec<f32> = {
+        foo: 27
+        bar: "john"
+        baz: 42.0
+    }
+    MY_STR = "my string"
+}
+
+cmp {
+    pub Doer<T f64>(x u32) (z T) {
+        node {
+            abstractNode IMyInterface
+            printer = std_pkg.Printer()
+            reader = elsewhere.Reader<str>()
+        }
+        net {
+            in.x -> printer.in.v
+            printer.out.v -> {
+                reader.in.v
+                out.z
+            }
+        }
+    }
+
+    Doer2<T f64>(x u32) (z T) {
+        node {
+            abstractNode IMyInterface
+            printer = std_pkg.Printer()
+            reader = elsewhere.Reader<str>()
+        }
+        net {
+            in.x -> printer.in.v
+            printer.out.v -> {
+                reader.in.v
+                out.z
+            }
+        }
+    }
+}
+

@@ -1,0 +1,62 @@
+{
+  "name": "vscode-nevalang",
+  "displayName": "Neva",
+  "description": "Neva langauge support (syntax highlighting, formatter, snippets) for Visual Studio Code",
+  "publisher": "nevalang",
+  "version": "0.0.1",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "bugs": {
+    "url": "https://github.com/nevalang/vscode-nevalang/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nevalang/vscode-nevalang/issues"
+  },
+  "keywords": [
+    "Neva",
+    "neva",
+    "neva language",
+    "nevalang",
+    "extension",
+    "autocompletion"
+  ],
+  "categories": [
+    "Snippets",
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "neva",
+        "aliases": [
+          "Neva",
+          "nevalang",
+          "Nevalang",
+          "NevaLang"
+        ],
+        "extensions": [
+          ".neva"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "neva",
+        "scopeName": "source.neva",
+        "path": "./syntaxes/neva.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.0",
+    "nodemon": "^2.0.22"
+  },
+  "scripts": {
+    "yaml2json": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
+    "start": "nodemon --delay 2.5 --watch syntaxes/neva.tmLanguage.yml --exec npm run yaml2json"
+  }
+}

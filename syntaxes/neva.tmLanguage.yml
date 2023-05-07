@@ -1,0 +1,59 @@
+$schema: https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+name: neva
+scopeName: source.neva
+fileTypes:
+  - .neva
+patterns:
+  - name: comment.line.double-slash
+    match: //.*$
+  - begin: \b(use)\s+
+    beginCaptures:
+      1:
+        name: keyword.import
+    end: (?!\G)
+    patterns:
+      - includes: "#imports"
+  - begin: \b(type)\s+
+    beginCaptures:
+      1:
+        name: keyword.type
+    end: (?!\G)
+    patterns:
+      - match: \d\w*
+        name: invalid.illegal.identifier
+      - match: \w+
+        name: entity.name.type
+  - name: keyword.io
+    match: io
+  - name: keyword.const
+    match: const
+  - name: keyword.cmp
+    match: cmp
+repository:
+  comments:
+    patterns: [{ "name": "comment.line.double-slash", "match": "//.*$" }]
+  imports:
+    patterns:
+      - match: ((?!\s+)[^\s]*)?\s*([^]*)
+        captures:
+          1:
+            name: "entity.alias.import.go"
+          2:
+            name: "string.quoted.double.go"
+          3:
+            name: "punctuation.definition.string.begin.go"
+          4:
+            name: "entity.name.import.go"
+          5:
+            name: "punctuation.definition.string.end.go"
+      - begin: "\\{"
+        beginCaptures:
+          0:
+            name: "punctuation.definition.imports.begin.bracket.curly"
+        end: "\\}"
+        endCaptures:
+          0:
+            name: "punctuation.definition.imports.end.bracket.curly"
+        patterns:
+          - include: "#comments"
+          - include: "#imports"
