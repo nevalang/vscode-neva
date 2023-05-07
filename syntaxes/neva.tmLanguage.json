@@ -7,8 +7,7 @@
   ],
   "patterns": [
     {
-      "name": "comment.line.double-slash",
-      "match": "//.*$"
+      "include": "#comments"
     },
     {
       "begin": "\\b(use)\\s+",
@@ -60,8 +59,29 @@
     "comments": {
       "patterns": [
         {
+          "name": "comment.block",
+          "begin": "\\/\\*",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment"
+            }
+          },
+          "end": "\\*\\/",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment"
+            }
+          }
+        },
+        {
           "name": "comment.line.double-slash",
-          "match": "//.*$"
+          "begin": "\\/\\/",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment"
+            }
+          },
+          "end": "(?:\\n|$)"
         }
       ]
     },

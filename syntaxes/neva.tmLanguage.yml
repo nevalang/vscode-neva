@@ -4,8 +4,7 @@ scopeName: source.neva
 fileTypes:
   - .neva
 patterns:
-  - name: comment.line.double-slash
-    match: //.*$
+  - include: "#comments"
   - begin: \b(use)\s+
     beginCaptures:
       1:
@@ -31,7 +30,22 @@ patterns:
     match: cmp
 repository:
   comments:
-    patterns: [{ "name": "comment.line.double-slash", "match": "//.*$" }]
+    patterns:
+      - name: comment.block
+        begin: \/\*
+        beginCaptures:
+          1:
+            name: punctuation.definition.comment
+        end: \*\/
+        endCaptures:
+          1:
+            name: punctuation.definition.comment
+      - name: comment.line.double-slash
+        begin: \/\/
+        beginCaptures:
+          1:
+            name: punctuation.definition.comment
+        end: (?:\n|$)
   imports:
     patterns:
       - match: ((?!\s+)[^\s]*)?\s*([^]*)
