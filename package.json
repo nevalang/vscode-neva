@@ -57,6 +57,6 @@
   },
   "scripts": {
     "yaml2json": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
-    "start": "nodemon --delay 2.5 --watch syntaxes/neva.tmLanguage.yml --exec npm run yaml2json"
+    "start": "nodemon --delay 1 --watch syntaxes/neva.tmLanguage.yml --exec npm run yaml2json"
   }
 }

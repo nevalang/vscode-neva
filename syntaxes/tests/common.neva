@@ -33,6 +33,7 @@ io {
 }
 
 const {
+    TRUE = true
     PI MyFloat = 3.14
     MY_VEC MyVec<MyFloat> = [PI, PI]
     pub MY_FRIEND MyRec<f32> = {
