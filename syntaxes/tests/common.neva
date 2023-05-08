@@ -8,11 +8,15 @@ use {
 }
 
 type {
+    MyErr error
+    MyCmplx c128 | c64
     MyFloat f32
+    MyBool bool
+    MyStr str
     MyVec<T> []T
     MyArr<T> [512]T
     MyRec<T> {
-        foo int
+        foo i32
         bar str
         baz MyArr<T>
     }
