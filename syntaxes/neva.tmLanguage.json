@@ -113,22 +113,6 @@
         }
       ]
     },
-    "keywords": {
-      "patterns": [
-        {
-          "match": "\\bconst\\b",
-          "name": "keyword.const"
-        },
-        {
-          "match": "\\bcomponents\\b",
-          "name": "keyword.function"
-        },
-        {
-          "match": "\\binterfaces\\b",
-          "name": "keyword.interface"
-        }
-      ]
-    },
     "operators": {
       "patterns": [
         {
@@ -246,9 +230,6 @@
       "include": "#delimiters"
     },
     {
-      "include": "#keywords"
-    },
-    {
       "include": "#operators"
     },
     {
@@ -335,12 +316,82 @@
               "name": "storage.type"
             },
             {
+              "begin": "\\b(\\w+)\\<",
+              "end": "\\>",
+              "beginCaptures": {
+                "1": {
+                  "name": "entity.name.type"
+                }
+              },
+              "patterns": [
+                {
+                  "match": "\\b(bool|error|int|float|str)\\b",
+                  "name": "storage.type"
+                },
+                {
+                  "match": "\\b(\\w+)\\b",
+                  "name": "entity.name.type"
+                },
+                {
+                  "begin": "\\{",
+                  "end": "\\}",
+                  "patterns": [
+                    {
+                      "match": "\\b(bool|error|int|float|str)\\b",
+                      "name": "storage.type"
+                    },
+                    {
+                      "match": "\\b(\\w+)(?=\\s*[|{])",
+                      "name": "entity.name.type"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "match": "\\b(\\w+<\\w+>|\\w+)(?=\\s*[|;]|$)",
               "name": "entity.name.type"
             },
             {
               "match": "^(\\s*)\\w+\\s*$",
-              "name": "variable.other.enummember"
+              "name": "source.neva"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "begin": "\\b(interfaces)\\s*\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.declaration.interfaces"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "match": "\\b(pub)\\b",
+          "name": "keyword.modifier.public"
+        },
+        {
+          "match": "\\b(\\w+)\\b(?=<|\\()",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.interface"
+            }
+          }
+        },
+        {
+          "begin": "\\(",
+          "end": "\\)",
+          "patterns": [
+            {
+              "match": "(\\w+)\\s(\\w+)",
+              "captures": {
+                "1": {
+                  "name": "variable.parameter"
+                }
+              }
             }
           ]
         }

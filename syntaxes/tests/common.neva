@@ -13,11 +13,42 @@ types {
     MyBool bool
     MyStr str
     MyVec<T> []T
+    MyArr<T MyVec<int>> [512]T
+    MyArr<T int> [512]int
+    MyRec<T> {
+        foo int
+        bar str
+        baz MyArr<T>
+        baz2 MyArr<int>
+    }
+    MyEnum {
+        First
+        Second
+    }
+    MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
+}
+
+
+// broken example
+types {
+    MyErr error
+    MyFloat float
+    MyBool bool
+    MyStr str
+    MyVec<T> []T
     MyArr<T> [512]T
     MyRec<T> {
         foo int
         bar str
         baz MyArr<T>
+        baz2 MyArr<int>
+        baz3 MyArr<{
+            foo int
+            bar str
+            baz MyArr<T>
+            baz2 MyArr<int>
+            baz3 MyArr<int>
+        }>
     }
     MyEnum {
         First
@@ -27,7 +58,7 @@ types {
 }
 
 interfaces {
-    IMyInterface<T MyUnion>(y int, x int) (z T)
+    IMyInterface<T bool>(y notStorage, x int) (z T)
     pub IMyInterface2<T MyUnion>(x int) (z T)
 }
 
