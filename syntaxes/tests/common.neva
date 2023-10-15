@@ -8,14 +8,13 @@ use {
 
 types {
     MyErr error
-    MyCmplx c128 | c64
-    MyFloat f32
+    MyFloat float
     MyBool bool
     MyStr str
     MyVec<T> []T
     MyArr<T> [512]T
     MyRec<T> {
-        foo i32
+        foo int
         bar str
         baz MyArr<T>
     }
@@ -27,15 +26,15 @@ types {
 }
 
 interfaces {
-    IMyInterface<T MyUnion>(x, y int) (z T)
-    pub IMyInterface2<T MyUnion>(x, y int) (z T)
+    IMyInterface<T MyUnion>(y int, x int) (z T)
+    pub IMyInterface2<T MyUnion>(x int) (z T)
 }
 
 const {
     true true
     pi myFloat 3.14
     my_vec MyVec<myFloat> [pi, pi]
-    pub my_friend MyRec<f32> {
+    pub my_friend MyRec<float> {
         foo: 27
         bar: "john"
         baz: 42.0
@@ -44,7 +43,7 @@ const {
 }
 
 components {
-    pub Doer<T f64>(x u32) (z T) {
+    pub Doer<T float>(x int) (z T) {
         nodes {
             abstractNode IMyInterface
             printer std_pkg.Printer
@@ -59,7 +58,7 @@ components {
         }
     }
 
-    Doer2<T f64>(x u32) (z T) {
+    Doer2<T float>(x int) (z T) {
         nodes {
             abstractNode IMyInterface
             printer std_pkg.Printer

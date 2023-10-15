@@ -2,100 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "neva",
   "scopeName": "source.neva",
-  "fileTypes": [
-    ".neva"
-  ],
-  "patterns": [
-    {
-      "include": "#comments"
-    },
-    {
-      "comment": "component definition",
-      "match": "^(\\bcmp\\b)(?:\\s+(\\([^\\)]+\\)\\s+)?(\\w+)(?=\\())?",
-      "captures": {
-        "1": {
-          "name": "keyword.function"
-        },
-        "2": {
-          "patterns": [
-            {
-              "include": "#brackets"
-            },
-            {
-              "include": "#operators"
-            }
-          ]
-        },
-        "3": {
-          "patterns": [
-            {
-              "match": "\\d\\w*",
-              "name": "invalid.illegal.identifier"
-            },
-            {
-              "match": "\\w+",
-              "name": "entity.name.function"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "comment": "Builtin constants",
-      "match": "\\btrue|false"
-    },
-    {
-      "include": "#numeric_literals"
-    },
-    {
-      "include": "#brackets"
-    },
-    {
-      "include": "#delimeters"
-    },
-    {
-      "include": "#keywords"
-    },
-    {
-      "include": "#operators"
-    },
-    {
-      "include": "#storage_types"
-    },
-    {
-      "begin": "\\b(use)\\s+",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.import"
-        }
-      },
-      "end": "(?!\\G)",
-      "patterns": [
-        {
-          "includes": "#imports"
-        }
-      ]
-    },
-    {
-      "begin": "\\b(type)\\s+",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.type"
-        }
-      },
-      "end": "(?!\\G)",
-      "patterns": [
-        {
-          "match": "\\d\\w*",
-          "name": "invalid.illegal.identifier"
-        },
-        {
-          "match": "\\w+",
-          "name": "entity.name.type"
-        }
-      ]
-    }
-  ],
+  "fileTypes": [".neva"],
   "repository": {
     "comments": {
       "patterns": [
@@ -213,11 +120,11 @@
       "patterns": [
         {
           "match": ",",
-          "name": "punctuation.other.comma.go"
+          "name": "punctuation.other.comma"
         },
         {
           "match": "\\.(?!\\.\\.)",
-          "name": "punctuation.other.period.go"
+          "name": "punctuation.other.period"
         }
       ]
     },
@@ -228,7 +135,7 @@
           "name": "keyword.const"
         },
         {
-          "match": "\\bcmp\\b",
+          "match": "\\bcomponents\\b",
           "name": "keyword.function"
         },
         {
@@ -268,14 +175,105 @@
           "name": "storage.type.error"
         },
         {
-          "match": "\\b(c(64|128)|f(32|64)|u|i(8|16|32|64)?)\\b",
-          "name": "storage.type.numeric.go"
+          "match": "\\b(bool|int|float|str|map)\\b",
+          "name": "storage.type.numeric"
         },
         {
           "match": "\\bstr\\b",
-          "name": "storage.type.string.go"
+          "name": "storage.type.string"
         }
       ]
     }
-  }
+  },
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "comment": "component definition",
+      "match": "^(\\bcomponents\\b)(?:\\s+(\\([^\\)]+\\)\\s+)?(\\w+)(?=\\())?",
+      "captures": {
+        "1": {
+          "name": "keyword.function"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#brackets"
+            },
+            {
+              "include": "#operators"
+            }
+          ]
+        },
+        "3": {
+          "patterns": [
+            {
+              "match": "\\d\\w*",
+              "name": "invalid.illegal.identifier"
+            },
+            {
+              "match": "\\w+",
+              "name": "entity.name.function"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "comment": "Builtin constants",
+      "match": "\\b(true|false|nil)"
+    },
+    {
+      "include": "#numeric_literals"
+    },
+    {
+      "include": "#brackets"
+    },
+    {
+      "include": "#delimeters"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#storage_types"
+    },
+    {
+      "begin": "\\b(use)\\s+",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.import"
+        }
+      },
+      "end": "(?!\\G)",
+      "patterns": [
+        {
+          "includes": "#imports"
+        }
+      ]
+    },
+    {
+      "begin": "\\b(type)\\s+",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.type"
+        }
+      },
+      "end": "(?!\\G)",
+      "patterns": [
+        {
+          "match": "\\d\\w*",
+          "name": "invalid.illegal.identifier"
+        },
+        {
+          "match": "\\w+",
+          "name": "entity.name.type"
+        }
+      ]
+    }
+  ]
 }
