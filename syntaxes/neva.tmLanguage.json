@@ -343,6 +343,25 @@
                     {
                       "match": "\\b(\\w+)(?=\\s*[|{])",
                       "name": "entity.name.type"
+                    },
+                    {
+                      "begin": "\\b(\\w+)\\<",
+                      "end": "\\>",
+                      "beginCaptures": {
+                        "1": {
+                          "name": "entity.name.type"
+                        }
+                      },
+                      "patterns": [
+                        {
+                          "match": "\\b(bool|error|int|float|str)\\b",
+                          "name": "storage.type"
+                        },
+                        {
+                          "match": "\\b(\\w+)\\b",
+                          "name": "entity.name.type"
+                        }
+                      ]
                     }
                   ]
                 }

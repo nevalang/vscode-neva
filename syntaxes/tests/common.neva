@@ -13,13 +13,19 @@ types {
     MyBool bool
     MyStr str
     MyVec<T> []T
-    MyArr<T MyVec<int>> [512]T
     MyArr<T int> [512]int
+    MyArr<T MyVec<int>> [512]T
+    MyArr<T MyVec<int>> [512][]int
     MyRec<T> {
         foo int
         bar str
         baz MyArr<T>
         baz2 MyArr<int>
+        baz2 MyArr<{
+            bazus int
+            bazus2 vec<float>
+        }>
+        bazxs {} // FIXME if remove this, then lines after parsed ok
     }
     MyEnum {
         First
