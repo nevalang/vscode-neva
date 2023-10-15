@@ -1,8 +1,9 @@
 // comments
 
 use {
-	std_pkg
-	imported/from/elsewhere
+    std/tmp/io
+	stdpkg
+	imported/from/elsewhereas
 	with_alias another/imported/from/elsewhere
 }
 
@@ -31,7 +32,7 @@ interfaces {
 }
 
 const {
-    true true
+    myTrue true
     pi myFloat 3.14
     my_vec MyVec<myFloat> [pi, pi]
     pub my_friend MyRec<float> {

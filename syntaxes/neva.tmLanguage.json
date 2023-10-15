@@ -7,21 +7,6 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.block",
-          "begin": "\\/\\*",
-          "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.comment"
-            }
-          },
-          "end": "\\*\\/",
-          "endCaptures": {
-            "1": {
-              "name": "punctuation.definition.comment"
-            }
-          }
-        },
-        {
           "name": "comment.line.double-slash",
           "begin": "\\/\\/",
           "beginCaptures": {
@@ -36,7 +21,7 @@
     "imports": {
       "patterns": [
         {
-          "match": "((?!\\s+)[^\\s]*)?\\s*([^]*)",
+          "match": "((?!\\s+)[^\\s]*)?\\s*([^\\n]*)",
           "captures": {
             "1": {
               "name": "entity.alias.import"
@@ -139,16 +124,8 @@
           "name": "keyword.function"
         },
         {
-          "match": "\\bio\\b",
+          "match": "\\binterfaces\\b",
           "name": "keyword.interface"
-        },
-        {
-          "match": "\\bmap\\b",
-          "name": "keyword.map"
-        },
-        {
-          "match": "\\brec\\b",
-          "name": "keyword.struct"
         }
       ]
     },
@@ -175,7 +152,7 @@
           "name": "storage.type.error"
         },
         {
-          "match": "\\b(bool|int|float|str|map)\\b",
+          "match": "\\b(int|float)\\b",
           "name": "storage.type.numeric"
         },
         {
@@ -183,11 +160,45 @@
           "name": "storage.type.string"
         }
       ]
+    },
+    "numeric_literals": {
+      "patterns": [
+        {
+          "match": "\\b0[xX][0-9a-fA-F]+\\b",
+          "name": "constant.numeric.hexadecimal"
+        },
+        {
+          "match": "\\b[0-9]+\\.?[0-9]*([eE][-+]?[0-9]+)?\\b",
+          "name": "constant.numeric.float"
+        },
+        {
+          "match": "\\b[0-9]+\\b",
+          "name": "constant.numeric.integer"
+        }
+      ]
+    },
+    "string_literals": {
+      "patterns": [
+        {
+          "name": "string.quoted.double",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\\"",
+              "name": "constant.character.escape.double-quote"
+            }
+          ]
+        }
+      ]
     }
   },
   "patterns": [
     {
       "include": "#comments"
+    },
+    {
+      "include": "#string_literals"
     },
     {
       "comment": "component definition",
@@ -221,8 +232,9 @@
       }
     },
     {
-      "comment": "Builtin constants",
-      "match": "\\b(true|false|nil)"
+      "comment": "Boolean constants",
+      "match": "\\b(true|false)",
+      "name": "constant.language.boolean"
     },
     {
       "include": "#numeric_literals"
@@ -231,7 +243,7 @@
       "include": "#brackets"
     },
     {
-      "include": "#delimeters"
+      "include": "#delimiters"
     },
     {
       "include": "#keywords"
@@ -243,35 +255,94 @@
       "include": "#storage_types"
     },
     {
-      "begin": "\\b(use)\\s+",
+      "begin": "\\b(use)\\s*\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.import"
         }
       },
-      "end": "(?!\\G)",
+      "end": "\\}",
       "patterns": [
         {
-          "includes": "#imports"
+          "match": "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$",
+          "captures": {
+            "2": {
+              "name": "entity.name.section"
+            }
+          }
+        },
+        {
+          "match": "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$",
+          "captures": {
+            "3": {
+              "name": "entity.name.section"
+            }
+          }
+        },
+        {
+          "match": "^(\\s*)[^\\s/]+\\s*$",
+          "captures": {
+            "0": {
+              "name": "entity.name.section"
+            }
+          }
         }
       ]
     },
     {
-      "begin": "\\b(type)\\s+",
+      "begin": "\\b(types)\\s*\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.type"
         }
       },
-      "end": "(?!\\G)",
+      "end": "\\}",
       "patterns": [
         {
-          "match": "\\d\\w*",
-          "name": "invalid.illegal.identifier"
+          "match": "^(\\s*)(\\w+)",
+          "captures": {
+            "2": {
+              "name": "entity.name.type"
+            }
+          }
         },
         {
-          "match": "\\w+",
+          "match": "\\b(bool|error|int|float|str)\\b",
+          "name": "storage.type"
+        },
+        {
+          "match": "\\b(\\w+)(?=\\s*[|{])",
+          "captures": {
+            "1": {
+              "name": "entity.name.type"
+            }
+          }
+        },
+        {
+          "match": "\\b\\w+\\b",
           "name": "entity.name.type"
+        },
+        {
+          "match": "^(\\s*)\\w+\\s*\\{\\s*$",
+          "name": "entity.name.type"
+        },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "match": "\\b(bool|error|int|float|str|\\w+<\\w+>)\\b",
+              "name": "storage.type"
+            },
+            {
+              "match": "\\b(\\w+<\\w+>|\\w+)(?=\\s*[|;]|$)",
+              "name": "entity.name.type"
+            },
+            {
+              "match": "^(\\s*)\\w+\\s*$",
+              "name": "variable.other.enummember"
+            }
+          ]
         }
       ]
     }
