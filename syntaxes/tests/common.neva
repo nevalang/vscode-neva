@@ -1,4 +1,3 @@
-/*comments*/
 // comments
 
 use {
@@ -7,7 +6,7 @@ use {
 	with_alias another/imported/from/elsewhere
 }
 
-type {
+types {
     MyErr error
     MyCmplx c128 | c64
     MyFloat f32
@@ -27,29 +26,29 @@ type {
     MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
 }
 
-io {
+interfaces {
     IMyInterface<T MyUnion>(x, y int) (z T)
     pub IMyInterface2<T MyUnion>(x, y int) (z T)
 }
 
 const {
-    TRUE = true
-    PI MyFloat = 3.14
-    MY_VEC MyVec<MyFloat> = [PI, PI]
-    pub MY_FRIEND MyRec<f32> = {
+    true true
+    pi myFloat 3.14
+    my_vec MyVec<myFloat> [pi, pi]
+    pub my_friend MyRec<f32> {
         foo: 27
         bar: "john"
         baz: 42.0
     }
-    MY_STR = "my string"
+    my_str "my string"
 }
 
-cmp {
+components {
     pub Doer<T f64>(x u32) (z T) {
-        node {
+        nodes {
             abstractNode IMyInterface
-            printer = std_pkg.Printer()
-            reader = elsewhere.Reader<str>()
+            printer std_pkg.Printer
+            reader elsewhere.Reader<str>
         }
         net {
             in.x -> printer.in.v
@@ -61,10 +60,10 @@ cmp {
     }
 
     Doer2<T f64>(x u32) (z T) {
-        node {
+        nodes {
             abstractNode IMyInterface
-            printer = std_pkg.Printer()
-            reader = elsewhere.Reader<str>()
+            printer std_pkg.Printer
+            reader elsewhere.Reader<str>
         }
         net {
             in.x -> printer.in.v
