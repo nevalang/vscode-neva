@@ -33,7 +33,7 @@ types { // adsad
         First
         Second
     }
-    MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
+    MyUnion MyFloat | MyVec | MyArr | MyRec | int
 }
 
 // broken example
@@ -44,24 +44,24 @@ types {
     MyStr str
     MyVec<T> []T
     MyArr<T> [512]T
-    MyRec<T> { // FIXME nested {} curly braces breakes syntax-highlighting based on {} scope
+    MyRec<T> { 
         foo int
         bar str
         baz MyArr<T>
         baz2 MyArr<int>
-        baz3 MyArr<rec {
+        baz3 MyArr<{
             foo int
             bar str
             baz MyArr<T>
             baz2 MyArr<int>
             baz3 MyArr<int>
-        }>
+        }> // FIXME nested {} curly braces breakes syntax-highlighting based on {} scope
     }
     MyEnum enum {
         First
         Second
     }
-    MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<{foo bar}> | MyEnum
+    MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<{foo float}> | MyEnum
 }
 
 interfaces {
