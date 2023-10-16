@@ -20,12 +20,12 @@ types {
         foo int
         bar str
         baz MyArr<T>
-        baz2 MyArr<int>
-        baz2 MyArr<{
+        bax MyArr<int>
+        bac MyArr<{
             bazus int
             bazus2 vec<float>
         }>
-        bazxs {} // FIXME if remove this, then lines after parsed ok
+        bam {} // FIXME if remove this, then lines after parsed ok
     }
     MyEnum {
         First
@@ -33,7 +33,6 @@ types {
     }
     MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
 }
-
 
 // broken example
 types {
@@ -60,7 +59,7 @@ types {
         First
         Second
     }
-    MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
+    MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<{foo bar}> | MyEnum
 }
 
 interfaces {

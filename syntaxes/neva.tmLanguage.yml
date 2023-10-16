@@ -1,181 +1,215 @@
-$schema: https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+---
+"$schema": https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
 name: neva
 scopeName: source.neva
 fileTypes:
-  - .neva
-patterns:
-  - include: "#comments"
-  - comment: component definition
-    match: ^(\bcmp\b)(?:\s+(\([^\)]+\)\s+)?(\w+)(?=\())?
-    captures:
-      1:
-        name: keyword.function
-      2:
-        patterns:
-          - include: "#brackets"
-          - include: "#operators"
-      3:
-        patterns:
-          - match: \d\w*
-            name: invalid.illegal.identifier
-          - match: \w+
-            name: entity.name.function
-  - comment: Builtin constants
-    match: \btrue|false
-  - include: "#numeric_literals"
-  - include: "#brackets"
-  - include: "#delimeters"
-  - include: "#keywords"
-  - include: "#operators"
-  - include: "#storage_types"
-  - begin: \b(use)\s+
-    beginCaptures:
-      1:
-        name: keyword.import
-    end: (?!\G)
-    patterns:
-      - includes: "#imports"
-  - begin: \b(type)\s+
-    beginCaptures:
-      1:
-        name: keyword.type
-    end: (?!\G)
-    patterns:
-      - match: \d\w*
-        name: invalid.illegal.identifier
-      - match: \w+
-        name: entity.name.type
+- ".neva"
 repository:
   comments:
     patterns:
-      - name: comment.block
-        begin: \/\*
-        beginCaptures:
-          1:
-            name: punctuation.definition.comment
-        end: \*\/
-        endCaptures:
-          1:
-            name: punctuation.definition.comment
-      - name: comment.line.double-slash
-        begin: \/\/
-        beginCaptures:
-          1:
-            name: punctuation.definition.comment
-        end: (?:\n|$)
+    - name: comment.line.double-slash
+      begin: "\\/\\/"
+      beginCaptures:
+        '1':
+          name: punctuation.definition.comment
+      end: "(?:\\n|$)"
   imports:
     patterns:
-      - match: ((?!\s+)[^\s]*)?\s*([^]*)
-        captures:
-          1:
-            name: "entity.alias.import"
-          2:
-            name: "entity.name.import"
-      - begin: \{
-        end: \}
-        beginCaptures:
-          0:
-            name: "punctuation.definition.imports.begin.bracket.curly"
-        endCaptures:
-          0:
-            name: "punctuation.definition.imports.end.bracket.curly"
-        patterns:
-          - include: "#comments"
-          - include: "#imports"
-  "brackets": {
-    "patterns": [
-      {
-        "begin": "{",
-        "beginCaptures": {
-          "0": {
-            "name": "punctuation.definition.begin.bracket.curly"
-          }
-        },
-        "end": "}",
-        "endCaptures": {
-          "0": {
-            "name": "punctuation.definition.end.bracket.curly"
-          }
-        },
-        "patterns": [
-          {
-            "include": "$self"
-          }
-        ]
-      },
-      {
-        "begin": "\\(",
-        "beginCaptures": {
-          "0": {
-            "name": "punctuation.definition.begin.bracket.round"
-          }
-        },
-        "end": "\\)",
-        "endCaptures": {
-          "0": {
-            "name": "punctuation.definition.end.bracket.round"
-          }
-        },
-        "patterns": [
-          {
-            "include": "$self"
-          }
-        ]
-      },
-      {
-        "match": "\\[|\\]",
-        "name": "punctuation.definition.bracket.square"
-      }
-    ]
-  }
-  "delimiters": {
-    "patterns": [
-      {
-        "match": ",",
-        "name": "punctuation.other.comma.go"
-      },
-      {
-        "match": "\\.(?!\\.\\.)",
-        "name": "punctuation.other.period.go"
-      }
-    ]
-  }
-  keywords:
-    patterns: [
-      {
-        "match": "\\bconst\\b",
-        "name": "keyword.const"
-      },
-      {
-        "match": "\\bcmp\\b",
-        "name": "keyword.function"
-      },
-      {
-        "match": "\\bio\\b",
-        "name": "keyword.interface"
-      },
-      {
-        "match": "\\bmap\\b",
-        "name": "keyword.map"
-      },
-      {
-        "match": "\\brec\\b",
-        "name": "keyword.struct"
-      }
-    ]
+    - match: "((?!\\s+)[^\\s]*)?\\s*([^\\n]*)"
+      captures:
+        '1':
+          name: entity.alias.import
+        '2':
+          name: entity.name.import
+    - begin: "\\{"
+      end: "\\}"
+      beginCaptures:
+        '0':
+          name: punctuation.definition.imports.begin.bracket.curly
+      endCaptures:
+        '0':
+          name: punctuation.definition.imports.end.bracket.curly
+      patterns:
+      - include: "#comments"
+      - include: "#imports"
+  brackets:
+    patterns:
+    - begin: "{"
+      beginCaptures:
+        '0':
+          name: punctuation.definition.begin.bracket.curly
+      end: "}"
+      endCaptures:
+        '0':
+          name: punctuation.definition.end.bracket.curly
+      patterns:
+      - include: "$self"
+    - begin: "\\("
+      beginCaptures:
+        '0':
+          name: punctuation.definition.begin.bracket.round
+      end: "\\)"
+      endCaptures:
+        '0':
+          name: punctuation.definition.end.bracket.round
+      patterns:
+      - include: "$self"
+    - match: "\\[|\\]"
+      name: punctuation.definition.bracket.square
+  delimiters:
+    patterns:
+    - match: ","
+      name: punctuation.other.comma
+    - match: "\\.(?!\\.\\.)"
+      name: punctuation.other.period
   operators:
     patterns:
-      - match: ->
-        name: keyword.operator.channel
-      - match: =
-        name: keyword.operator.assignment
+    - match: "->"
+      name: keyword.operator.channel
+    - match: "="
+      name: keyword.operator.assignment
   storage_types:
     patterns:
-      - match: \bbool\b
-        name: storage.type.boolean
-      - match: \berror\b
-        name: storage.type.error
-      - match: \b(c(64|128)|f(32|64)|u|i(8|16|32|64)?)\b
-        name: storage.type.numeric.go
-      - match: \bstr\b
-        name: storage.type.string.go
+    - match: "\\bbool\\b"
+      name: storage.type.boolean
+    - match: "\\berror\\b"
+      name: storage.type.error
+    - match: "\\b(int|float)\\b"
+      name: storage.type.numeric
+    - match: "\\bstr\\b"
+      name: storage.type.string
+  numeric_literals:
+    patterns:
+    - match: "\\b0[xX][0-9a-fA-F]+\\b"
+      name: constant.numeric.hexadecimal
+    - match: "\\b[0-9]+\\.?[0-9]*([eE][-+]?[0-9]+)?\\b"
+      name: constant.numeric.float
+    - match: "\\b[0-9]+\\b"
+      name: constant.numeric.integer
+  string_literals:
+    patterns:
+    - name: string.quoted.double
+      begin: "\""
+      end: "\""
+      patterns:
+      - match: \\"
+        name: constant.character.escape.double-quote
+patterns:
+- include: "#comments"
+- include: "#string_literals"
+- comment: component definition
+  match: "^(\\bcomponents\\b)(?:\\s+(\\([^\\)]+\\)\\s+)?(\\w+)(?=\\())?"
+  captures:
+    '1':
+      name: keyword.function
+    '2':
+      patterns:
+      - include: "#brackets"
+      - include: "#operators"
+    '3':
+      patterns:
+      - match: "\\d\\w*"
+        name: invalid.illegal.identifier
+      - match: "\\w+"
+        name: entity.name.function
+- comment: Boolean constants
+  match: "\\b(true|false)"
+  name: constant.language.boolean
+- include: "#numeric_literals"
+- include: "#brackets"
+- include: "#delimiters"
+- include: "#operators"
+- include: "#storage_types"
+- begin: "\\b(use)\\s*\\{"
+  beginCaptures:
+    '1':
+      name: keyword.import
+  end: "\\}"
+  patterns:
+  - match: "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$"
+    captures:
+      '2':
+        name: entity.name.section
+  - match: "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$"
+    captures:
+      '3':
+        name: entity.name.section
+  - match: "^(\\s*)[^\\s/]+\\s*$"
+    captures:
+      '0':
+        name: entity.name.section
+- begin: "\\b(types)\\s*\\{"
+  beginCaptures:
+    '1':
+      name: keyword.type
+  end: "\\}"
+  patterns:
+  - match: "^(\\s*)(\\w+)"
+    captures:
+      '2':
+        name: entity.name.type
+  - match: "\\b(bool|error|int|float|str)\\b"
+    name: storage.type
+  - match: "\\b(\\w+)(?=\\s*[|{])"
+    captures:
+      '1':
+        name: entity.name.type
+  - match: "\\b\\w+\\b"
+    name: entity.name.type
+  - match: "^(\\s*)\\w+\\s*\\{\\s*$"
+    name: entity.name.type
+  - begin: "\\{"
+    end: "\\}"
+    patterns:
+    - match: "\\b(bool|error|int|float|str|\\w+<\\w+>)\\b"
+      name: storage.type
+    - begin: "\\b(\\w+)\\<"
+      end: "\\>"
+      beginCaptures:
+        '1':
+          name: entity.name.type
+      patterns:
+      - match: "\\b(bool|error|int|float|str)\\b"
+        name: storage.type
+      - match: "\\b(\\w+)\\b"
+        name: entity.name.type
+      - begin: "\\{"
+        end: "\\}"
+        patterns:
+        - match: "\\b(bool|error|int|float|str)\\b"
+          name: storage.type
+        - match: "\\b(\\w+)(?=\\s*[|{])"
+          name: entity.name.type
+        - begin: "\\b(\\w+)\\<"
+          end: "\\>"
+          beginCaptures:
+            '1':
+              name: entity.name.type
+          patterns:
+          - match: "\\b(bool|error|int|float|str)\\b"
+            name: storage.type
+          - match: "\\b(\\w+)\\b"
+            name: entity.name.type
+    - match: "\\b(\\w+<\\w+>|\\w+)(?=\\s*[|;]|$)"
+      name: entity.name.type
+    - match: "^(\\s*)\\w+\\s*$"
+      name: source.neva
+- begin: "\\b(interfaces)\\s*\\{"
+  beginCaptures:
+    '1':
+      name: keyword.declaration.interfaces
+  end: "\\}"
+  patterns:
+  - match: "\\b(pub)\\b"
+    name: keyword.modifier.public
+  - match: "\\b(\\w+)\\b(?=<|\\()"
+    captures:
+      '1':
+        name: entity.name.type.interface
+  - begin: "\\("
+    end: "\\)"
+    patterns:
+    - match: "(\\w+)\\s(\\w+)"
+      captures:
+        '1':
+          name: variable.parameter
