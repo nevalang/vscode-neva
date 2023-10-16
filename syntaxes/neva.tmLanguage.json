@@ -43,11 +43,18 @@
           "name": "storage.type.string"
         },
         {
-          "include": "#record_type"
+          "match": "\\bany\\b",
+          "name": "storage.type.any"
+        },
+        {
+          "include": "#struct_type"
+        },
+        {
+          "include": "#enum_type"
         }
       ]
     },
-    "record_type": {
+    "struct_type": {
       "patterns": [
         {
           "begin": "\\b(struct)\\s*\\{",
@@ -65,6 +72,20 @@
               "include": "#storage_types"
             }
           ]
+        }
+      ]
+    },
+    "enum_type": {
+      "patterns": [
+        {
+          "begin": "\\b(enum)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.struct"
+            }
+          },
+          "end": "\\}",
+          "name": "variable.other.enummember"
         }
       ]
     },
@@ -107,7 +128,7 @@
       "match": "\\b(nil)",
       "name": "constant.language.nil"
     },
-    "record_literal": {
+    "struct_literal": {
       "patterns": [
         {
           "begin": "\\{",
@@ -126,7 +147,7 @@
               "include": "#string_literals"
             },
             {
-              "include": "#record_literal"
+              "include": "#struct_literal"
             }
           ]
         }
@@ -225,7 +246,7 @@
           "include": "#pub"
         },
         {
-          "include": "#record_literal"
+          "include": "#struct_literal"
         },
         {
           "include": "#storage_types"
@@ -260,47 +281,53 @@
           "include": "#storage_types"
         },
         {
-          "match": "\\b(\\w+)\\b\\s*<",
-          "captures": {
-            "1": {
-              "name": "entity.name.function"
-            }
-          }
+          "match": "\\b(\\w+)\\b(?=\\s*<|\\s*\\()",
+          "name": "entity.name.section"
         },
         {
-          "begin": "\\b(nodes)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "entity.name.section"
-            }
-          },
+          "begin": "\\{",
           "end": "\\}",
           "patterns": [
             {
-              "include": "#storage_types"
+              "begin": "\\b(nodes)\\s*\\{",
+              "beginCaptures": {
+                "1": {
+                  "name": "entity.name.section"
+                }
+              },
+              "end": "\\}",
+              "patterns": [
+                {
+                  "include": "#storage_types"
+                },
+                {
+                  "match": "^(\\s*)\\b(\\w+)\\b",
+                  "captures": {
+                    "2": {
+                      "name": "variable.other.node"
+                    }
+                  }
+                }
+              ]
             },
             {
-              "match": "^(\\s*)\\b(\\w+)\\b",
-              "captures": {
-                "2": {
-                  "name": "variable.other.node"
+              "begin": "\\b(net)\\s*\\{",
+              "beginCaptures": {
+                "1": {
+                  "name": "entity.name.section"
                 }
-              }
-            }
-          ]
-        },
-        {
-          "begin": "\\b(net)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "entity.name.section"
-            }
-          },
-          "end": "\\}",
-          "patterns": [
-            {
-              "match": "->",
-              "name": "keyword.control"
+              },
+              "end": "\\}",
+              "patterns": [
+                {
+                  "match": "->",
+                  "name": "keyword.control"
+                },
+                {
+                  "begin": "\\{",
+                  "end": "\\}"
+                }
+              ]
             }
           ]
         }

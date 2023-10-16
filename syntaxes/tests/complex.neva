@@ -32,7 +32,7 @@ types { // adsad
             foo float
         }
     }
-    anotherRec struct { // 
+    anotherRec struct { // test
         foo int
     }
     MyEnum enum {
@@ -42,8 +42,8 @@ types { // adsad
     MyUnion MyFloat | MyVec | MyArr | MyRec | int
 }
 
-// broken example
 types {
+    MyAny any
     MyErr error
     MyFloat float
     MyBool bool
@@ -91,7 +91,22 @@ const {
 }
 
 components {
-    pub Doer<T float>(x int) (z T) {
+    pub Doer<T int>(x int) (z T) {
+        nodes {
+            abstractNode IMyInterface
+            printer std_pkg.Printer
+            reader elsewhere.Reader<str>
+        }
+        net {
+            in.x -> printer.in.v
+            printer.out.v -> {
+                reader.in.v
+                out.z
+            }
+        }
+    }
+    
+    pub Doer2 <T float>(x int) (z T, x2 []struct {foo bool }) {
         nodes {
             abstractNode IMyInterface
             printer std_pkg.Printer
@@ -106,7 +121,7 @@ components {
         }
     }
 
-    Doer2<T float>(x int) (z T) {
+    Doer2<T float>(x int) (z T, z2 bool) {
         nodes {
             abstractNode IMyInterface
             printer std_pkg.Printer

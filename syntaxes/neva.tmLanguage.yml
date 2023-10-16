@@ -35,10 +35,13 @@ repository:
       name: storage.type.numeric
     - match: "\\bstr\\b"  # Matches the keyword 'str'
       name: storage.type.string
-    - include: "#record_type"
+    - match: "\\bany\\b"  # Matches the keyword 'any'
+      name: storage.type.any
+    - include: "#struct_type"
+    - include: "#enum_type"
 
-  # Record type (indirect-recursive via storage_types)
-  record_type:
+  # Struct type (indirect-recursive via storage_types)
+  struct_type:
     patterns:
     - begin: "\\b(struct)\\s*\\{"
       beginCaptures:
@@ -48,6 +51,16 @@ repository:
       patterns:
         - include: "#comments"
         - include: "#storage_types"
+
+  # Enum type
+  enum_type:
+    patterns:
+    - begin: "\\b(enum)\\s*\\{"
+      beginCaptures:
+        '1':
+          name: keyword.struct
+      end: "\\}"
+      name: variable.other.enummember
 
   # Numeric literals
   numeric_literals:
@@ -79,8 +92,8 @@ repository:
     match: "\\b(nil)"  # Matches the keyword 'nil'
     name: constant.language.nil
 
-  # Record literal (structure)
-  record_literal:
+  # Struct literal (structure)
+  struct_literal:
     patterns:
     - begin: "\\{"
       end: "\\}"
@@ -89,7 +102,7 @@ repository:
         - include: "#bool_literals"
         - include: "#numeric_literals"
         - include: "#string_literals"
-        - include: "#record_literal"
+        - include: "#struct_literal"
 
 # ----------------------------------------------------------------
 # Patterns (actual rules)
@@ -147,7 +160,7 @@ patterns:
     end: "\\}"  # Matches a closing curly brace
     patterns:
     - include: "#pub"
-    - include: "#record_literal"
+    - include: "#struct_literal"
     - include: "#storage_types"
     - include: "#string_literals"
     - include: "#numeric_literals"
@@ -163,31 +176,38 @@ patterns:
     patterns:
     - include: "#pub"
     - include: "#storage_types"
-    - match: "\\b(\\w+)\\b\\s*<"  # Matches the name like 'Doer' followed by optional whitespace and an opening angle bracket
-      captures:
-        '1':
-          name: entity.name.function
-
-    # Component Nodes
-    - begin: "\\b(nodes)\\s*\\{"  # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
-      beginCaptures:
-        '1':
-          name: entity.name.section
-      end: "\\}"  # Matches a closing curly brace
+    - match: "\\b(\\w+)\\b(?=\\s*<|\\s*\\()"
+      name: "entity.name.section"
+    - begin: "\\{"
+      end: "\\}"
       patterns:
-        - include: "#storage_types"
-        - match: "^(\\s*)\\b(\\w+)\\b"  # Matches a line with some whitespace, followed by a word (node identifier)
-          captures:
-            '2':
-              name: variable.other.node
+      # Component Nodes
+      - begin: "\\b(nodes)\\s*\\{"  # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
+        beginCaptures:
+          '1':
+            name: entity.name.section
+        end: "\\}"  # Matches a closing curly brace
+        patterns:
+          - include: "#storage_types"
+          - match: "^(\\s*)\\b(\\w+)\\b"  # Matches a line with some whitespace, followed by a word (node identifier)
+            captures:
+              '2':
+                name: variable.other.node
 
-    # Component Net
-    - begin: "\\b(net)\\s*\\{"  # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
-      beginCaptures:
-        '1':
-          name: entity.name.section
-      end: "\\}"  # Matches a closing curly brace
-      patterns:
-        - match: "->"  # Matches the '->' operator
-          name: keyword.control
+      # Component Net
+      - begin: "\\b(net)\\s*\\{"  # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
+        beginCaptures:
+          '1':
+            name: entity.name.section
+        end: "\\}"  # Matches a closing curly brace
+        patterns:
+          - match: "->"  # Matches the '->' operator
+            name: keyword.control
+          - begin: "\\{"
+            end: "\\}"
+            # patterns:
+              # - match: "->"  # Matches the '->' operator
+              # name: keyword.control
 
+
+    
