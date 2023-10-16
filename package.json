@@ -1,6 +1,11 @@
 {
   "name": "vscode-nevalang",
   "displayName": "Neva",
+  "author": {
+    "email": "emil.musician@gmail.com",
+    "name": "Emil Valeev",
+    "url": "https://github.com/emil14"
+  },
   "description": "Neva langauge support (syntax highlighting, formatter, snippets) for Visual Studio Code",
   "publisher": "nevalang",
   "version": "0.1.0",
