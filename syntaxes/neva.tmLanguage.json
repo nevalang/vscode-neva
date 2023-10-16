@@ -6,6 +6,10 @@
     ".neva"
   ],
   "repository": {
+    "pub": {
+      "match": "\\b(pub)\\b",
+      "name": "storage.modifier.public"
+    },
     "comments": {
       "patterns": [
         {
@@ -17,113 +21,6 @@
             }
           },
           "end": "(?:\\n|$)"
-        }
-      ]
-    },
-    "imports": {
-      "patterns": [
-        {
-          "match": "((?!\\s+)[^\\s]*)?\\s*([^\\n]*)",
-          "captures": {
-            "1": {
-              "name": "entity.alias.import"
-            },
-            "2": {
-              "name": "entity.name.import"
-            }
-          }
-        },
-        {
-          "begin": "\\{",
-          "end": "\\}",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.imports.begin.bracket.curly"
-            }
-          },
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.imports.end.bracket.curly"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#comments"
-            },
-            {
-              "include": "#imports"
-            }
-          ]
-        }
-      ]
-    },
-    "brackets": {
-      "patterns": [
-        {
-          "begin": "{",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.begin.bracket.curly"
-            }
-          },
-          "end": "}",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.end.bracket.curly"
-            }
-          },
-          "patterns": [
-            {
-              "include": "$self"
-            }
-          ]
-        },
-        {
-          "begin": "\\(",
-          "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.begin.bracket.round"
-            }
-          },
-          "end": "\\)",
-          "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.end.bracket.round"
-            }
-          },
-          "patterns": [
-            {
-              "include": "$self"
-            }
-          ]
-        },
-        {
-          "match": "\\[|\\]",
-          "name": "punctuation.definition.bracket.square"
-        }
-      ]
-    },
-    "delimiters": {
-      "patterns": [
-        {
-          "match": ",",
-          "name": "punctuation.other.comma"
-        },
-        {
-          "match": "\\.(?!\\.\\.)",
-          "name": "punctuation.other.period"
-        }
-      ]
-    },
-    "operators": {
-      "patterns": [
-        {
-          "match": "->",
-          "name": "keyword.operator.channel"
-        },
-        {
-          "match": "=",
-          "name": "keyword.operator.assignment"
         }
       ]
     },
@@ -171,71 +68,25 @@
           "end": "\"",
           "patterns": [
             {
-              "match": "\\\\\"",
+              "match": "\\\\\"\"",
               "name": "constant.character.escape.double-quote"
             }
           ]
         }
       ]
+    },
+    "bool_literals": {
+      "match": "\\b(true|false)",
+      "name": "constant.language.boolean"
+    },
+    "nil_literal": {
+      "match": "\\b(nil)",
+      "name": "constant.language.nil"
     }
   },
   "patterns": [
     {
       "include": "#comments"
-    },
-    {
-      "include": "#string_literals"
-    },
-    {
-      "comment": "component definition",
-      "match": "^(\\bcomponents\\b)(?:\\s+(\\([^\\)]+\\)\\s+)?(\\w+)(?=\\())?",
-      "captures": {
-        "1": {
-          "name": "keyword.function"
-        },
-        "2": {
-          "patterns": [
-            {
-              "include": "#brackets"
-            },
-            {
-              "include": "#operators"
-            }
-          ]
-        },
-        "3": {
-          "patterns": [
-            {
-              "match": "\\d\\w*",
-              "name": "invalid.illegal.identifier"
-            },
-            {
-              "match": "\\w+",
-              "name": "entity.name.function"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "comment": "Boolean constants",
-      "match": "\\b(true|false)",
-      "name": "constant.language.boolean"
-    },
-    {
-      "include": "#numeric_literals"
-    },
-    {
-      "include": "#brackets"
-    },
-    {
-      "include": "#delimiters"
-    },
-    {
-      "include": "#operators"
-    },
-    {
-      "include": "#storage_types"
     },
     {
       "begin": "\\b(use)\\s*\\{",
@@ -269,6 +120,9 @@
               "name": "entity.name.section"
             }
           }
+        },
+        {
+          "include": "#comments"
         }
       ]
     },
@@ -282,102 +136,13 @@
       "end": "\\}",
       "patterns": [
         {
-          "match": "^(\\s*)(\\w+)",
-          "captures": {
-            "2": {
-              "name": "entity.name.type"
-            }
-          }
+          "include": "#comments"
         },
         {
-          "match": "\\b(bool|error|int|float|str)\\b",
-          "name": "storage.type"
+          "include": "#pub"
         },
         {
-          "match": "\\b(\\w+)(?=\\s*[|{])",
-          "captures": {
-            "1": {
-              "name": "entity.name.type"
-            }
-          }
-        },
-        {
-          "match": "\\b\\w+\\b",
-          "name": "entity.name.type"
-        },
-        {
-          "match": "^(\\s*)\\w+\\s*\\{\\s*$",
-          "name": "entity.name.type"
-        },
-        {
-          "begin": "\\{",
-          "end": "\\}",
-          "patterns": [
-            {
-              "match": "\\b(bool|error|int|float|str|\\w+<\\w+>)\\b",
-              "name": "storage.type"
-            },
-            {
-              "begin": "\\b(\\w+)\\<",
-              "end": "\\>",
-              "beginCaptures": {
-                "1": {
-                  "name": "entity.name.type"
-                }
-              },
-              "patterns": [
-                {
-                  "match": "\\b(bool|error|int|float|str)\\b",
-                  "name": "storage.type"
-                },
-                {
-                  "match": "\\b(\\w+)\\b",
-                  "name": "entity.name.type"
-                },
-                {
-                  "begin": "\\{",
-                  "end": "\\}",
-                  "patterns": [
-                    {
-                      "match": "\\b(bool|error|int|float|str)\\b",
-                      "name": "storage.type"
-                    },
-                    {
-                      "match": "\\b(\\w+)(?=\\s*[|{])",
-                      "name": "entity.name.type"
-                    },
-                    {
-                      "begin": "\\b(\\w+)\\<",
-                      "end": "\\>",
-                      "beginCaptures": {
-                        "1": {
-                          "name": "entity.name.type"
-                        }
-                      },
-                      "patterns": [
-                        {
-                          "match": "\\b(bool|error|int|float|str)\\b",
-                          "name": "storage.type"
-                        },
-                        {
-                          "match": "\\b(\\w+)\\b",
-                          "name": "entity.name.type"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "match": "\\b(\\w+<\\w+>|\\w+)(?=\\s*[|;]|$)",
-              "name": "entity.name.type"
-            },
-            {
-              "match": "^(\\s*)\\w+\\s*$",
-              "name": "source.neva"
-            }
-          ]
+          "include": "#storage_types"
         }
       ]
     },
@@ -391,28 +156,91 @@
       "end": "\\}",
       "patterns": [
         {
-          "match": "\\b(pub)\\b",
-          "name": "keyword.modifier.public"
+          "include": "#pub"
         },
         {
-          "match": "\\b(\\w+)\\b(?=<|\\()",
-          "captures": {
+          "include": "#storage_types"
+        }
+      ]
+    },
+    {
+      "begin": "\\b(const)\\s*\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.declaration.const"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#pub"
+        },
+        {
+          "include": "#storage_types"
+        },
+        {
+          "include": "#string_literals"
+        },
+        {
+          "include": "#numeric_literals"
+        },
+        {
+          "include": "#bool_literals"
+        },
+        {
+          "include": "#nil_literal"
+        }
+      ]
+    },
+    {
+      "begin": "\\b(components)\\s*\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.declaration.function"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#pub"
+        },
+        {
+          "include": "#storage_types"
+        },
+        {
+          "begin": "\\b(nodes)\\s*\\{",
+          "beginCaptures": {
             "1": {
-              "name": "entity.name.type.interface"
+              "name": "entity.name.section"
             }
-          }
-        },
-        {
-          "begin": "\\(",
-          "end": "\\)",
+          },
+          "end": "\\}",
           "patterns": [
             {
-              "match": "(\\w+)\\s(\\w+)",
+              "include": "#storage_types"
+            },
+            {
+              "match": "^(\\s*)[^\\s/]+\\s*$",
               "captures": {
-                "1": {
-                  "name": "variable.parameter"
+                "0": {
+                  "name": "variable.other.node"
                 }
               }
+            }
+          ]
+        },
+        {
+          "begin": "\\b(net)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.section"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "match": "\\->\\",
+              "name": "keyword.operator.arrow"
             }
           ]
         }

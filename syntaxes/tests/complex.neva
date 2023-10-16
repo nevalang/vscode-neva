@@ -1,31 +1,33 @@
 // comments
 
-use {
-    std/tmp/io
-	stdpkg
-	imported/from/elsewhereas
+use { // asd
+    std/tmp/io // asdasdas asd1 1s
+    // asdasx
+	stdpkg // asd
+	imported/from/elsewhereas // asd
 	with_alias another/imported/from/elsewhere
-}
+} // adsad
 
-types {
-    MyErr error
-    MyFloat float
-    MyBool bool
-    MyStr str
-    MyVec<T> []T
-    MyArr<T int> [512]int
-    MyArr<T MyVec<int>> [512]T
-    MyArr<T MyVec<int>> [512][]int
-    MyRec<T> {
-        foo int
-        bar str
-        baz MyArr<T>
-        bax MyArr<int>
-        bac MyArr<{
-            bazus int
-            bazus2 vec<float>
+types { // adsad
+    MyErr error // asdasdasd
+    MyFloat float // asdasdasd
+    MyBool bool // asdasdasd
+    pub MyStr str // asdasdasd
+    MyVec<T> []T // asdasdasd
+    MyArr<T int> [512]int // asdasdasd
+    MyArr<T MyVec<int>> [512]T // asdasdasd
+    MyArr<T MyVec<int>> [512][]int // asdasdasd
+    // 123123sa
+    pub MyRec<T> { // asdasdasd
+        foo int // asdasdasd
+        bar str // asdasdasd
+        baz MyArr<T> // asdasdasd
+        bax MyArr<int> // asdasdasd
+        bac MyArr<{ // asdasdasd
+            bazus int // asx
+            bazus2 vec<float> // asd
         }>
-        bam {} // FIXME if remove this, then lines after parsed ok
+        bam {}
     }
     MyEnum {
         First
@@ -42,12 +44,12 @@ types {
     MyStr str
     MyVec<T> []T
     MyArr<T> [512]T
-    MyRec<T> {
+    MyRec<T> { // FIXME nested {} curly braces breakes syntax-highlighting based on {} scope
         foo int
         bar str
         baz MyArr<T>
         baz2 MyArr<int>
-        baz3 MyArr<{
+        baz3 MyArr<rec {
             foo int
             bar str
             baz MyArr<T>
@@ -55,7 +57,7 @@ types {
             baz3 MyArr<int>
         }>
     }
-    MyEnum {
+    MyEnum enum {
         First
         Second
     }
@@ -65,18 +67,20 @@ types {
 interfaces {
     IMyInterface<T bool>(y notStorage, x int) (z T)
     pub IMyInterface2<T MyUnion>(x int) (z T)
+    IMyInterface3<T bool>(y notStorage, x int) (z T)
 }
 
 const {
     myTrue true
     pi myFloat 3.14
-    my_vec MyVec<myFloat> [pi, pi]
+    pub my_vec MyVec<myFloat> [pi, pi]
+    zero any nil
     pub my_friend MyRec<float> {
         foo: 27
         bar: "john"
         baz: 42.0
     }
-    my_str "my string"
+    my_str str "my string"
 }
 
 components {
