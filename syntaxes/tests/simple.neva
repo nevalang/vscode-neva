@@ -27,7 +27,7 @@ interfaces {
 }
 
 const {
-    myTrue true
+    myTrue bool true
     pi myFloat 3.14
     pub my_vec MyVec<myFloat> [pi, pi]
     zero any nil
@@ -37,14 +37,14 @@ const {
 components {
     pub Doer<T float>(x int) (z T) {
         nodes {
-            abstractNode IMyInterface
-            printer std_pkg.Printer
-            reader elsewhere.Reader<str>
+            abstractNode IMyInterface()
+            printer std_pkg.Printer()
+            reader elsewhere.Reader<str>()
         }
         net {
-            in.x -> printer.in.v
-            printer.out.v -> {
-                reader.in.v
+            in.x -> printer.v
+            printer.v -> {
+                reader.v
                 out.z
             }
         }

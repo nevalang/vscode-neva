@@ -208,6 +208,14 @@
           "include": "#storage_types"
         },
         {
+          "match": "\\b(\\w+)\\b\\s*<",
+          "captures": {
+            "1": {
+              "name": "entity.name.function"
+            }
+          }
+        },
+        {
           "begin": "\\b(nodes)\\s*\\{",
           "beginCaptures": {
             "1": {
@@ -220,9 +228,9 @@
               "include": "#storage_types"
             },
             {
-              "match": "^(\\s*)[^\\s/]+\\s*$",
+              "match": "^(\\s*)\\b(\\w+)\\b",
               "captures": {
-                "0": {
+                "2": {
                   "name": "variable.other.node"
                 }
               }
@@ -239,8 +247,8 @@
           "end": "\\}",
           "patterns": [
             {
-              "match": "\\->\\",
-              "name": "keyword.operator.arrow"
+              "match": "->",
+              "name": "keyword.control"
             }
           ]
         }

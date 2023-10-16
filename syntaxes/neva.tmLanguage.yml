@@ -49,79 +49,92 @@ repository:
     match: "\\b(nil)"  # Matches the keyword 'nil'
     name: constant.language.nil
 patterns:
-- include: "#comments"
-- begin: "\\b(use)\\s*\\{"  # Matches the keyword 'use' followed by optional whitespace and an opening curly brace
-  beginCaptures:
-    '1':
-      name: keyword.import
-  end: "\\}"  # Matches a closing curly brace
-  patterns:
-  - match: "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$"  # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, whitespace, and then any character except whitespace and slashes until the end of the line
-    captures:
-      '2':
-        name: entity.name.section
-  - match: "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$"  # Similar to above, but with a grouping for a slash followed by non-whitespace/non-slash characters
-    captures:
-      '3':
-        name: entity.name.section
-  - match: "^(\\s*)[^\\s/]+\\s*$"  # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, and then optional whitespace until the end of the line
-    captures:
-      '0':
-        name: entity.name.section
   - include: "#comments"
-- begin: "\\b(types)\\s*\\{"  # Matches the keyword 'types' followed by optional whitespace and an opening curly brace
-  beginCaptures:
-    '1':
-      name: keyword.type
-  end: "\\}"  # Matches a closing curly brace
-  patterns:
-  - include: "#comments"
-  - include: "#pub"
-  - include: "#storage_types"
-- begin: "\\b(interfaces)\\s*\\{"  # Matches the keyword 'interfaces' followed by optional whitespace and an opening curly brace
-  beginCaptures:
-    '1':
-      name: keyword.declaration.interfaces
-  end: "\\}"  # Matches a closing curly brace
-  patterns:
-  - include: "#pub"
-  - include: "#storage_types"
-- begin: "\\b(const)\\s*\\{"  # Matches the keyword 'const' followed by optional whitespace and an opening curly brace
-  beginCaptures:
-    '1':
-      name: keyword.declaration.const
-  end: "\\}"  # Matches a closing curly brace
-  patterns:
-  - include: "#pub"
-  - include: "#storage_types"
-  - include: "#string_literals"
-  - include: "#numeric_literals"
-  - include: "#bool_literals"
-  - include: "#nil_literal"
-- begin: "\\b(components)\\s*\\{"  # Matches the keyword 'components' followed by optional whitespace and an opening curly brace
-  beginCaptures:
-    '1':
-      name: keyword.declaration.function
-  end: "\\}"  # Matches a closing curly brace
-  patterns:
-  - include: "#pub"
-  - include: "#storage_types"
-  - begin: "\\b(nodes)\\s*\\{"  # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
+  - begin: "\\b(use)\\s*\\{"  # Matches the keyword 'use' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
-        name: entity.name.section
+        name: keyword.import
     end: "\\}"  # Matches a closing curly brace
     patterns:
-      - include: "#storage_types"
-      - match: "^(\\s*)[^\\s/]+\\s*$"  # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, and then optional whitespace until the end of the line
-        captures:
-          '0':
-            name: variable.other.node
-  - begin: "\\b(net)\\s*\\{"  # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
+    - match: "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$"  # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, whitespace, and then any character except whitespace and slashes until the end of the line
+      captures:
+        '2':
+          name: entity.name.section
+    - match: "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$"  # Similar to above, but with a grouping for a slash followed by non-whitespace/non-slash characters
+      captures:
+        '3':
+          name: entity.name.section
+    - match: "^(\\s*)[^\\s/]+\\s*$"  # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, and then optional whitespace until the end of the line
+      captures:
+        '0':
+          name: entity.name.section
+    - include: "#comments"
+  - begin: "\\b(types)\\s*\\{"  # Matches the keyword 'types' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
-        name: entity.name.section
+        name: keyword.type
     end: "\\}"  # Matches a closing curly brace
     patterns:
-      - match: "\\->\\" 
-        name: keyword.operator.arrow
+    - include: "#comments"
+    - include: "#pub"
+    - include: "#storage_types"
+  - begin: "\\b(interfaces)\\s*\\{"  # Matches the keyword 'interfaces' followed by optional whitespace and an opening curly brace
+    beginCaptures:
+      '1':
+        name: keyword.declaration.interfaces
+    end: "\\}"  # Matches a closing curly brace
+    patterns:
+    - include: "#pub"
+    - include: "#storage_types"
+  - begin: "\\b(const)\\s*\\{"  # Matches the keyword 'const' followed by optional whitespace and an opening curly brace
+    beginCaptures:
+      '1':
+        name: keyword.declaration.const
+    end: "\\}"  # Matches a closing curly brace
+    patterns:
+    - include: "#pub"
+    - include: "#storage_types"
+    - include: "#string_literals"
+    - include: "#numeric_literals"
+    - include: "#bool_literals"
+    - include: "#nil_literal"
+  # ... (rest of your grammar)
+
+  - begin: "\\b(components)\\s*\\{"  # Matches the keyword 'components' followed by optional whitespace and an opening curly brace
+    beginCaptures:
+      '1':
+        name: keyword.declaration.function
+    end: "\\}"  # Matches a closing curly brace
+    patterns:
+    - include: "#pub"
+    - include: "#storage_types"
+    - match: "\\b(\\w+)\\b\\s*<"  # Matches the name like 'Doer' followed by optional whitespace and an opening angle bracket
+      captures:
+        '1':
+          name: entity.name.function
+    - begin: "\\b(nodes)\\s*\\{"  # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
+      beginCaptures:
+        '1':
+          name: entity.name.section
+      end: "\\}"  # Matches a closing curly brace
+      patterns:
+        - include: "#storage_types"
+        - match: "^(\\s*)\\b(\\w+)\\b"  # Matches a line with some whitespace, followed by a word (node identifier)
+          captures:
+            '2':
+              name: variable.other.node
+    - begin: "\\b(net)\\s*\\{"  # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
+      beginCaptures:
+        '1':
+          name: entity.name.section
+      end: "\\}"  # Matches a closing curly brace
+      patterns:
+        - match: "->"  # Matches the '->' operator
+          name: keyword.control
+        # - match: "\\b(\\w+)\\.\\b(\\w+)"  # Matches identifiers like 'reader.in' and 'out.z'
+        #   captures:
+        #     '1':
+        #       name: variable.other.identifier
+        #     # '2':
+        #     #   name: variable.parameter
+
