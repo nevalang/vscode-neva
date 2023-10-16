@@ -4,10 +4,17 @@ name: neva
 scopeName: source.neva
 fileTypes:
 - ".neva"
+
+# ----------------------------------------------------------------
+# Repository (reusable pattern definitions)
+# ----------------------------------------------------------------
 repository:
+  # Pub keyword
   pub:
     match: "\\b(pub)\\b"  # Matches the keyword 'pub'
     name: storage.modifier.public
+
+  # Comments
   comments:
     patterns:
     - name: comment.line.double-slash
@@ -16,6 +23,8 @@ repository:
         '1':
           name: punctuation.definition.comment
       end: "(?:\\n|$)"  # Matches the end of a line or the end of the input
+
+  # Storage types (basic types)
   storage_types:
     patterns:
     - match: "\\bbool\\b"  # Matches the keyword 'bool'
@@ -26,6 +35,18 @@ repository:
       name: storage.type.numeric
     - match: "\\bstr\\b"  # Matches the keyword 'str'
       name: storage.type.string
+    - include: "#record_type"
+
+  # Record type (indirect-recursive via storage_types)
+  record_type:
+    patterns:
+    - begin: "\\{"
+      end: "\\}"
+      patterns:
+        - include: "#comments"
+        - include: "#storage_types"
+
+  # Numeric literals
   numeric_literals:
     patterns:
     - match: "\\b0[xX][0-9a-fA-F]+\\b"  # Matches hexadecimal literals (e.g., 0x1a3)
@@ -34,6 +55,8 @@ repository:
       name: constant.numeric.float
     - match: "\\b[0-9]+\\b"  # Matches integer literals (e.g., 123)
       name: constant.numeric.integer
+
+  # String literals
   string_literals:
     patterns:
     - name: string.quoted.double
@@ -42,14 +65,34 @@ repository:
       patterns:
       - match: \\""  # Matches an escaped double quote (\")
         name: constant.character.escape.double-quote
+  
+  # Boolean literals
   bool_literals:
     match: "\\b(true|false)"  # Matches the keywords 'true' or 'false'
     name: constant.language.boolean
+
+  # Nil literal
   nil_literal:
     match: "\\b(nil)"  # Matches the keyword 'nil'
     name: constant.language.nil
+
+  # Record literal (structure)
+  record_literal:
+    patterns:
+    - begin: "\\{"
+      end: "\\}"
+      patterns:
+        - include: "#nil_literal"
+        - include: "#bool_literals"
+        - include: "#numeric_literals"
+        - include: "#string_literals"
+        - include: "#record_literal"
+
+# ----------------------------------------------------------------
+# Patterns (actual rules)
+# ----------------------------------------------------------------
 patterns:
-  - include: "#comments"
+  - include: "#comments" # Comments at the root level of the file
 
   # Use (Imports)
   - begin: "\\b(use)\\s*\\{"  # Matches the keyword 'use' followed by optional whitespace and an opening curly brace
@@ -101,6 +144,7 @@ patterns:
     end: "\\}"  # Matches a closing curly brace
     patterns:
     - include: "#pub"
+    - include: "#record_literal"
     - include: "#storage_types"
     - include: "#string_literals"
     - include: "#numeric_literals"

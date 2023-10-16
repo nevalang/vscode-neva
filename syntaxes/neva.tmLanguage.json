@@ -41,6 +41,25 @@
         {
           "match": "\\bstr\\b",
           "name": "storage.type.string"
+        },
+        {
+          "include": "#record_type"
+        }
+      ]
+    },
+    "record_type": {
+      "patterns": [
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "include": "#storage_types"
+            }
+          ]
         }
       ]
     },
@@ -82,6 +101,31 @@
     "nil_literal": {
       "match": "\\b(nil)",
       "name": "constant.language.nil"
+    },
+    "record_literal": {
+      "patterns": [
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#nil_literal"
+            },
+            {
+              "include": "#bool_literals"
+            },
+            {
+              "include": "#numeric_literals"
+            },
+            {
+              "include": "#string_literals"
+            },
+            {
+              "include": "#record_literal"
+            }
+          ]
+        }
+      ]
     }
   },
   "patterns": [
@@ -174,6 +218,9 @@
       "patterns": [
         {
           "include": "#pub"
+        },
+        {
+          "include": "#record_literal"
         },
         {
           "include": "#storage_types"
