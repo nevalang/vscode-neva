@@ -1,12 +1,14 @@
 # VSCode Neva
 
+![Logo of the language](/assets/header.png "Nevalang logo and title").
+
 This is VSCode extension for [Neva](https://github.com/nevalang/neva) programming language.
 
 ## Features
 
 ### Syntax Highlighting
 
-![Picture of a syntax highlighting](/code.png "Syntax highlighting example").
+![Picture of a syntax highlighting](/assets/code.png "Syntax highlighting example").
 
 ## Requirements
 
