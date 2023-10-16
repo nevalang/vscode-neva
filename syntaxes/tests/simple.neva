@@ -1,52 +1,60 @@
 // comments
 
 use {
-    std/tmp/io
-	stdpkg
-	imported/from/elsewhereas
-	with_alias another/imported/from/elsewhere
+    std/io
+	github.com/emil14/nevatools
+	ws github.com/nevalang/websocket
 }
 
 types {
-    MyErr error
-    MyFloat float
-    MyBool bool
-    pub MyStr str
-    MyVec<T> []T
-    MyArr<T int> [512]int
-    MyArr<T MyVec<int>> [512]T
-    MyArr<T MyVec<int>> [512][]int
-    MyUnion MyFloat | MyVec | MyArr | MyRec | MyEnum
-    MyArr<T MyVec<int>> [512][]int
+    Err error
+    Float float
+    Bool bool
+    pub Str str
+    Vec<T> []T
+    Arr<T Vec<int>> [512][]T
+    Union Float | Vec | Arr | Rec | Enum
+    Struct struct {
+        age int
+        name str
+        bestFriend struct {
+            isDog bool // should be true
+        }
+    }
 }
 
 interfaces {
-    IMyInterface<T bool>(y notStorage, x int) (z T)
-    pub IMyInterface2<T MyUnion>(x int) (z T)
-    IMyInterface3<T bool>(y notStorage, x int) (z T)
+    InterfacePrivate<T bool>(y T, x int) (z T)
+    pub InterfacePublic<T Union>(x int, y str) (z T)
 }
 
 const {
-    myTrue bool true
-    pi myFloat 3.14
-    pub my_vec MyVec<myFloat> [pi, pi]
     zero any nil
-    my_str str "my string"
+    myTrue bool true
+    pi float 3.14
+    pub vec Vec<float> [pi, pi]
+    greet str "Hello, world!"
 }
 
 components {
-    pub Doer<T float>(x int) (z T) {
+    Main(enter) (exit) {
         nodes {
-            abstractNode IMyInterface()
-            printer std_pkg.Printer()
-            reader elsewhere.Reader<str>()
+            doer Doer<Float>
+        }
+        net {
+            in.enter -> doer.x
+            doer.z -> out.exit
+        }
+    }
+
+    pub Doer<T float>(x) (z T) {
+        nodes {
+            abstractNode InterfacePrivate
+            printer io.Print
         }
         net {
             in.x -> printer.v
-            printer.v -> {
-                reader.v
-                out.z
-            }
+            printer.v -> out.z
         }
     }
 }

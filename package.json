@@ -3,7 +3,7 @@
   "displayName": "Neva",
   "description": "Neva langauge support (syntax highlighting, formatter, snippets) for Visual Studio Code",
   "publisher": "nevalang",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"

@@ -4,37 +4,16 @@ This is VSCode extension for [Neva](https://github.com/nevalang/neva) programmin
 
 ## Features
 
-Including screenshots in action. Many popular extensions utilize animations.
+### Syntax Highlighting
+
+![Picture of a syntax highlighting](/code.png "Syntax highlighting example").
 
 ## Requirements
 
-...
-
-## Extension Settings
-
-For example:
-
-This extension contributes the following settings:
-
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-...
+- [Nevalang](https://github.com/nevalang/neva) installed
 
 ## Release Notes
 
-...
+### 0.1.0
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+First release with textmate (regexp) based **syntax highlighting**
