@@ -23,16 +23,16 @@ types { // adsad
         bar str // asdasdasd
         baz MyArr<T> // asdasdasd
         bax MyArr<int> // asdasdasd
-        bac MyArr<{ // asdasdasd
+        bac MyArr<struct { // asdasdasd
             bazus int // asx
             bazus2 vec<float> // asd
         }>
-        bam {
+        bam struct { 
             asd int
             foo float
         }
     }
-    anotherRec {
+    anotherRec struct { // 
         foo int
     }
     MyEnum enum {
@@ -50,7 +50,7 @@ types {
     MyStr str
     MyVec<T> []T
     MyArr<T> [512]T
-    MyRec<T> {
+    MyRec<T> struct {
         foo int
         bar str
         baz MyArr<T>
@@ -67,7 +67,7 @@ types {
         First
         Second
     }
-    MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<{foo float}> | MyEnum
+    MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<struct {foo float}> | MyEnum
 }
 
 interfaces {

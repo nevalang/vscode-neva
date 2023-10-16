@@ -50,7 +50,12 @@
     "record_type": {
       "patterns": [
         {
-          "begin": "\\{",
+          "begin": "\\b(struct)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.struct"
+            }
+          },
           "end": "\\}",
           "patterns": [
             {

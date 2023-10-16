@@ -40,7 +40,10 @@ repository:
   # Record type (indirect-recursive via storage_types)
   record_type:
     patterns:
-    - begin: "\\{"
+    - begin: "\\b(struct)\\s*\\{"
+      beginCaptures:
+        '1':
+          name: keyword.struct
       end: "\\}"
       patterns:
         - include: "#comments"
