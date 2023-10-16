@@ -50,6 +50,8 @@ repository:
     name: constant.language.nil
 patterns:
   - include: "#comments"
+
+  # Use (Imports)
   - begin: "\\b(use)\\s*\\{"  # Matches the keyword 'use' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
@@ -69,6 +71,8 @@ patterns:
         '0':
           name: entity.name.section
     - include: "#comments"
+
+  # Types
   - begin: "\\b(types)\\s*\\{"  # Matches the keyword 'types' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
@@ -78,6 +82,8 @@ patterns:
     - include: "#comments"
     - include: "#pub"
     - include: "#storage_types"
+
+  # Interfaces
   - begin: "\\b(interfaces)\\s*\\{"  # Matches the keyword 'interfaces' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
@@ -86,6 +92,8 @@ patterns:
     patterns:
     - include: "#pub"
     - include: "#storage_types"
+
+  # Const
   - begin: "\\b(const)\\s*\\{"  # Matches the keyword 'const' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
@@ -98,8 +106,8 @@ patterns:
     - include: "#numeric_literals"
     - include: "#bool_literals"
     - include: "#nil_literal"
-  # ... (rest of your grammar)
 
+  # Components
   - begin: "\\b(components)\\s*\\{"  # Matches the keyword 'components' followed by optional whitespace and an opening curly brace
     beginCaptures:
       '1':
@@ -112,6 +120,8 @@ patterns:
       captures:
         '1':
           name: entity.name.function
+
+    # Component Nodes
     - begin: "\\b(nodes)\\s*\\{"  # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
       beginCaptures:
         '1':
@@ -123,6 +133,8 @@ patterns:
           captures:
             '2':
               name: variable.other.node
+
+    # Component Net
     - begin: "\\b(net)\\s*\\{"  # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
       beginCaptures:
         '1':
@@ -131,10 +143,4 @@ patterns:
       patterns:
         - match: "->"  # Matches the '->' operator
           name: keyword.control
-        # - match: "\\b(\\w+)\\.\\b(\\w+)"  # Matches identifiers like 'reader.in' and 'out.z'
-        #   captures:
-        #     '1':
-        #       name: variable.other.identifier
-        #     # '2':
-        #     #   name: variable.parameter
 
