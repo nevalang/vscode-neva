@@ -1,14 +1,18 @@
 # VSCode Neva
 
-![Logo of the language](/assets/header.png "Nevalang logo and title").
+![Logo of the language](/assets/header.png "Nevalang logo and title")
 
-This is VSCode extension for [Neva](https://github.com/nevalang/neva) programming language.
+This is VSCode extension for [Neva](https://github.com/nevalang/neva) - flow-based programming language.
 
 ## Features
 
+### Custom Editor
+
+...
+
 ### Syntax Highlighting
 
-![Picture of a syntax highlighting](/assets/code.png "Syntax highlighting example").
+![Picture of a syntax highlighting](/assets/code.png "Syntax highlighting example")
 
 ## Requirements
 
@@ -16,6 +20,10 @@ This is VSCode extension for [Neva](https://github.com/nevalang/neva) programmin
 
 ## Release Notes
 
+### 0.2.0
+
+**Custom editor** with **webview** for visual editing of `*.neva` files.
+
 ### 0.1.0
 
-First release with textmate (regexp) based **syntax highlighting**
+First release with textmate (regexp) based **syntax highlighting**.
