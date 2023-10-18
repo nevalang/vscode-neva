@@ -18,6 +18,10 @@ This is VSCode extension for [Neva](https://github.com/nevalang/neva) - flow-bas
 
 - [Nevalang](https://github.com/nevalang/neva) installed
 
+## Contributing
+
+See [./Contributing.md](Contributing.md)
+
 ## Release Notes
 
 ### 0.2.0

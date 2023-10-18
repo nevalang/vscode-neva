@@ -34,6 +34,8 @@ export class NevaEditor implements CustomTextEditorProvider {
     webviewPanel: WebviewPanel,
     token: CancellationToken
   ): void | Thenable<void> {
+    console.log("hello from resolveCustomTextEditor");
+
     const extensionUri = this.context.extensionUri;
 
     webviewPanel.webview.options = {

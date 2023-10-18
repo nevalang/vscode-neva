@@ -69,21 +69,21 @@
         "scopeName": "source.neva",
         "path": "./syntaxes/neva.tmLanguage.json"
       }
+    ],
+    "customEditors": [
+      {
+        "viewType": "neva.editNeva",
+        "displayName": "Neva",
+        "selector": [
+          {
+            "filenamePattern": "*.neva"
+          }
+        ],
+        "priority": "default"
+      }
     ]
   },
   "icon": "assets/logo.png",
-  "customEditors": [
-    {
-      "viewType": "neva.editNeva",
-      "displayName": "Neva",
-      "selector": [
-        {
-          "filenamePattern": "*.neva"
-        }
-      ],
-      "priority": "default"
-    }
-  ],
   "dependencies": {
     "vscode": "^1.1.37"
   },
@@ -102,7 +102,7 @@
     "yaml2json": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
     "watch-yaml2json": "nodemon --delay 1 --watch syntaxes/neva.tmLanguage.yml --exec npm run yaml2json",
     "ts": "tsc --p ./",
-    "watch-ts": "tsc -w ./",
+    "watch-ts": "tsc -w -p ./",
     "build": "npm run yaml2json && npm run ts"
   }
 }

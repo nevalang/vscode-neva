@@ -7,6 +7,7 @@ Extension consist of 3 parts:
   - `neva.tmLanguage.json` - build artefact, generated from yaml
   - `tests` - \*.neva files to test syntax highlighting
   - `yaml2json` and `watch-yaml2json` commands in `package.json`
+  - `language-configuration.json` - out of the box vscode's highlighting for simple things like brackets, etc
 - `src` - vscode extension itself
   - `extension.ts` - high-level vscode api usage, registers custom editor and commands
   - `editor.ts` - glue between vscode api and webview, custom text editor interface implementation
