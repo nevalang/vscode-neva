@@ -60,7 +60,11 @@
         "extensions": [
           ".neva"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./assets/fileicon.svg",
+          "dark": "./assets/fileicon.svg"
+        }
       }
     ],
     "grammars": [

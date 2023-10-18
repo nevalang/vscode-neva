@@ -16,5 +16,6 @@
     "debugConsole.infoForeground": "#cccccc",
     "minimap.background": "#00000000",
     "scrollbar.shadow": "#00000000"
-  }
+  },
+  "svg.preview.background": "editor"
 }
