@@ -77,7 +77,9 @@
       "viewType": "neva.editNeva",
       "displayName": "Neva",
       "selector": [
-        { "filenamePattern": "*.neva" }
+        {
+          "filenamePattern": "*.neva"
+        }
       ],
       "priority": "default"
     }

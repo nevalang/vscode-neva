@@ -1,9 +1,9 @@
-import * as vscode from "vscode";
-import { NevaEditor } from "./NevaEditor";
+import { ExtensionContext } from "vscode";
+import { registerNevaEditor } from "./editor";
 
-export function activate(context: vscode.ExtensionContext) {
-  context.subscriptions.push(NevaEditor.register(context));
-  
+export function activate(context: ExtensionContext) {
+  context.subscriptions.push(registerNevaEditor(context));
+
   // context.subscriptions.push(
   //   vscode.commands.registerCommand()
   // )
@@ -64,4 +64,3 @@ export function activate(context: vscode.ExtensionContext) {
 
 // send message from webview to extension
 // window.addEventListener('message', event => {})
-

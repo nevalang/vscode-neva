@@ -14,20 +14,19 @@ import {
   Range,
   workspace,
 } from "vscode";
-import { getUri } from "./getUri";
-import { getNonce } from "./getNonce";
+
+const viewType = "neva.editNeva";
+
+export const registerNevaEditor = (context: ExtensionContext): Disposable =>
+  window.registerCustomEditorProvider(viewType, new NevaEditor(context), {
+    supportsMultipleEditorsPerDocument: true,
+  });
 
 export class NevaEditor implements CustomTextEditorProvider {
-  public static readonly viewType = "neva.editNeva";
+  private readonly context: ExtensionContext;
 
-  constructor(private readonly context: ExtensionContext) {}
-
-  public static register(context: ExtensionContext): Disposable {
-    return window.registerCustomEditorProvider(
-      NevaEditor.viewType,
-      new NevaEditor(context),
-      { supportsMultipleEditorsPerDocument: true }
-    );
+  constructor(context: ExtensionContext) {
+    this.context = context;
   }
 
   resolveCustomTextEditor(
@@ -40,11 +39,12 @@ export class NevaEditor implements CustomTextEditorProvider {
     webviewPanel.webview.options = {
       enableScripts: true,
       localResourceRoots: [
-        Uri.joinPath(extensionUri, "out"),
-        Uri.joinPath(extensionUri, "webview-ui/build"),
+        (Uri as any).joinPath(extensionUri, "out"),
+        (Uri as any).joinPath(extensionUri, "webview/dist"),
       ],
     };
-    webviewPanel.webview.html = NevaEditor.getWebviewContent(
+
+    webviewPanel.webview.html = getWebviewContent(
       webviewPanel.webview,
       extensionUri
     );
@@ -62,7 +62,7 @@ export class NevaEditor implements CustomTextEditorProvider {
         if (e.document.uri.toString() === document.uri.toString()) {
           if (!isUpdating.current) {
             console.log("update window", isUpdating);
-            // nevaEditorPanel.updateWindow(webviewPanel, e.document);
+            updateWindow(webviewPanel, e.document);
           } else {
             isUpdating.current = false;
           }
@@ -71,6 +71,7 @@ export class NevaEditor implements CustomTextEditorProvider {
       undefined,
       disposables
     );
+
     window.onDidChangeActiveColorTheme(
       (e: ColorTheme) => {
         let isDarkTheme = e.kind === ColorThemeKind.Dark;
@@ -82,6 +83,7 @@ export class NevaEditor implements CustomTextEditorProvider {
       undefined,
       disposables
     );
+
     webviewPanel.webview.onDidReceiveMessage(
       (message: any) => {
         const command = message.command;
@@ -122,57 +124,64 @@ export class NevaEditor implements CustomTextEditorProvider {
       }
     });
 
-    NevaEditor.updateWindow(webviewPanel, document);
+    updateWindow(webviewPanel, document);
   }
+}
 
-  static async updateWindow(panel: WebviewPanel, document: TextDocument) {
-    let currentTheme = window.activeColorTheme;
-    let isDarkTheme = currentTheme.kind === ColorThemeKind.Dark;
+function getWebviewContent(webview: Webview, extensionUri: Uri) {
+  const stylesUri = getUri(webview, extensionUri, [
+    "webview",
+    "dist",
+    "assets",
+    "index.css",
+  ]);
 
-    // const content = await workspace.fs.readFile(contentUri);
-    panel.webview.postMessage({
-      type: "revive",
-      value: document.getText(),
-      uri: document.uri,
-      isDarkTheme: isDarkTheme,
-    });
+  const scriptUri = getUri(webview, extensionUri, [
+    "webview",
+    "dist",
+    "assets",
+    "index.js",
+  ]);
+
+  return /*html*/ `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="${stylesUri}">
+        <title>Neva Editor</title>
+      </head>
+      <body>
+        <div id="root"></div>
+        <script type="module" nonce="${getNonce()}" src="${scriptUri}"></script>
+      </body>
+    </html>
+  `;
+}
+
+function updateWindow(panel: WebviewPanel, document: TextDocument) {
+  const currentTheme = window.activeColorTheme;
+  const isDarkTheme = currentTheme.kind === ColorThemeKind.Dark;
+
+  panel.webview.postMessage({
+    type: "revive",
+    value: document.getText(),
+    uri: document.uri,
+    isDarkTheme: isDarkTheme,
+  });
+}
+
+function getNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
+  return text;
+}
 
-  static getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // The CSS file from the React build output
-    const stylesUri = getUri(webview, extensionUri, [
-      "webview-ui",
-      "build",
-      "assets",
-      "index.css",
-    ]);
-    // The JS file from the React build output
-    const scriptUri = getUri(webview, extensionUri, [
-      "webview-ui",
-      "build",
-      "assets",
-      "index.js",
-    ]);
-    // const scriptUri2 = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "Live2DAvatarLoader-2GUNJWES.js"]);
-    const nonce = getNonce();
-    // removing this cause causing the style sheet not loading properly
-    // <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
-    // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-    return /*html*/ `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          <title>Hello World</title>
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
-        </body>
-      </html>
-    `;
-  }
+function getUri(webview: Webview, extensionUri: Uri, pathList: string[]) {
+  return webview.asWebviewUri((Uri as any).joinPath(extensionUri, ...pathList));
 }
