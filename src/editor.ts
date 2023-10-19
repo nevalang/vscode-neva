@@ -60,11 +60,11 @@ export class NevaEditor implements CustomTextEditorProvider {
     };
 
     workspace.onDidChangeTextDocument(
-      (e) => {
-        if (e.document.uri.toString() === document.uri.toString()) {
+      (event) => {
+        if (event.document.uri.toString() === document.uri.toString()) {
           if (!isUpdating.current) {
             console.log("update window", isUpdating);
-            updateWindow(webviewPanel, e.document);
+            updateWindow(webviewPanel, event.document);
           } else {
             isUpdating.current = false;
           }
@@ -75,8 +75,8 @@ export class NevaEditor implements CustomTextEditorProvider {
     );
 
     window.onDidChangeActiveColorTheme(
-      (e: ColorTheme) => {
-        let isDarkTheme = e.kind === ColorThemeKind.Dark;
+      (event: ColorTheme) => {
+        let isDarkTheme = event.kind === ColorThemeKind.Dark;
         webviewPanel.webview.postMessage({
           type: "theme",
           isDarkTheme: isDarkTheme,
@@ -92,25 +92,17 @@ export class NevaEditor implements CustomTextEditorProvider {
         const text = message.text;
 
         switch (command) {
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside media/main.js)
           case "update":
             const edit = new WorkspaceEdit();
             isUpdating.current = true;
-            // @ts-ignore
-            isUpdating.editTime = Date.now();
-
+            isUpdating.editTime = Date.now() as any;
             console.log("update", message.uri, text);
-            // Just replace the entire document every time for this example extension.
-            // A more complete extension should compute minimal edits instead.
             edit.replace(
               message.uri,
               new Range(0, 0, document.lineCount, 0),
               text
             );
-            workspace.applyEdit(edit).then(() => {
-              // window.showInformationMessage(`Successfully wrote to ${uri.path}`);
-            });
+            workspace.applyEdit(edit);
         }
       },
       undefined,

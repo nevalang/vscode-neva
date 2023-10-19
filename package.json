@@ -62,8 +62,8 @@
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./assets/fileicon.svg",
-          "dark": "./assets/fileicon.svg"
+          "light": "./assets/file-icon.svg",
+          "dark": "./assets/file-icon.svg"
         }
       }
     ],
