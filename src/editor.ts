@@ -15,18 +15,16 @@ import {
   workspace,
 } from "vscode";
 
-const viewType = "neva.editNeva";
 
-export const registerNevaEditor = (context: ExtensionContext): Disposable =>
-  window.registerCustomEditorProvider(viewType, new NevaEditor(context), {
-    supportsMultipleEditorsPerDocument: true,
-  });
+export type ParseFunc = (text: string) => string;
 
 export class NevaEditor implements CustomTextEditorProvider {
   private readonly context: ExtensionContext;
+  private readonly parseFunc: ParseFunc;
 
-  constructor(context: ExtensionContext) {
+  constructor(context: ExtensionContext, parseFunc: ParseFunc) {
     this.context = context;
+    this.parseFunc = parseFunc;
   }
 
   resolveCustomTextEditor(
@@ -35,6 +33,8 @@ export class NevaEditor implements CustomTextEditorProvider {
     token: CancellationToken
   ): void | Thenable<void> {
     console.log("hello from resolveCustomTextEditor");
+
+    console.log(this.parseFunc(document.getText()));
 
     const extensionUri = this.context.extensionUri;
 
