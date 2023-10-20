@@ -1,26 +1,29 @@
-// @ts-nocheck
-
 // This is modified version of the original wasm_exec_node.js from Go authors.
 
-"use strict";
+import * as fs from "fs";
+import * as path from "path";
+import { TextEncoder, TextDecoder } from "util";
+import * as os from "os";
+import { performance } from "perf_hooks";
+import * as crypto from "crypto";
 
-globalThis.require = require;
-globalThis.fs = require("fs");
-globalThis.path = require("path");
-globalThis.TextEncoder = require("util").TextEncoder;
-globalThis.TextDecoder = require("util").TextDecoder;
+(globalThis as any).fs = fs;
+(globalThis as any).path = path;
+(globalThis as any).TextEncoder = TextEncoder;
+(globalThis as any).TextDecoder = TextDecoder;
+(globalThis as any).performance ??= performance;
+(globalThis as any).crypto ??= crypto;
 
-globalThis.performance ??= require("performance");
-
-globalThis.crypto ??= require("crypto");
-
-require("./wasm_exec");
+require("./wasm_exec.js"); // globalThis must be patched before this line
+declare var Go: any; // it injects Go constructor into global scope
 
 const go = new Go();
-go.env = Object.assign({ TMPDIR: require("os").tmpdir() }, process.env);
+go.env = Object.assign({ TMPDIR: os.tmpdir() }, process.env);
 go.exit = process.exit;
 
-export const loadWasm = async (): WebAssembly.WebAssemblyInstantiatedSource => {
+export const loadWasm = async (): Promise<
+  WebAssembly.WebAssemblyInstantiatedSource | undefined
+> => {
   try {
     const source = await WebAssembly.instantiate(
       fs.readFileSync(path.resolve(__dirname, "../../wasm/main.wasm")),

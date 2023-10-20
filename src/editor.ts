@@ -15,7 +15,6 @@ import {
   workspace,
 } from "vscode";
 
-
 export type ParseFunc = (text: string) => string;
 
 export class NevaEditor implements CustomTextEditorProvider {
@@ -32,9 +31,10 @@ export class NevaEditor implements CustomTextEditorProvider {
     webviewPanel: WebviewPanel,
     token: CancellationToken
   ): void | Thenable<void> {
-    console.log("hello from resolveCustomTextEditor");
-
-    console.log(this.parseFunc(document.getText()));
+    console.log("hello from resolveCustomTextEditor", {
+      text: document.getText(),
+      parsed: this.parseFunc(document.getText()),
+    });
 
     const extensionUri = this.context.extensionUri;
 

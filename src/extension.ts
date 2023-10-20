@@ -3,22 +3,20 @@ import { ParseFunc, NevaEditor } from "./editor";
 import { loadWasm } from "./wasm/wasm_exec_vscode";
 
 declare global {
-  var parse: ParseFunc;
+  var parseNevaFile: ParseFunc;
 }
 
 const viewType = "neva.editNeva";
 
 export async function activate(context: ExtensionContext) {
-  await loadWasm();
-  const parse: ParseFunc = global.parse; // @ts-ignore
+  await loadWasm(); // injects parseNevaFile into global
+  const parse: ParseFunc = global.parseNevaFile;
   const editor = new NevaEditor(context, parse);
 
   const disposable: Disposable = window.registerCustomEditorProvider(
     viewType,
     editor,
-    {
-      supportsMultipleEditorsPerDocument: true,
-    }
+    { supportsMultipleEditorsPerDocument: true }
   );
 
   context.subscriptions.push(disposable);
