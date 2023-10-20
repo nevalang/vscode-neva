@@ -19,11 +19,11 @@ export type ParseFunc = (text: string) => string;
 
 export class NevaEditor implements CustomTextEditorProvider {
   private readonly context: ExtensionContext;
-  private readonly parseFunc: ParseFunc;
+  private readonly parse: ParseFunc;
 
   constructor(context: ExtensionContext, parseFunc: ParseFunc) {
     this.context = context;
-    this.parseFunc = parseFunc;
+    this.parse = parseFunc;
   }
 
   resolveCustomTextEditor(
@@ -31,10 +31,16 @@ export class NevaEditor implements CustomTextEditorProvider {
     webviewPanel: WebviewPanel,
     token: CancellationToken
   ): void | Thenable<void> {
-    console.log("hello from resolveCustomTextEditor", {
-      text: document.getText(),
-      parsed: this.parseFunc(document.getText()),
-    });
+    let protoString: string;
+    try {
+      protoString = this.parse(document.getText());
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+
+    console.log(protoString);
+    // const file = File.fromJSON(protoString);
 
     const extensionUri = this.context.extensionUri;
 

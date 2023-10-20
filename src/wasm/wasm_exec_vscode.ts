@@ -21,7 +21,7 @@ const go = new Go();
 go.env = Object.assign({ TMPDIR: os.tmpdir() }, process.env);
 go.exit = process.exit;
 
-export const loadWasm = async (): Promise<
+export const patchGlobal = async (): Promise<
   WebAssembly.WebAssemblyInstantiatedSource | undefined
 > => {
   try {
@@ -37,7 +37,7 @@ export const loadWasm = async (): Promise<
       }
     });
 
-    go.run(source.instance); // async
+    go.run(source.instance); // async, injects functions into global
 
     return source;
   } catch (err) {
