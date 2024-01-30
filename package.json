@@ -9,17 +9,17 @@
   },
   "description": "VSCode extension for Neva programming language",
   "publisher": "nevalang",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"
   },
   "bugs": {
-    "url": "https://github.com/nevalang/neva/issues"
+    "url": "https://github.com/nevalang/vscode-neva/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nevalang/neva/web"
+    "url": "https://github.com/nevalang/vscode-neva"
   },
   "keywords": [
     "neva",
