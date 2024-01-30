@@ -1,24 +1,29 @@
-import { Disposable, ExtensionContext, window } from "vscode";
-import { ParseFunc, NevaEditor } from "./editor";
-import { patchGlobal } from "./wasm/wasm_exec_vscode";
+import { ExtensionContext, window, commands } from "vscode";
+import { LanguageClient } from "vscode-languageclient/node";
+import { setupLsp } from "./lsp";
+import { getPreviewCommand } from "./command";
 
-declare global {
-  var parseNevaFile: ParseFunc;
-}
-
-const viewType = "neva.editNeva";
+let lspClient: LanguageClient;
 
 export async function activate(context: ExtensionContext) {
-  console.log("vscode neva activated");
+  console.info("neva module detected, extension activated");
 
-  await patchGlobal(); // injects parseNevaFile into global
-  const editor = new NevaEditor(context, global.parseNevaFile);
+  // Run language server, initialize client and establish connection
+  lspClient = setupLsp(context);
+  lspClient.onNotification("neva/analyzer_message", (message: string) => {
+    window.showWarningMessage(message);
+  });
 
-  const disposable: Disposable = window.registerCustomEditorProvider(
-    viewType,
-    editor,
-    { supportsMultipleEditorsPerDocument: true }
+  // Register preview command that opens webview
+  context.subscriptions.push(
+    commands.registerCommand(
+      "neva.openPreview",
+      getPreviewCommand(context, lspClient)
+    )
   );
+  console.info("preview command registered");
+}
 
-  context.subscriptions.push(disposable);
+export function deactivate(): Thenable<void> | undefined {
+  return lspClient && lspClient.stop();
 }
