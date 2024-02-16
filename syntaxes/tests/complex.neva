@@ -8,15 +8,51 @@ import { // asd
 	with_alias another/imported/from/elsewhere
 } // adsad
 
-types { // adsad
+type MyErr error // asdasdasd
+type MyFloat float // asdasdasd
+type MyBool bool // asdasdasd
+pub type MyStr string // asdasdasd
+type MyArr<T int> list<int> // asdasdasd
+type X struct{foo list<enum {x,t,y}>}
+type MyArr<T MyVec<int>,Y int, Z> list<T> // asdasdasd
+type MyVec<T> list<T> // asdasdasd
+type MyArr<T MyVec<int>> list<list<T>> // asdasdasd
+
+type x struct {foo int}
+
+// 123123sa
+pub type MyRec<T> struct { // asdasdasd
+    foo int // asdasdasd
+    bar string // asdasdasd
+    baz MyArr<T> // asdasdasd
+    bax MyArr<int> // asdasdasd
+    bac MyArr<struct { // asdasdasd
+        bazus int // asx
+        bazus2 vec<float> // asd
+    }>
+    bam struct {
+        asd int
+        foo float
+    }
+}
+type anotherRec struct { // test
+    foo int
+}
+type MyEnum enum {
+    First
+    Second
+}
+type MyUnion MyFloat | MyVec | MyArr | MyRec | int
+
+type { // adsad
     MyErr error // asdasdasd
     MyFloat float // asdasdasd
     MyBool bool // asdasdasd
     pub MyStr string // asdasdasd
-    MyVec<T> []T // asdasdasd
-    MyArr<T int> [512]int // asdasdasd
-    MyArr<T MyVec<int>> [512]T // asdasdasd
-    MyArr<T MyVec<int>> [512][]int // asdasdasd
+    MyVec<T> list<T> // asdasdasd
+    MyArr<T int> list<int> // asdasdasd
+    MyArr<T MyVec<int>> list<T> // asdasdasd
+    MyArr<T MyVec<int>> list<list<int>> // asdasdasd
     // 123123sa
     pub MyRec<T> struct { // asdasdasd
         foo int // asdasdasd
@@ -42,14 +78,30 @@ types { // adsad
     MyUnion MyFloat | MyVec | MyArr | MyRec | int
 }
 
-types {
+type MyRec<T> struct {
+    foo int
+    bar string
+    baz MyArr<T>
+    baz2 MyArr<int>
+    baz3 MyArr<struct {
+        foo int
+        bar string
+        baz MyArr<T>
+        baz2 MyArr<int>
+        baz3 MyArr<int>
+    }>
+}
+
+type MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<struct {foo float}> | MyEnum
+
+type {
     MyAny any
     MyErr error
     MyFloat float
     MyBool bool
     MyStr string
-    MyVec<T> []T
-    MyArr<T> [512]T
+    MyVec<T> list<T>
+    MyArr<T> list<T>
     MyRec<T> struct {
         foo int
         bar string
@@ -70,7 +122,7 @@ types {
     MyUnion MyFloat | MyVec<int> | MyArr<MyVec<int>> | MyRec<struct {foo float}> | MyEnum
 }
 
-interfaces {
+interface {
     IMyInterface<T bool>(y notStorage, x int) (z T)
     pub IMyInterface2<T MyUnion>(x int) (z T)
     IMyInterface3<T bool>(y notStorage, x int) (z T)
@@ -90,7 +142,7 @@ const {
     my_str string "my string"
 }
 
-components {
+component {
     pub Doer<T int>(x int) (z T) {
         nodes {
             abstractNode IMyInterface
@@ -106,7 +158,7 @@ components {
         }
     }
     
-    pub Doer2 <T float>(x int) (z T, x2 []struct {foo bool }) {
+    pub Doer2 <T float>(x int) (z T, x2 list<struct { foo bool }>) {
         nodes {
             abstractNode IMyInterface
             printer std_pkg.Printer

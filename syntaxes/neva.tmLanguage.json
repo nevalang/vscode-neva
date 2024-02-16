@@ -6,10 +6,6 @@
     ".neva"
   ],
   "repository": {
-    "pub": {
-      "match": "\\b(pub)\\b",
-      "name": "storage.modifier.public"
-    },
     "comments": {
       "patterns": [
         {
@@ -23,6 +19,10 @@
           "end": "(?:\\n|$)"
         }
       ]
+    },
+    "pub": {
+      "match": "\\b(pub)\\b",
+      "name": "storage.modifier.public"
     },
     "storage_types": {
       "patterns": [
@@ -82,10 +82,10 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#comments"
+              "include": "#storage_types"
             },
             {
-              "include": "#storage_types"
+              "include": "#comments"
             }
           ]
         }
@@ -97,11 +97,33 @@
           "begin": "\\b(enum)\\s*\\{",
           "beginCaptures": {
             "1": {
-              "name": "keyword.struct"
+              "name": "storage.type.enum"
             }
           },
           "end": "\\}",
           "name": "variable.other.enummember"
+        }
+      ]
+    },
+    "const_literals": {
+      "patterns": [
+        {
+          "include": "#nil_literal"
+        },
+        {
+          "include": "#bool_literals"
+        },
+        {
+          "include": "#numeric_literals"
+        },
+        {
+          "include": "#string_literals"
+        },
+        {
+          "include": "#list_literal"
+        },
+        {
+          "include": "#struct_literal"
         }
       ]
     },
@@ -151,19 +173,20 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#nil_literal"
-            },
+              "include": "#const_literals"
+            }
+          ]
+        }
+      ]
+    },
+    "list_literal": {
+      "patterns": [
+        {
+          "begin": "\\[",
+          "end": "\\]",
+          "patterns": [
             {
-              "include": "#bool_literals"
-            },
-            {
-              "include": "#numeric_literals"
-            },
-            {
-              "include": "#string_literals"
-            },
-            {
-              "include": "#struct_literal"
+              "include": "#const_literals"
             }
           ]
         }
@@ -213,6 +236,12 @@
       "include": "#comments"
     },
     {
+      "include": "#pub"
+    },
+    {
+      "include": "#compiler_directives"
+    },
+    {
       "begin": "\\b(import)\\s*\\{",
       "beginCaptures": {
         "1": {
@@ -222,36 +251,12 @@
       "end": "\\}",
       "patterns": [
         {
-          "match": "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$",
-          "captures": {
-            "2": {
-              "name": "entity.name.section"
-            }
-          }
-        },
-        {
-          "match": "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$",
-          "captures": {
-            "3": {
-              "name": "entity.name.section"
-            }
-          }
-        },
-        {
-          "match": "^(\\s*)[^\\s/]+\\s*$",
-          "captures": {
-            "0": {
-              "name": "entity.name.section"
-            }
-          }
-        },
-        {
           "include": "#comments"
         }
       ]
     },
     {
-      "begin": "\\b(types)\\s*\\{",
+      "begin": "\\b(type)\\s*\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.type"
@@ -260,18 +265,36 @@
       "end": "\\}",
       "patterns": [
         {
-          "include": "#comments"
-        },
-        {
           "include": "#pub"
         },
         {
           "include": "#storage_types"
+        },
+        {
+          "include": "#comments"
         }
       ]
     },
     {
-      "begin": "\\b(interfaces)\\s*\\{",
+      "match": "\\b(type)\\s+(.*)",
+      "captures": {
+        "1": {
+          "name": "keyword.type"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#storage_types"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "begin": "\\b(interface)\\s*\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.interfaces"
@@ -284,8 +307,26 @@
         },
         {
           "include": "#storage_types"
+        },
+        {
+          "include": "#comments"
         }
       ]
+    },
+    {
+      "match": "\\b(interface)\\s+(.*)",
+      "captures": {
+        "1": {
+          "name": "keyword.declaration.interfaces"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#storage_types"
+            }
+          ]
+        }
+      }
     },
     {
       "begin": "\\b(const)\\s*\\{",
@@ -300,27 +341,33 @@
           "include": "#pub"
         },
         {
-          "include": "#struct_literal"
+          "include": "#const_literals"
         },
         {
           "include": "#storage_types"
         },
         {
-          "include": "#string_literals"
-        },
-        {
-          "include": "#numeric_literals"
-        },
-        {
-          "include": "#bool_literals"
-        },
-        {
-          "include": "#nil_literal"
+          "include": "#comments"
         }
       ]
     },
     {
-      "begin": "\\b(components)\\s*\\{",
+      "match": "\\b(const)\\s+(.*)",
+      "captures": {
+        "1": {
+          "name": "keyword.declaration.consts"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#storage_types"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "begin": "\\b(component)\\s*\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.function"
@@ -377,6 +424,56 @@
                   "end": "\\}"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "begin": "\\b(component)\\s+(.*)\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.declaration.function"
+        },
+        "2": {
+          "name": "entity.section.name"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#storage_types"
+        },
+        {
+          "begin": "\\b(nodes)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.section"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#component_nodes"
+            }
+          ]
+        },
+        {
+          "begin": "\\b(net)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.section"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "match": "->",
+              "name": "keyword.control"
+            },
+            {
+              "begin": "\\{",
+              "end": "\\}"
             }
           ]
         }

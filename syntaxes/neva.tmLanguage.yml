@@ -5,15 +5,10 @@ scopeName: source.neva
 fileTypes:
   - ".neva"
 
-# ----------------------------------------------------------------
-# Repository (reusable pattern definitions)
-# ----------------------------------------------------------------
+# ================================================================
+# REPOSITORY (reusable patterns)
+# ================================================================
 repository:
-  # Pub keyword
-  pub:
-    match: "\\b(pub)\\b" # Matches the keyword 'pub'
-    name: storage.modifier.public
-
   # Comments
   comments:
     patterns:
@@ -24,39 +19,37 @@ repository:
             name: punctuation.definition.comment
         end: "(?:\\n|$)" # Matches the end of a line or the end of the input
 
-  # Storage types (basic types)
+  # Pub keyword
+  pub:
+    match: "\\b(pub)\\b" # Matches the keyword 'pub'
+    name: storage.modifier.public
+
+  # ----------------------------------------------------------------
+  # TYPES
+  # ----------------------------------------------------------------
+
+  # Builtin types
   storage_types:
     patterns:
-      # any
       - match: "\\bany\\b" # Matches the keyword 'any'
         name: storage.type.any
-      # maybe
       - match: "\\bmaybe\\b" # Matches the keyword 'maybe'
         name: storage.type.maybe
-      # bool
       - match: "\\bbool\\b" # Matches the keyword 'bool'
         name: storage.type.boolean
-      # int | float
       - match: "\\b(int|float)\\b" # Matches the keywords 'int' or 'float'
         name: storage.type.numeric
-      # string
       - match: "\\bstring\\b" # Matches the keyword 'string'
         name: storage.type.string
-      # map
       - match: "\\bmap\\b" # Matches the keyword 'map'
         name: storage.type.map
-      # list
       - match: "\\blist\\b" # Matches the keyword 'list'
         name: storage.type.list
-      # error
       - match: "\\berror\\b" # Matches the keyword 'error'
         name: storage.type.error
-      # stream
       - match: "\\bstream\\b" # Matches the keyword 'stream'
         name: storage.type.stream
-      # struct
       - include: "#struct_type"
-      # enum
       - include: "#enum_type"
 
   # Struct type (indirect-recursive via storage_types)
@@ -68,8 +61,8 @@ repository:
             name: keyword.struct
         end: "\\}"
         patterns:
-          - include: "#comments"
           - include: "#storage_types"
+          - include: "#comments"
 
   # Enum type
   enum_type:
@@ -77,9 +70,22 @@ repository:
       - begin: "\\b(enum)\\s*\\{"
         beginCaptures:
           "1":
-            name: keyword.struct
+            name: storage.type.enum
         end: "\\}"
         name: variable.other.enummember
+
+  # ----------------------------------------------------------------
+  # CONSTANT LITERALS
+  # ----------------------------------------------------------------
+
+  const_literals:
+    patterns:
+      - include: "#nil_literal"
+      - include: "#bool_literals"
+      - include: "#numeric_literals"
+      - include: "#string_literals"
+      - include: "#list_literal"
+      - include: "#struct_literal"
 
   # Numeric literals
   numeric_literals:
@@ -111,17 +117,25 @@ repository:
     match: "\\b(nil)" # Matches the keyword 'nil'
     name: constant.language.nil
 
-  # Struct literal (structure)
+  # Structure (and map) literal
   struct_literal:
     patterns:
       - begin: "\\{"
         end: "\\}"
         patterns:
-          - include: "#nil_literal"
-          - include: "#bool_literals"
-          - include: "#numeric_literals"
-          - include: "#string_literals"
-          - include: "#struct_literal"
+          - include: "#const_literals"
+
+  # List literal
+  list_literal:
+    patterns:
+      - begin: "\\["
+        end: "\\]"
+        patterns:
+          - include: "#const_literals"
+
+  # ----------------------------------------------------------------
+  # OTHER
+  # ----------------------------------------------------------------
 
   # Compiler directives
   compiler_directives:
@@ -133,7 +147,7 @@ repository:
             name: meta.directive
         end: "(?:\\n|$)" # Matches the end of a line or the end of the input
 
-  # Component nodes
+  # Component nodes (used for components and node's DI)
   component_nodes:
     patterns:
       - include: "#storage_types"
@@ -144,14 +158,15 @@ repository:
       - begin: "\\{"
         end: "\\}"
         patterns:
-        - include: "#component_nodes"
+          - include: "#component_nodes"
 
-# ----------------------------------------------------------------
-# Patterns (actual rules)
-# ----------------------------------------------------------------
+# ================================================================
+# PATTERNS (actual rules)
+# ================================================================
 patterns:
-  # Comments at the root level of the file
   - include: "#comments"
+  - include: "#pub"
+  - include: "#compiler_directives"
 
   # Imports
   - begin: "\\b(import)\\s*\\{" # Matches the keyword 'import' followed by optional whitespace and an opening curly brace
@@ -160,33 +175,31 @@ patterns:
         name: keyword.import
     end: "\\}" # Matches a closing curly brace
     patterns:
-      - match: "^(\\s*)([^\\s/]+)\\s+[^\\s]+(?:/[^\\s]+)*$" # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, whitespace, and then any character except whitespace and slashes until the end of the line
-        captures:
-          "2":
-            name: entity.name.section
-      - match: "^(\\s*)[^\\s/]+(?:/[^\\s/]+)*(/([^\\s/]+))\\s*$" # Similar to above, but with a grouping for a slash followed by non-whitespace/non-slash characters
-        captures:
-          "3":
-            name: entity.name.section
-      - match: "^(\\s*)[^\\s/]+\\s*$" # Matches a line with some whitespace, followed by non-whitespace/non-slash characters, and then optional whitespace until the end of the line
-        captures:
-          "0":
-            name: entity.name.section
       - include: "#comments"
 
-  # Types
-  - begin: "\\b(types)\\s*\\{" # Matches the keyword 'types' followed by optional whitespace and an opening curly brace
+  # Type (group form)
+  - begin: "\\b(type)\\s*\\{" # Matches the keyword 'type' followed by optional whitespace and an opening curly brace
     beginCaptures:
       "1":
         name: keyword.type
     end: "\\}" # Matches a closing curly brace
     patterns:
-      - include: "#comments"
       - include: "#pub"
       - include: "#storage_types"
+      - include: "#comments"
 
-  # Interfaces
-  - begin: "\\b(interfaces)\\s*\\{" # Matches the keyword 'interfaces' followed by optional whitespace and an opening curly brace
+  # Type (single form)
+  - match: "\\b(type)\\s+(.*)" # FIXME ends at \n
+    captures:
+      "1":
+        name: keyword.type
+      "2":
+        patterns:
+          - include: "#storage_types"
+          - include: "#comments"
+
+  # Interface (group form)
+  - begin: "\\b(interface)\\s*\\{" # Matches the keyword 'interface' followed by optional whitespace and an opening curly brace
     beginCaptures:
       "1":
         name: keyword.declaration.interfaces
@@ -194,8 +207,18 @@ patterns:
     patterns:
       - include: "#pub"
       - include: "#storage_types"
+      - include: "#comments"
 
-  # Const
+  # Interface (single form)
+  - match: "\\b(interface)\\s+(.*)" # FIXME ends at \n
+    captures:
+      "1":
+        name: keyword.declaration.interfaces
+      "2":
+        patterns:
+          - include: "#storage_types"
+
+  # Constant (group form)
   - begin: "\\b(const)\\s*\\{" # Matches the keyword 'const' followed by optional whitespace and an opening curly brace
     beginCaptures:
       "1":
@@ -203,19 +226,25 @@ patterns:
     end: "\\}" # Matches a closing curly brace
     patterns:
       - include: "#pub"
-      - include: "#struct_literal"
+      - include: "#const_literals"
       - include: "#storage_types"
-      - include: "#string_literals"
-      - include: "#numeric_literals"
-      - include: "#bool_literals"
-      - include: "#nil_literal"
+      - include: "#comments"
 
-  # Components
-  - begin: "\\b(components)\\s*\\{" # Matches the keyword 'components' followed by optional whitespace and an opening curly brace
+  # Constant (single form)
+  - match: "\\b(const)\\s+(.*)" # FIXME ends at \n
+    captures:
+      "1":
+        name: keyword.declaration.consts
+      "2":
+        patterns:
+          - include: "#storage_types"
+
+  # Component (group form)
+  - begin: "\\b(component)\\s*\\{"
     beginCaptures:
       "1":
         name: keyword.declaration.function
-    end: "\\}" # Matches a closing curly brace
+    end: "\\}"
     patterns:
       - include: "#compiler_directives"
       - include: "#pub"
@@ -245,3 +274,31 @@ patterns:
                 name: keyword.control
               - begin: "\\{"
                 end: "\\}"
+
+  # Component (single form)
+  - begin: "\\b(component)\\s+(.*)\\{"
+    beginCaptures:
+      "1":
+        name: keyword.declaration.function
+      "2":
+        name: entity.section.name
+    end: "\\}"
+    patterns:
+      - include: "#storage_types"
+      - begin: "\\b(nodes)\\s*\\{"
+        beginCaptures:
+          "1":
+            name: entity.name.section
+        end: "\\}"
+        patterns:
+          - include: "#component_nodes"
+      - begin: "\\b(net)\\s*\\{"
+        beginCaptures:
+          "1":
+            name: entity.name.section
+        end: "\\}"
+        patterns:
+          - match: "->"
+            name: keyword.control
+          - begin: "\\{"
+            end: "\\}"
