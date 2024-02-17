@@ -33,7 +33,9 @@ type {
     pub Users list<User>
 }
 
-interface IStreamHandler<T>(seq stream<T>) (res T)
+interface IStreamHandler<T>(
+    seq stream<T>
+) (res int)
 
 pub interface IListStreamer<T>(l list<T>) (seq stream<T>)
 
@@ -66,7 +68,7 @@ component Main(enter any) (exit any) {
 }
 
 pub component Bypass<T float>(foo T) (bar T) {
-    net { in.foo -> out.bar }
+    net { in:foo -> out:bar }
 }
 
 component {
@@ -84,7 +86,7 @@ component {
     }
 
     pub Bypass<T float>(foo T) (bar T) {
-        net { in.foo -> out.bar }
+        net { in:foo -> out:bar }
     }
 }
 

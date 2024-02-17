@@ -276,22 +276,21 @@
       ]
     },
     {
-      "match": "\\b(type)\\s+(.*)",
-      "captures": {
+      "begin": "\\b(type)",
+      "beginCaptures": {
         "1": {
           "name": "keyword.type"
-        },
-        "2": {
-          "patterns": [
-            {
-              "include": "#builtin_types"
-            },
-            {
-              "include": "#comments"
-            }
-          ]
         }
-      }
+      },
+      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "patterns": [
+        {
+          "include": "#builtin_types"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
     },
     {
       "begin": "\\b(interface)\\s*\\{",
@@ -314,19 +313,21 @@
       ]
     },
     {
-      "match": "\\b(interface)\\s+(.*)",
-      "captures": {
+      "begin": "\\b(interface)",
+      "beginCaptures": {
         "1": {
           "name": "keyword.declaration.interfaces"
-        },
-        "2": {
-          "patterns": [
-            {
-              "include": "#builtin_types"
-            }
-          ]
         }
-      }
+      },
+      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "patterns": [
+        {
+          "include": "#builtin_types"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
     },
     {
       "begin": "\\b(const)\\s*\\{",
@@ -352,22 +353,23 @@
       ]
     },
     {
-      "match": "\\b(const)\\s+(.*)",
-      "captures": {
-        "1": {
-          "name": "keyword.declaration.consts"
+      "1": {
+        "name": "keyword.declaration.consts"
+      },
+      "begin": "\\b(const)",
+      "beginCaptures": null,
+      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "patterns": [
+        {
+          "include": "#builtin_types"
         },
-        "2": {
-          "patterns": [
-            {
-              "include": "#builtin_types"
-            },
-            {
-              "include": "#const_literals"
-            }
-          ]
+        {
+          "include": "#const_literals"
+        },
+        {
+          "include": "#comments"
         }
-      }
+      ]
     },
     {
       "begin": "\\b(component)\\s*\\{",
@@ -433,12 +435,15 @@
       ]
     },
     {
-      "begin": "\\b(component)\\s+(.*)\\{",
+      "begin": "\\b(component)\\s+\\b(\\w+)\\s*(.*)\\{",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.function"
         },
         "2": {
+          "name": "entity.name.section"
+        },
+        "3": {
           "patterns": [
             {
               "include": "#builtin_types"

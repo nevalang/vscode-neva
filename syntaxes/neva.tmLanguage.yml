@@ -151,6 +151,7 @@ repository:
 # ================================================================
 # PATTERNS (actual rules)
 # ================================================================
+
 patterns:
   - include: "#comments"
   - include: "#pub"
@@ -159,6 +160,7 @@ patterns:
   # ----------------------------------------------------------------
   # IMPORTS
   # ----------------------------------------------------------------
+
   - begin: "\\b(import)\\s*\\{"
     beginCaptures:
       "1":
@@ -183,14 +185,14 @@ patterns:
       - include: "#comments"
 
   # SINGLE
-  - match: "\\b(type)\\s+(.*)" # FIXME ends at \n
-    captures:
+  - begin: "\\b(type)" # FIXME ends at \n
+    beginCaptures:
       "1":
         name: keyword.type
-      "2":
-        patterns:
-          - include: "#builtin_types"
-          - include: "#comments"
+    end: "(?=\\b(import|pub|type|const|interface|component)\\b)"
+    patterns:
+      - include: "#builtin_types"
+      - include: "#comments"
 
   # ----------------------------------------------------------------
   # INTERFACES
@@ -208,13 +210,14 @@ patterns:
       - include: "#comments"
 
   # SINGLE
-  - match: "\\b(interface)\\s+(.*)" # FIXME ends at \n
-    captures:
+  - begin: "\\b(interface)"
+    beginCaptures:
       "1":
         name: keyword.declaration.interfaces
-      "2":
-        patterns:
-          - include: "#builtin_types"
+    end: "(?=\\b(import|pub|type|const|interface|component)\\b)"
+    patterns:
+      - include: "#builtin_types"
+      - include: "#comments"
 
   # ----------------------------------------------------------------
   # CONSTANTS
@@ -233,14 +236,15 @@ patterns:
       - include: "#comments"
 
   # SINGLE
-  - match: "\\b(const)\\s+(.*)" # FIXME ends at \n
-    captures:
-      "1":
-        name: keyword.declaration.consts
-      "2":
-        patterns:
-          - include: "#builtin_types"
-          - include: "#const_literals"
+  - begin: "\\b(const)"
+    beginCaptures:
+    "1":
+      name: keyword.declaration.consts
+    end: "(?=\\b(import|pub|type|const|interface|component)\\b)"
+    patterns:
+      - include: "#builtin_types"
+      - include: "#const_literals"
+      - include: "#comments"
 
   # ----------------------------------------------------------------
   # CONSTANTS
@@ -283,11 +287,13 @@ patterns:
                 end: "\\}"
 
   # SINGLE
-  - begin: "\\b(component)\\s+(.*)\\{"
+  - begin: "\\b(component)\\s+\\b(\\w+)\\s*(.*)\\{"
     beginCaptures:
       "1":
         name: keyword.declaration.function
       "2":
+        name: entity.name.section
+      "3":
         patterns:
           - include: "#builtin_types"
     end: "\\}"
