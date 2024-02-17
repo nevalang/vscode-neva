@@ -185,7 +185,7 @@ patterns:
       - include: "#comments"
 
   # SINGLE
-  - begin: "\\b(type)" # FIXME ends at \n
+  - begin: "\\b(type)"
     beginCaptures:
       "1":
         name: keyword.type
@@ -238,8 +238,8 @@ patterns:
   # SINGLE
   - begin: "\\b(const)"
     beginCaptures:
-    "1":
-      name: keyword.declaration.consts
+      "1":
+        name: keyword.declaration.const
     end: "(?=\\b(import|pub|type|const|interface|component)\\b)"
     patterns:
       - include: "#builtin_types"
@@ -247,7 +247,7 @@ patterns:
       - include: "#comments"
 
   # ----------------------------------------------------------------
-  # CONSTANTS
+  # COMPONENTS
   # ----------------------------------------------------------------
 
   # GROUP

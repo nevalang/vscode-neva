@@ -353,11 +353,12 @@
       ]
     },
     {
-      "1": {
-        "name": "keyword.declaration.consts"
-      },
       "begin": "\\b(const)",
-      "beginCaptures": null,
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.declaration.const"
+        }
+      },
       "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
       "patterns": [
         {
