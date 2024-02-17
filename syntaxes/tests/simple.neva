@@ -9,6 +9,9 @@ import {
 	github.com/nevalang/x
 }
 
+#extern(bool_parser)
+pub component BoolParser(s string) (res bool, err error)
+
 type Primitive Num | string | bool
 
 pub type Num int | float

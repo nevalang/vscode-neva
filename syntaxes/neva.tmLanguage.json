@@ -436,23 +436,16 @@
       ]
     },
     {
-      "begin": "\\b(component)\\s+\\b(\\w+)\\s*(.*)\\{",
+      "begin": "\\b(component)\\s+\\b(\\w+)",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.function"
         },
         "2": {
           "name": "entity.name.section"
-        },
-        "3": {
-          "patterns": [
-            {
-              "include": "#builtin_types"
-            }
-          ]
         }
       },
-      "end": "\\}",
+      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
       "patterns": [
         {
           "include": "#builtin_types"
