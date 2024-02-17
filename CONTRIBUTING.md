@@ -6,7 +6,7 @@
 
 This extension consist of 4 parts:
 
-1. Language server. This is go application under `cmd/lsp/`
+1. Language server (TODO move it here from compiler repo)
 2. VSCode extension (bridge) in `web` (you are here)
 3. Webview-UI (React-application) in `web/webview`
 4. Syntax highlighting grammar under `web/syntaxes` directory
@@ -15,15 +15,11 @@ This extension consist of 4 parts:
 
 Simply `VSCode Extension` debug task. See [launch.json](../.vscode/launch.json) and [tasks.json](../.vscode/tasks.json) to figure out what's going on.
 
-### Webview
-
-See
-
 ## Production
 
 ```bash
 npm run build # build textmate grammar, webview and vscode extension
-vsce package # pack everything into a VSIX package
+make package # pack everything into a VSIX package
 ```
 
 ## FAQ

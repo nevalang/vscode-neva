@@ -100,6 +100,12 @@ repository:
         patterns:
           - match: \\""
             name: constant.character.escape.double-quote
+      - name: string.quoted.single
+        begin: "'"
+        end: "'"
+        patterns:
+          - match: \\'"
+            name: constant.character.escape.single-quote
 
   bool_literals:
     match: "\\b(true|false)"
@@ -138,6 +144,16 @@ repository:
 
   component_nodes:
     patterns:
+      - begin: "\\b(nodes)\\s*\\{"
+        beginCaptures:
+          "1":
+            name: entity.name.section
+        end: "\\}"
+        patterns:
+          - include: "#component_nodes_body"
+
+  component_nodes_body:
+    patterns:
       - include: "#builtin_types"
       - match: "^(\\s*)\\b(\\w+)\\b"
         captures:
@@ -146,7 +162,23 @@ repository:
       - begin: "\\{"
         end: "\\}"
         patterns:
-          - include: "#component_nodes"
+          - include: "#component_nodes_body" # DI
+
+  component_net:
+    patterns:
+      - begin: "\\b(net)\\s*\\{"
+        beginCaptures:
+          "1":
+            name: entity.name.section
+        end: "\\}"
+        patterns:
+          - include: "#bool_literals"
+          - include: "#num_literals"
+          - include: "#string_literals"
+          - match: "\\$\\w+"
+            name: variable.other.constant
+          - match: "->"
+            name: keyword.control
 
 # ================================================================
 # PATTERNS (actual rules)
@@ -265,26 +297,8 @@ patterns:
       - begin: "\\{"
         end: "\\}"
         patterns:
-          # Component Nodes
-          - begin: "\\b(nodes)\\s*\\{" # Matches the keyword 'nodes' followed by optional whitespace and an opening curly brace
-            beginCaptures:
-              "1":
-                name: entity.name.section
-            end: "\\}" # Matches a closing curly brace
-            patterns:
-              - include: "#component_nodes"
-
-          # Component Net
-          - begin: "\\b(net)\\s*\\{" # Matches the keyword 'net' followed by optional whitespace and an opening curly brace
-            beginCaptures:
-              "1":
-                name: entity.name.section
-            end: "\\}" # Matches a closing curly brace
-            patterns:
-              - match: "->" # Matches the '->' operator
-                name: keyword.control
-              - begin: "\\{"
-                end: "\\}"
+          - include: "#component_nodes"
+          - include: "#component_net"
 
   # SINGLE
   - begin: "\\b(component)\\s+\\b(\\w+)"
@@ -296,20 +310,5 @@ patterns:
     end: "(?=\\b(import|pub|type|const|interface|component)\\b)"
     patterns:
       - include: "#builtin_types"
-      - begin: "\\b(nodes)\\s*\\{"
-        beginCaptures:
-          "1":
-            name: entity.name.section
-        end: "\\}"
-        patterns:
-          - include: "#component_nodes"
-      - begin: "\\b(net)\\s*\\{"
-        beginCaptures:
-          "1":
-            name: entity.name.section
-        end: "\\}"
-        patterns:
-          - match: "->"
-            name: keyword.control
-          - begin: "\\{"
-            end: "\\}"
+      - include: "#component_nodes"
+      - include: "#component_net"

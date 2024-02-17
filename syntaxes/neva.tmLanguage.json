@@ -155,6 +155,17 @@
               "name": "constant.character.escape.double-quote"
             }
           ]
+        },
+        {
+          "name": "string.quoted.single",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "match": "\\\\'\"",
+              "name": "constant.character.escape.single-quote"
+            }
+          ]
         }
       ]
     },
@@ -209,6 +220,24 @@
     "component_nodes": {
       "patterns": [
         {
+          "begin": "\\b(nodes)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.section"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#component_nodes_body"
+            }
+          ]
+        }
+      ]
+    },
+    "component_nodes_body": {
+      "patterns": [
+        {
           "include": "#builtin_types"
         },
         {
@@ -224,7 +253,39 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#component_nodes"
+              "include": "#component_nodes_body"
+            }
+          ]
+        }
+      ]
+    },
+    "component_net": {
+      "patterns": [
+        {
+          "begin": "\\b(net)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.section"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#bool_literals"
+            },
+            {
+              "include": "#num_literals"
+            },
+            {
+              "include": "#string_literals"
+            },
+            {
+              "match": "\\$\\w+",
+              "name": "variable.other.constant"
+            },
+            {
+              "match": "->",
+              "name": "keyword.control"
             }
           ]
         }
@@ -399,37 +460,10 @@
           "end": "\\}",
           "patterns": [
             {
-              "begin": "\\b(nodes)\\s*\\{",
-              "beginCaptures": {
-                "1": {
-                  "name": "entity.name.section"
-                }
-              },
-              "end": "\\}",
-              "patterns": [
-                {
-                  "include": "#component_nodes"
-                }
-              ]
+              "include": "#component_nodes"
             },
             {
-              "begin": "\\b(net)\\s*\\{",
-              "beginCaptures": {
-                "1": {
-                  "name": "entity.name.section"
-                }
-              },
-              "end": "\\}",
-              "patterns": [
-                {
-                  "match": "->",
-                  "name": "keyword.control"
-                },
-                {
-                  "begin": "\\{",
-                  "end": "\\}"
-                }
-              ]
+              "include": "#component_net"
             }
           ]
         }
@@ -451,37 +485,10 @@
           "include": "#builtin_types"
         },
         {
-          "begin": "\\b(nodes)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "entity.name.section"
-            }
-          },
-          "end": "\\}",
-          "patterns": [
-            {
-              "include": "#component_nodes"
-            }
-          ]
+          "include": "#component_nodes"
         },
         {
-          "begin": "\\b(net)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "entity.name.section"
-            }
-          },
-          "end": "\\}",
-          "patterns": [
-            {
-              "match": "->",
-              "name": "keyword.control"
-            },
-            {
-              "begin": "\\{",
-              "end": "\\}"
-            }
-          ]
+          "include": "#component_net"
         }
       ]
     }

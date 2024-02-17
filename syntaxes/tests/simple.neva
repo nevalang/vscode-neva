@@ -47,6 +47,8 @@ interface {
     pub IListStreamer<T>(l list<T>) (seq stream<T>)
 }
 
+const greeting string = 'Hello, World!'
+
 const greet string = "Hello, world!"
 
 pub const nums list<int> = [1, 2, 3, 4, 5]
@@ -55,6 +57,22 @@ const {
     pi float = 3.14
     greet string = "Hello, world!"
     pub nums list<int> = [1, 2, 3, 4, 5]
+}
+
+component Main(start any) (stop any) {
+	nodes { printer Printer<string> }
+	net {
+		in:start -> ($greeting -> printer:data)
+		printer:sig -> out:stop
+	}
+}
+
+component Main(start any) (stop any) {
+	nodes { printer Printer<string> }
+	net {
+		in:start -> ('Hello, World!' -> printer:data)
+		printer:sig -> out:stop
+	}
 }
 
 component Main(enter any) (exit any) {
