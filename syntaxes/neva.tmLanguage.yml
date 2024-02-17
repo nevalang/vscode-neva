@@ -8,8 +8,8 @@ fileTypes:
 # ================================================================
 # REPOSITORY (reusable patterns)
 # ================================================================
+
 repository:
-  # Comments
   comments:
     patterns:
       - name: comment.line.double-slash
@@ -19,7 +19,6 @@ repository:
             name: punctuation.definition.comment
         end: "(?:\\n|$)" # Matches the end of a line or the end of the input
 
-  # Pub keyword
   pub:
     match: "\\b(pub)\\b" # Matches the keyword 'pub'
     name: storage.modifier.public
@@ -28,8 +27,7 @@ repository:
   # TYPES
   # ----------------------------------------------------------------
 
-  # Builtin types
-  storage_types:
+  builtin_types:
     patterns:
       - match: "\\bany\\b" # Matches the keyword 'any'
         name: storage.type.any
@@ -52,7 +50,6 @@ repository:
       - include: "#struct_type"
       - include: "#enum_type"
 
-  # Struct type (indirect-recursive via storage_types)
   struct_type:
     patterns:
       - begin: "\\b(struct)\\s*\\{"
@@ -61,10 +58,9 @@ repository:
             name: keyword.struct
         end: "\\}"
         patterns:
-          - include: "#storage_types"
+          - include: "#builtin_types" # recursion
           - include: "#comments"
 
-  # Enum type
   enum_type:
     patterns:
       - begin: "\\b(enum)\\s*\\{"
@@ -82,62 +78,55 @@ repository:
     patterns:
       - include: "#nil_literal"
       - include: "#bool_literals"
-      - include: "#numeric_literals"
+      - include: "#num_literals"
       - include: "#string_literals"
       - include: "#list_literal"
       - include: "#struct_literal"
 
-  # Numeric literals
-  numeric_literals:
+  num_literals:
     patterns:
-      - match: "\\b0[xX][0-9a-fA-F]+\\b" # Matches hexadecimal literals (e.g., 0x1a3)
+      - match: "\\b0[xX][0-9a-fA-F]+\\b"
         name: constant.numeric.hexadecimal
-      - match: "\\b[0-9]+\\.?[0-9]*([eE][-+]?[0-9]+)?\\b" # Matches floating-point literals (e.g., 3.14, 2.71e5)
+      - match: "\\b[0-9]+\\.?[0-9]*([eE][-+]?[0-9]+)?\\b"
         name: constant.numeric.float
-      - match: "\\b[0-9]+\\b" # Matches integer literals (e.g., 123)
+      - match: "\\b[0-9]+\\b"
         name: constant.numeric.integer
 
-  # String literals
   string_literals:
     patterns:
       - name: string.quoted.double
-        begin: '"' # Matches the start of a string literal (")
-        end: '"' # Matches the end of a string literal (")
+        begin: '"'
+        end: '"'
         patterns:
-          - match: \\"" # Matches an escaped double quote (\")
+          - match: \\""
             name: constant.character.escape.double-quote
 
-  # Boolean literals
   bool_literals:
-    match: "\\b(true|false)" # Matches the keywords 'true' or 'false'
+    match: "\\b(true|false)"
     name: constant.language.boolean
 
-  # Nil literal
   nil_literal:
-    match: "\\b(nil)" # Matches the keyword 'nil'
+    match: "\\b(nil)"
     name: constant.language.nil
 
-  # Structure (and map) literal
-  struct_literal:
+  struct_literal: # and map literal
     patterns:
       - begin: "\\{"
         end: "\\}"
         patterns:
-          - include: "#const_literals"
+          - include: "#const_literals" # recursion
 
-  # List literal
   list_literal:
     patterns:
       - begin: "\\["
         end: "\\]"
         patterns:
-          - include: "#const_literals"
+          - include: "#const_literals" # recursion
 
   # ----------------------------------------------------------------
   # OTHER
   # ----------------------------------------------------------------
 
-  # Compiler directives
   compiler_directives:
     patterns:
       - name: meta.directive
@@ -145,13 +134,12 @@ repository:
         beginCaptures:
           "1":
             name: meta.directive
-        end: "(?:\\n|$)" # Matches the end of a line or the end of the input
+        end: "(?:\\n|$)" # end of line or end of the input
 
-  # Component nodes (used for components and node's DI)
   component_nodes:
     patterns:
-      - include: "#storage_types"
-      - match: "^(\\s*)\\b(\\w+)\\b" # Matches a line with some whitespace, followed by a word
+      - include: "#builtin_types"
+      - match: "^(\\s*)\\b(\\w+)\\b"
         captures:
           "2":
             name: variable.other.node
@@ -168,57 +156,71 @@ patterns:
   - include: "#pub"
   - include: "#compiler_directives"
 
-  # Imports
-  - begin: "\\b(import)\\s*\\{" # Matches the keyword 'import' followed by optional whitespace and an opening curly brace
+  # ----------------------------------------------------------------
+  # IMPORTS
+  # ----------------------------------------------------------------
+  - begin: "\\b(import)\\s*\\{"
     beginCaptures:
       "1":
         name: keyword.import
-    end: "\\}" # Matches a closing curly brace
+    end: "\\}"
     patterns:
       - include: "#comments"
 
-  # Type (group form)
-  - begin: "\\b(type)\\s*\\{" # Matches the keyword 'type' followed by optional whitespace and an opening curly brace
+  # ----------------------------------------------------------------
+  # TYPES
+  # ----------------------------------------------------------------
+
+  # GROUP
+  - begin: "\\b(type)\\s*\\{"
     beginCaptures:
       "1":
         name: keyword.type
-    end: "\\}" # Matches a closing curly brace
+    end: "\\}"
     patterns:
       - include: "#pub"
-      - include: "#storage_types"
+      - include: "#builtin_types"
       - include: "#comments"
 
-  # Type (single form)
+  # SINGLE
   - match: "\\b(type)\\s+(.*)" # FIXME ends at \n
     captures:
       "1":
         name: keyword.type
       "2":
         patterns:
-          - include: "#storage_types"
+          - include: "#builtin_types"
           - include: "#comments"
 
-  # Interface (group form)
-  - begin: "\\b(interface)\\s*\\{" # Matches the keyword 'interface' followed by optional whitespace and an opening curly brace
+  # ----------------------------------------------------------------
+  # INTERFACES
+  # ----------------------------------------------------------------
+
+  # GROUP
+  - begin: "\\b(interface)\\s*\\{"
     beginCaptures:
       "1":
         name: keyword.declaration.interfaces
-    end: "\\}" # Matches a closing curly brace
+    end: "\\}"
     patterns:
       - include: "#pub"
-      - include: "#storage_types"
+      - include: "#builtin_types"
       - include: "#comments"
 
-  # Interface (single form)
+  # SINGLE
   - match: "\\b(interface)\\s+(.*)" # FIXME ends at \n
     captures:
       "1":
         name: keyword.declaration.interfaces
       "2":
         patterns:
-          - include: "#storage_types"
+          - include: "#builtin_types"
 
-  # Constant (group form)
+  # ----------------------------------------------------------------
+  # CONSTANTS
+  # ----------------------------------------------------------------
+
+  # GROUP FORM
   - begin: "\\b(const)\\s*\\{" # Matches the keyword 'const' followed by optional whitespace and an opening curly brace
     beginCaptures:
       "1":
@@ -227,19 +229,24 @@ patterns:
     patterns:
       - include: "#pub"
       - include: "#const_literals"
-      - include: "#storage_types"
+      - include: "#builtin_types"
       - include: "#comments"
 
-  # Constant (single form)
+  # SINGLE
   - match: "\\b(const)\\s+(.*)" # FIXME ends at \n
     captures:
       "1":
         name: keyword.declaration.consts
       "2":
         patterns:
-          - include: "#storage_types"
+          - include: "#builtin_types"
+          - include: "#const_literals"
 
-  # Component (group form)
+  # ----------------------------------------------------------------
+  # CONSTANTS
+  # ----------------------------------------------------------------
+
+  # GROUP
   - begin: "\\b(component)\\s*\\{"
     beginCaptures:
       "1":
@@ -248,7 +255,7 @@ patterns:
     patterns:
       - include: "#compiler_directives"
       - include: "#pub"
-      - include: "#storage_types"
+      - include: "#builtin_types"
       - match: "\\b(\\w+)\\b(?=\\s*<|\\s*\\()"
         name: "entity.name.section"
       - begin: "\\{"
@@ -275,16 +282,17 @@ patterns:
               - begin: "\\{"
                 end: "\\}"
 
-  # Component (single form)
+  # SINGLE
   - begin: "\\b(component)\\s+(.*)\\{"
     beginCaptures:
       "1":
         name: keyword.declaration.function
       "2":
-        name: entity.section.name
+        patterns:
+          - include: "#builtin_types"
     end: "\\}"
     patterns:
-      - include: "#storage_types"
+      - include: "#builtin_types"
       - begin: "\\b(nodes)\\s*\\{"
         beginCaptures:
           "1":

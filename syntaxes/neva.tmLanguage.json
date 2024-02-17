@@ -24,7 +24,7 @@
       "match": "\\b(pub)\\b",
       "name": "storage.modifier.public"
     },
-    "storage_types": {
+    "builtin_types": {
       "patterns": [
         {
           "match": "\\bany\\b",
@@ -82,7 +82,7 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#storage_types"
+              "include": "#builtin_types"
             },
             {
               "include": "#comments"
@@ -114,7 +114,7 @@
           "include": "#bool_literals"
         },
         {
-          "include": "#numeric_literals"
+          "include": "#num_literals"
         },
         {
           "include": "#string_literals"
@@ -127,7 +127,7 @@
         }
       ]
     },
-    "numeric_literals": {
+    "num_literals": {
       "patterns": [
         {
           "match": "\\b0[xX][0-9a-fA-F]+\\b",
@@ -209,7 +209,7 @@
     "component_nodes": {
       "patterns": [
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "match": "^(\\s*)\\b(\\w+)\\b",
@@ -268,7 +268,7 @@
           "include": "#pub"
         },
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "include": "#comments"
@@ -284,7 +284,7 @@
         "2": {
           "patterns": [
             {
-              "include": "#storage_types"
+              "include": "#builtin_types"
             },
             {
               "include": "#comments"
@@ -306,7 +306,7 @@
           "include": "#pub"
         },
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "include": "#comments"
@@ -322,7 +322,7 @@
         "2": {
           "patterns": [
             {
-              "include": "#storage_types"
+              "include": "#builtin_types"
             }
           ]
         }
@@ -344,7 +344,7 @@
           "include": "#const_literals"
         },
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "include": "#comments"
@@ -360,7 +360,10 @@
         "2": {
           "patterns": [
             {
-              "include": "#storage_types"
+              "include": "#builtin_types"
+            },
+            {
+              "include": "#const_literals"
             }
           ]
         }
@@ -382,7 +385,7 @@
           "include": "#pub"
         },
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "match": "\\b(\\w+)\\b(?=\\s*<|\\s*\\()",
@@ -436,13 +439,17 @@
           "name": "keyword.declaration.function"
         },
         "2": {
-          "name": "entity.section.name"
+          "patterns": [
+            {
+              "include": "#builtin_types"
+            }
+          ]
         }
       },
       "end": "\\}",
       "patterns": [
         {
-          "include": "#storage_types"
+          "include": "#builtin_types"
         },
         {
           "begin": "\\b(nodes)\\s*\\{",
