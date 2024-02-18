@@ -1,6 +1,7 @@
+// comments
+
 import {
     std/io
-    std/strconv
 }
 
 type User struct {
@@ -9,11 +10,36 @@ type User struct {
     friend maybe<User>
 }
 
-component UserPrinter(u User) (sig any) {
+const user User = {
+    name: "John",
+    age: 25,
+    friend: {
+        name: "Jane",
+        age: 24,
+        friend: nil
+    }
+}
+
+component Main(start any) (stop any) {
     nodes {
-        printer Printer<string>
+        userPrinter UserAgePrinter {
+            printer io.Printer
+        }
     }
     net {
-        
+        :start -> ($user -> userPrinter:u)
+        userPrinter:sig -> :stop
+    }
+}
+
+pub interface IPrinter<T>(data T) (sig T)
+
+component UserAgePrinter(u User) (sig any) {
+    nodes {
+        printer IPrinter<string>
+    }
+    net {
+        :u.age -> printer:data
+        printer:sig -> :sig     
     }
 }
