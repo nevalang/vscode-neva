@@ -142,6 +142,10 @@ repository:
             name: meta.directive
         end: "(?:\\n|$)" # end of line or end of the input
 
+  # ----------------------------------------------------------------
+  # COMPONENTS
+  # ----------------------------------------------------------------
+
   component_nodes:
     patterns:
       - begin: "\\b(nodes)\\s*\\{"
@@ -179,6 +183,8 @@ repository:
             name: variable.other.constant
           - match: "->"
             name: keyword.control
+          - match: "(?<!\\S)(:)(\\w+)\\b"
+            name: variable.parameter
 
 # ================================================================
 # PATTERNS (actual rules)

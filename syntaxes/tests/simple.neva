@@ -62,16 +62,16 @@ const {
 component Main(start any) (stop any) {
 	nodes { printer Printer<string> }
 	net {
-		in:start -> ($greeting -> printer:data)
-		printer:sig -> out:stop
+		:start -> ($greeting -> printer:data)
+		printer:sig -> :stop
 	}
 }
 
 component Main(start any) (stop any) {
 	nodes { printer Printer<string> }
 	net {
-		in:start -> ('Hello, World!' -> printer:data)
-		printer:sig -> out:stop
+		:start -> ('Hello, World!' -> printer:data)
+		printer:sig -> :stop
 	}
 }
 
@@ -82,14 +82,14 @@ component Main(enter any) (exit any) {
         writer foo.FileWriter
     }
     net {
-        in:enter -> (pi -> bypass:foo)
+        :enter -> (pi -> bypass:foo)
         bypass:bar -> [printer:msg, writer:msg]
-        printer:msg -> out:exit
+        printer:msg -> :exit
     }
 }
 
 pub component Bypass<T float>(foo T) (bar T) {
-    net { in:foo -> out:bar }
+    net { :foo -> :bar }
 }
 
 component {
@@ -100,14 +100,14 @@ component {
             writer foo.FileWriter
         }
         net {
-            in:enter -> (pi -> bypass:foo)
+            :enter -> (pi -> bypass:foo)
             bypass:bar -> [printer:msg, writer:msg]
-            printer:msg -> out:exit
+            printer:msg -> :exit
         }
     }
 
     pub Bypass<T float>(foo T) (bar T) {
-        net { in:foo -> out:bar }
+        net { :foo -> :bar }
     }
 }
 

@@ -286,6 +286,10 @@
             {
               "match": "->",
               "name": "keyword.control"
+            },
+            {
+              "match": "(?<!\\S)(:)(\\w+)\\b",
+              "name": "variable.parameter"
             }
           ]
         }
