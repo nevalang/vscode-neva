@@ -230,6 +230,9 @@
           "patterns": [
             {
               "include": "#component_nodes_body"
+            },
+            {
+              "include": "#comments"
             }
           ]
         }
@@ -241,10 +244,13 @@
           "include": "#builtin_types"
         },
         {
-          "match": "^(\\s*)\\b(\\w+)\\b",
+          "match": "^(\\s*)\\b(\\w+)\\b\\s+(\\w+)\\b",
           "captures": {
             "2": {
               "name": "variable.other.node"
+            },
+            "3": {
+              "name": "entity.name.function"
             }
           }
         },
@@ -254,6 +260,9 @@
           "patterns": [
             {
               "include": "#component_nodes_body"
+            },
+            {
+              "include": "#comments"
             }
           ]
         }
@@ -288,8 +297,26 @@
               "name": "keyword.control"
             },
             {
-              "match": "(?<!\\S)(:)(\\w+)\\b",
-              "name": "variable.parameter"
+              "match": "\\:(\\w+)\\b",
+              "captures": {
+                "1": {
+                  "name": "variable.parameter"
+                }
+              }
+            },
+            {
+              "match": "(\\w+)\\b\\:(\\w+)\\b",
+              "captures": {
+                "1": {
+                  "name": "variable.other.node"
+                },
+                "2": {
+                  "name": "variable.parameter"
+                }
+              }
+            },
+            {
+              "include": "#comments"
             }
           ]
         }
@@ -470,6 +497,9 @@
               "include": "#component_net"
             }
           ]
+        },
+        {
+          "include": "#comments"
         }
       ]
     },
@@ -493,6 +523,9 @@
         },
         {
           "include": "#component_net"
+        },
+        {
+          "include": "#comments"
         }
       ]
     }

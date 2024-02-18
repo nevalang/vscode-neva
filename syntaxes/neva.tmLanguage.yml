@@ -155,18 +155,22 @@ repository:
         end: "\\}"
         patterns:
           - include: "#component_nodes_body"
+          - include: "#comments"
 
   component_nodes_body:
     patterns:
       - include: "#builtin_types"
-      - match: "^(\\s*)\\b(\\w+)\\b"
+      - match: "^(\\s*)\\b(\\w+)\\b\\s+(\\w+)\\b"
         captures:
           "2":
             name: variable.other.node
+          "3":
+            name: entity.name.function
       - begin: "\\{"
         end: "\\}"
         patterns:
           - include: "#component_nodes_body" # DI
+          - include: "#comments"
 
   component_net:
     patterns:
@@ -183,8 +187,17 @@ repository:
             name: variable.other.constant
           - match: "->"
             name: keyword.control
-          - match: "(?<!\\S)(:)(\\w+)\\b"
-            name: variable.parameter
+          - match: "\\:(\\w+)\\b" # io port addrs
+            captures:
+              "1":
+                name: variable.parameter
+          - match: "(\\w+)\\b\\:(\\w+)\\b" # norm port addrs
+            captures:
+              "1":
+                name: variable.other.node
+              "2":
+                name: variable.parameter
+          - include: "#comments"
 
 # ================================================================
 # PATTERNS (actual rules)
@@ -305,6 +318,7 @@ patterns:
         patterns:
           - include: "#component_nodes"
           - include: "#component_net"
+      - include: "#comments"
 
   # SINGLE
   - begin: "\\b(component)\\s+\\b(\\w+)"
@@ -318,3 +332,4 @@ patterns:
       - include: "#builtin_types"
       - include: "#component_nodes"
       - include: "#component_net"
+      - include: "#comments"
