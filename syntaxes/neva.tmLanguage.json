@@ -244,7 +244,7 @@
           "include": "#builtin_types"
         },
         {
-          "match": "^(\\s*)\\b(\\w+)\\b\\s+(\\w+)\\b",
+          "match": "^(\\s*)\\b(\\w+)\\b\\s+((\\w+\\.)*\\w+)\\b",
           "captures": {
             "2": {
               "name": "variable.other.node"

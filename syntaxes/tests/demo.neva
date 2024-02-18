@@ -1,0 +1,19 @@
+import {
+    std/io
+    std/strconv
+}
+
+type User struct {
+    name string
+    age int
+    friend maybe<User>
+}
+
+component UserPrinter(u User) (sig any) {
+    nodes {
+        printer Printer<string>
+    }
+    net {
+        
+    }
+}
