@@ -2,9 +2,9 @@
 
 ![Black Header](./assets/header.png "Nevalang logo and title")
 
-This is extension for [Neva](https://github.com/nevalang/neva) - flow based programming language with static types.
+This is a VScode extension for [Neva](https://github.com/nevalang/neva) - a flow based programming language with static types.
 
-Please note that you need to have `neva.yaml` in the root of your workspace to activate extension.
+Please note that you need to have a `neva.yaml` file in the root of your workspace to activate the extension.
 
 ## Requirements
 
@@ -18,11 +18,11 @@ Please note that you need to have `neva.yaml` in the root of your workspace to a
 
 ### Error messages (Diagnostics)
 
-Error messages occur as you type in _problems_ panel
+Error messages occur as you type in the _problems_ panel
 
 ### Visual Editor (WIP)
 
-Currently disabled due to massive changes in the language. You can see source code in the `webview` directory.
+Currently disabled due to massive changes in the language. You can see the source code in the `webview` directory.
 
 ## Contributing
 
