@@ -149,13 +149,11 @@ component {
             printer std_pkg.Printer
             reader elsewhere.Reader<string>
         }
-        net {
-            in.x -> printer.in.v
-            printer.out.v -> {
-                reader.in.v
-                out.z
-            }
-        }
+        in.x -> printer.in.v
+        printer.out.v -> [
+            reader.in.v,
+            out.z
+        ]
     }
     
     pub Doer2 <T float>(x int) (z T, x2 list<struct { foo bool }>) {
@@ -164,13 +162,11 @@ component {
             printer std_pkg.Printer
             reader elsewhere.Reader<string>
         }
-        net {
-            in.x -> printer.in.v
-            printer.out.v -> {
-                reader.in.v
-                out.z
-            }
-        }
+        in.x -> printer.in.v
+        printer.out.v -> [
+            reader.in.v,
+            out.z
+        ]
     }
 
     Doer2<T float>(x int) (z T, z2 bool) {
@@ -179,13 +175,11 @@ component {
             printer std_pkg.Printer
             reader elsewhere.Reader<string>
         }
-        net {
-            in.x -> printer.in.v
-            printer.out.v -> {
-                reader.in.v
-                out.z
-            }
-        }
+        in.x -> printer.in.v
+        printer.out.v -> [
+            reader.in.v,
+            out.z
+        ]
     }
 
     #runtime_func(Read)
@@ -200,4 +194,3 @@ component {
     #runtime_func(ParseInt)
     pub ParseInt(v string) (v int, err string)
 }
-

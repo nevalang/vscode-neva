@@ -271,54 +271,51 @@
     "component_net": {
       "patterns": [
         {
-          "begin": "\\b(net)\\s*\\{",
-          "beginCaptures": {
+          "include": "#bool_literals"
+        },
+        {
+          "include": "#num_literals"
+        },
+        {
+          "include": "#string_literals"
+        },
+        {
+          "match": "\\$\\w+",
+          "name": "variable.other.constant"
+        },
+        {
+          "match": "->",
+          "name": "keyword.control"
+        },
+        {
+          "match": "\\:(\\w+)\\b",
+          "captures": {
             "1": {
-              "name": "entity.name.section"
+              "name": "variable.parameter"
             }
-          },
-          "end": "\\}",
-          "patterns": [
-            {
-              "include": "#bool_literals"
+          }
+        },
+        {
+          "match": "(\\w+)\\b\\:(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.node"
             },
-            {
-              "include": "#num_literals"
-            },
-            {
-              "include": "#string_literals"
-            },
-            {
-              "match": "\\$\\w+",
-              "name": "variable.other.constant"
-            },
-            {
-              "match": "->",
-              "name": "keyword.control"
-            },
-            {
-              "match": "\\:(\\w+)\\b",
-              "captures": {
-                "1": {
-                  "name": "variable.parameter"
-                }
-              }
-            },
-            {
-              "match": "(\\w+)\\b\\:(\\w+)\\b",
-              "captures": {
-                "1": {
-                  "name": "variable.other.node"
-                },
-                "2": {
-                  "name": "variable.parameter"
-                }
-              }
-            },
-            {
-              "include": "#comments"
+            "2": {
+              "name": "variable.parameter"
             }
-          ]
+          }
+        },
+        {
+          "match": "(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.parameter"
+            }
+          }
+        },
+        {
+          "include": "#comments"
         }
       ]
     }

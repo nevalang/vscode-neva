@@ -104,7 +104,8 @@
     "watch-ts": "tsc -w -p ./",
     "build-webview": "cd webview && rm -rf dist && npm run build",
     "watch-webview": "nodemon --watch ./webview/src --exec npm run build-webview || exit 1",
-    "watch": "concurrently 'npm run watch-yaml2json' 'npm run watch-ts' 'npm run watch-webview'"
+    "watch": "concurrently 'npm run watch-yaml2json' 'npm run watch-ts'",
+    "start": "npm run watch"
   },
   "nodemonConfig": {
     "ext": "js,json,hbs,html,ts,tsx,yml,yaml",
