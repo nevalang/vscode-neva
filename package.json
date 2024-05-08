@@ -9,7 +9,7 @@
   },
   "description": "VSCode extension for Neva programming language",
   "publisher": "nevalang",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"
@@ -62,8 +62,8 @@
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./assets/logo.svg",
-          "dark": "./assets/logo.svg"
+          "light": "assets/logo.svg",
+          "dark": "assets/logo.svg"
         }
       }
     ],
@@ -79,7 +79,7 @@
     "workspaceContains:neva.yml",
     "workspaceContains:neva.yaml"
   ],
-  "icon": "./assets/logo_gradient.png",
+  "icon": "assets/logo_gradient.png",
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
   },

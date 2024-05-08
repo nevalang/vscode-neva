@@ -30,6 +30,11 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.5.0
+
+- Updated syntax highlighting after removing "net" keyword
+- Fixed syntax highlighting for nodes without ports in component connections
+
 ### 0.4.0
 
 - Add support for single-form entity declaration
