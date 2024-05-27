@@ -217,7 +217,7 @@
         }
       ]
     },
-    "component_nodes": {
+    "flow_nodes": {
       "patterns": [
         {
           "begin": "\\b(nodes)\\s*\\{",
@@ -229,7 +229,7 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#component_nodes_body"
+              "include": "#flow_nodes_body"
             },
             {
               "include": "#comments"
@@ -238,7 +238,7 @@
         }
       ]
     },
-    "component_nodes_body": {
+    "flow_nodes_body": {
       "patterns": [
         {
           "include": "#builtin_types"
@@ -259,7 +259,7 @@
           "end": "\\}",
           "patterns": [
             {
-              "include": "#component_nodes_body"
+              "include": "#flow_nodes_body"
             },
             {
               "include": "#comments"
@@ -268,7 +268,7 @@
         }
       ]
     },
-    "component_net": {
+    "flow_net": {
       "patterns": [
         {
           "include": "#bool_literals"
@@ -345,54 +345,14 @@
       ]
     },
     {
-      "begin": "\\b(type)\\s*\\{",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.type"
-        }
-      },
-      "end": "\\}",
-      "patterns": [
-        {
-          "include": "#pub"
-        },
-        {
-          "include": "#builtin_types"
-        },
-        {
-          "include": "#comments"
-        }
-      ]
-    },
-    {
       "begin": "\\b(type)",
       "beginCaptures": {
         "1": {
           "name": "keyword.type"
         }
       },
-      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "end": "(?=\\b(import|pub|type|const|interface|flow)\\b)",
       "patterns": [
-        {
-          "include": "#builtin_types"
-        },
-        {
-          "include": "#comments"
-        }
-      ]
-    },
-    {
-      "begin": "\\b(interface)\\s*\\{",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.declaration.interfaces"
-        }
-      },
-      "end": "\\}",
-      "patterns": [
-        {
-          "include": "#pub"
-        },
         {
           "include": "#builtin_types"
         },
@@ -408,31 +368,8 @@
           "name": "keyword.declaration.interfaces"
         }
       },
-      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "end": "(?=\\b(import|pub|type|const|interface|flow)\\b)",
       "patterns": [
-        {
-          "include": "#builtin_types"
-        },
-        {
-          "include": "#comments"
-        }
-      ]
-    },
-    {
-      "begin": "\\b(const)\\s*\\{",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.declaration.const"
-        }
-      },
-      "end": "\\}",
-      "patterns": [
-        {
-          "include": "#pub"
-        },
-        {
-          "include": "#const_literals"
-        },
         {
           "include": "#builtin_types"
         },
@@ -448,7 +385,7 @@
           "name": "keyword.declaration.const"
         }
       },
-      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "end": "(?=\\b(import|pub|type|const|interface|flow)\\b)",
       "patterns": [
         {
           "include": "#builtin_types"
@@ -462,46 +399,7 @@
       ]
     },
     {
-      "begin": "\\b(component)\\s*\\{",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.declaration.function"
-        }
-      },
-      "end": "\\}",
-      "patterns": [
-        {
-          "include": "#compiler_directives"
-        },
-        {
-          "include": "#pub"
-        },
-        {
-          "include": "#builtin_types"
-        },
-        {
-          "match": "\\b(\\w+)\\b(?=\\s*<|\\s*\\()",
-          "name": "entity.name.section"
-        },
-        {
-          "begin": "\\{",
-          "end": "\\}",
-          "patterns": [
-            {
-              "include": "#component_nodes"
-            },
-            {
-              "include": "#component_net"
-            }
-          ]
-        },
-        {
-          "include": "#comments"
-        }
-      ]
-    },
-    {
-      "begin": "\\b(component)\\s+\\b(\\w+)",
+      "begin": "\\b(flow)\\s+\\b(\\w+)",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.function"
@@ -510,16 +408,16 @@
           "name": "entity.name.section"
         }
       },
-      "end": "(?=\\b(import|pub|type|const|interface|component)\\b)",
+      "end": "(?=\\b(import|pub|type|const|interface|flow)\\b)",
       "patterns": [
         {
           "include": "#builtin_types"
         },
         {
-          "include": "#component_nodes"
+          "include": "#flow_nodes"
         },
         {
-          "include": "#component_net"
+          "include": "#flow_net"
         },
         {
           "include": "#comments"
