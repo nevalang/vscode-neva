@@ -30,6 +30,12 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.6.0
+
+- Updated syntax highlighting to mach latest changes in compiler
+    - Replaced `component` keyword with `flow`
+    - Removed all _group forms_ for entity declarasions
+
 ### 0.5.0
 
 - Updated syntax highlighting after removing "net" keyword
