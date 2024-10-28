@@ -143,10 +143,10 @@ repository:
         end: "(?:\\n|$)" # end of line or end of the input
 
   # ----------------------------------------------------------------
-  # FLOWS
+  # COMPONENTS
   # ----------------------------------------------------------------
 
-  flow_nodes:
+  nodes:
     patterns:
       - begin: "\\b(nodes)\\s*\\{"
         beginCaptures:
@@ -154,10 +154,10 @@ repository:
             name: entity.name.section
         end: "\\}"
         patterns:
-          - include: "#flow_nodes_body"
+          - include: "#nodes_body"
           - include: "#comments"
 
-  flow_nodes_body:
+  nodes_body:
     patterns:
       - include: "#builtin_types"
       - match: "^(\\s*)\\b(\\w+)\\b\\s+((\\w+\\.)*\\w+)\\b"
@@ -169,10 +169,10 @@ repository:
       - begin: "\\{"
         end: "\\}"
         patterns:
-          - include: "#flow_nodes_body" # DI
+          - include: "#nodes_body" # DI
           - include: "#comments"
 
-  flow_net:
+  net:
     patterns:
       - include: "#bool_literals"
       - include: "#num_literals"
@@ -226,7 +226,7 @@ patterns:
     beginCaptures:
       "1":
         name: keyword.type
-    end: "(?=\\b(import|pub|type|const|interface|flow)\\b)"
+    end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
       - include: "#comments"
@@ -239,7 +239,7 @@ patterns:
     beginCaptures:
       "1":
         name: keyword.declaration.interfaces
-    end: "(?=\\b(import|pub|type|const|interface|flow)\\b)"
+    end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
       - include: "#comments"
@@ -252,25 +252,25 @@ patterns:
     beginCaptures:
       "1":
         name: keyword.declaration.const
-    end: "(?=\\b(import|pub|type|const|interface|flow)\\b)"
+    end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
       - include: "#const_literals"
       - include: "#comments"
 
   # ----------------------------------------------------------------
-  # FLOWS
+  # COMPONENTS
   # ----------------------------------------------------------------
 
-  - begin: "\\b(flow)\\s+\\b(\\w+)"
+  - begin: "\\b(def)\\s+\\b(\\w+)"
     beginCaptures:
       "1":
         name: keyword.declaration.function
       "2":
         name: entity.name.section
-    end: "(?=\\b(import|pub|type|const|interface|flow)\\b)"
+    end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
-      - include: "#flow_nodes"
-      - include: "#flow_net"
+      - include: "#nodes"
+      - include: "#net"
       - include: "#comments"

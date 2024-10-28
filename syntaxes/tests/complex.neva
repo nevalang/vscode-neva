@@ -128,69 +128,62 @@ interface {
     IMyInterface3<T bool>(y notStorage, x int) (z T)
 }
 
-const {
-    myTrue bool true
-    pi myFloat 3.14
-    pub my_vec MyVec<myFloat> [pi, pi]
-    zero any nil
-    foo struct { bar int } { bar: 42 }
-    pub my_friend MyRec<float> {
-        foo: 27
-        bar: "john"
-        baz: 42.0
-    }
-    my_str string "my string"
+const myTrue bool true
+const pi myFloat 3.14
+pub const my_vec MyVec<myFloat> [pi, pi]
+const zero any nil
+const foo struct { bar int } { bar: 42 }
+pub const my_friend MyRec<float> {
+    foo: 27
+    bar: "john"
+    baz: 42.0
+}
+const my_str string "my string"
+
+pub def Doer<T int>(x int) (z T) {
+    abstractNode IMyInterface
+    printer std_pkg.Printer
+    reader elsewhere.Reader<string>
+    ---
+    in.x -> printer.in.v
+    printer.out.v -> [
+        reader.in.v,
+        out.z
+    ]
 }
 
-component {
-    pub Doer<T int>(x int) (z T) {
-        nodes {
-            abstractNode IMyInterface
-            printer std_pkg.Printer
-            reader elsewhere.Reader<string>
-        }
-        in.x -> printer.in.v
-        printer.out.v -> [
-            reader.in.v,
-            out.z
-        ]
-    }
-    
-    pub Doer2 <T float>(x int) (z T, x2 list<struct { foo bool }>) {
-        nodes {
-            abstractNode IMyInterface
-            printer std_pkg.Printer
-            reader elsewhere.Reader<string>
-        }
-        in.x -> printer.in.v
-        printer.out.v -> [
-            reader.in.v,
-            out.z
-        ]
-    }
-
-    Doer2<T float>(x int) (z T, z2 bool) {
-        nodes {
-            abstractNode IMyInterface
-            printer std_pkg.Printer
-            reader elsewhere.Reader<string>
-        }
-        in.x -> printer.in.v
-        printer.out.v -> [
-            reader.in.v,
-            out.z
-        ]
-    }
-
-    #runtime_func(Read)
-    pub Read(sig) (v string)
-
-    #runtime_func(Print)
-    pub Print<T>(v T) (v T)
-
-    #runtime_func(Lock)
-    pub Lock<T>(sig, v T) (v T)
-
-    #runtime_func(ParseInt)
-    pub ParseInt(v string) (v int, err string)
+pub def Doer2 <T float>(x int) (z T, x2 list<struct { foo bool }>) {
+    abstractNode IMyInterface
+    printer std_pkg.Printer
+    reader elsewhere.Reader<string>
+    ---
+    in.x -> printer.in.v
+    printer.out.v -> [
+        reader.in.v,
+        out.z
+    ]
 }
+
+def Doer2<T float>(x int) (z T, z2 bool) {
+    abstractNode IMyInterface
+    printer std_pkg.Printer
+    reader elsewhere.Reader<string>
+    ---
+    in.x -> printer.in.v
+    printer.out.v -> [
+        reader.in.v,
+        out.z
+    ]
+}
+
+#runtime_func(Read)
+pub def Read(sig) (v string)
+
+#runtime_func(Print)
+pub def Print<T>(v T) (v T)
+
+#runtime_func(Lock)
+pub def Lock<T>(sig, v T) (v T)
+
+#runtime_func(ParseInt)
+pub def ParseInt(v string) (v int, err string)

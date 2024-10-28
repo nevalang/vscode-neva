@@ -1,16 +1,16 @@
 // comments
 
 import {
-    std/io
+    std:io
 
-    @/my_lovely_mod/foo
-    @/my_lovely_mod/bar/baz
+    @:my_lovely_mod/foo
+    @:my_lovely_mod/bar/baz
 
 	github.com/nevalang/x
 }
 
 #extern(bool_parser)
-pub component BoolParser(s string) (res bool, err error)
+pub def BoolParser(s string) (res bool, err error)
 
 type Primitive Num | string | bool
 
@@ -53,61 +53,48 @@ const greet string = "Hello, world!"
 
 pub const nums list<int> = [1, 2, 3, 4, 5]
 
-const {
-    pi float = 3.14
-    greet string = "Hello, world!"
-    pub nums list<int> = [1, 2, 3, 4, 5]
+const pi float = 3.14
+const greet string = "Hello, world!"
+const pub nums list<int> = [1, 2, 3, 4, 5]
+
+def Main(start any) (stop any) {
+	printer Printer<string>
+	---
+    :start -> ($greeting -> printer:data)
+    printer:sig -> :stop
 }
 
-component Main(start any) (stop any) {
-	nodes { printer Printer<string> }
-	net {
-		:start -> ($greeting -> printer:data)
-		printer:sig -> :stop
-	}
+def Main(start any) (stop any) {
+	printer Printer<string>
+	---
+    :start -> ('Hello, World!' -> printer:data)
+    printer:sig -> :stop
 }
 
-component Main(start any) (stop any) {
-	nodes { printer Printer<string> }
-	net {
-		:start -> ('Hello, World!' -> printer:data)
-		printer:sig -> :stop
-	}
+def Main(enter any) (exit any) {
+    bypass Bypass<float>
+    printer Printer<float>
+    writer foo.FileWriter
+    ---
+    :enter -> (pi -> bypass:foo)
+    bypass:bar -> [printer:msg, writer:msg]
+    printer:msg -> :exit
 }
 
-component Main(enter any) (exit any) {
-    nodes {
-        bypass Bypass<float>
-        printer Printer<float>
-        writer foo.FileWriter
-    }
-    net {
-        :enter -> (pi -> bypass:foo)
-        bypass:bar -> [printer:msg, writer:msg]
-        printer:msg -> :exit
-    }
-}
-
-pub component Bypass<T float>(foo T) (bar T) {
+pub def Bypass<T float>(foo T) (bar T) {
     net { :foo -> :bar }
 }
 
-component {
-    Main(enter any) (exit any) {
-        nodes {
-            bypass Bypass<float>
-            printer Printer<float>
-            writer foo.FileWriter
-        }
-        net {
-            :enter -> (pi -> bypass:foo)
-            bypass:bar -> [printer:msg, writer:msg]
-            printer:msg -> :exit
-        }
-    }
-
-    pub Bypass<T float>(foo T) (bar T) {
-        net { :foo -> :bar }
-    }
+def Main(enter any) (exit any) {
+    bypass Bypass<float>
+    printer Printer<float>
+    writer foo.FileWriter
+    ---
+    :enter -> (pi -> bypass:foo)
+    bypass:bar -> [printer:msg, writer:msg]
+    printer:msg -> :exit
 }
 
+pub def Bypass<T float>(foo T) (bar T) {
+    net { :foo -> :bar }
+}

@@ -1,8 +1,6 @@
 // comments
 
-import {
-    std/io
-}
+import { std/io }
 
 type User struct {
     name string
@@ -20,26 +18,20 @@ const user User = {
     }
 }
 
-component Main(start any) (stop any) {
-    nodes {
-        userPrinter UserAgePrinter {
-            printer io.Printer
-        }
+def Main(start any) (stop any) {
+    userPrinter UserAgePrinter {
+        printer io.Printer
     }
-    net {
-        :start -> ($user -> userPrinter:u)
-        userPrinter:sig -> :stop
-    }
+    ---
+    :start -> { $user -> userPrinter:u }
+    userPrinter:sig -> :stop
 }
 
 pub interface IPrinter<T>(data T) (sig T)
 
-component UserAgePrinter(u User) (sig any) {
-    nodes {
-        printer IPrinter<string>
-    }
-    net {
-        :u.age -> printer:data
-        printer:sig -> :sig     
-    }
+def UserAgePrinter(u User) (sig any) {
+    printer IPrinter<string>
+    ---
+    :u.age -> printer:data
+    printer:sig -> :sig     
 }

@@ -30,11 +30,20 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.0
+
+- LSP improvements
+  - Sending errors to VSCode "problems" panel
+  - Support for TCP in debug-mode (for extension developers)
+- Updated syntax highlighting to mach latest changes in compiler
+  - `flow` keyword was replaced with `def`
+- Internal Changes (minor refactoring)
+
 ### 0.6.0
 
 - Updated syntax highlighting to mach latest changes in compiler
-    - Replaced `component` keyword with `flow`
-    - Removed all _group forms_ for entity declarasions
+  - Replaced `component` keyword with `flow`
+  - Removed all _group forms_ for entity declarasions
 
 ### 0.5.0
 
