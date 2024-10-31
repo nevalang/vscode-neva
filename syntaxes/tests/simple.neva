@@ -60,41 +60,41 @@ const pub nums list<int> = [1, 2, 3, 4, 5]
 def Main(start any) (stop any) {
 	printer Printer<string>
 	---
-    :start -> ($greeting -> printer:data)
+    :start -> { $greeting -> printer:data }
     printer:sig -> :stop
 }
 
 def Main(start any) (stop any) {
 	printer Printer<string>
 	---
-    :start -> ('Hello, World!' -> printer:data)
+    :start -> { 'Hello, World!' -> printer:data }
     printer:sig -> :stop
 }
 
+def Main(start any) (stop any) {
+    bypass Bypass<float>
+    printer Printer<float>
+    writer foo.FileWriter
+    ---
+    :start -> { pi -> bypass:foo }
+    bypass:bar -> [printer:msg, writer:msg]
+    printer:msg -> :stop
+}
+
+pub def Bypass<T float>(foo T) (bar T) {
+    :foo -> :bar
+}
+
 def Main(enter any) (exit any) {
     bypass Bypass<float>
     printer Printer<float>
     writer foo.FileWriter
     ---
-    :enter -> (pi -> bypass:foo)
+    :enter -> { pi -> bypass:foo }
     bypass:bar -> [printer:msg, writer:msg]
     printer:msg -> :exit
 }
 
 pub def Bypass<T float>(foo T) (bar T) {
-    net { :foo -> :bar }
-}
-
-def Main(enter any) (exit any) {
-    bypass Bypass<float>
-    printer Printer<float>
-    writer foo.FileWriter
-    ---
-    :enter -> (pi -> bypass:foo)
-    bypass:bar -> [printer:msg, writer:msg]
-    printer:msg -> :exit
-}
-
-pub def Bypass<T float>(foo T) (bar T) {
-    net { :foo -> :bar }
+    :foo -> :bar
 }
