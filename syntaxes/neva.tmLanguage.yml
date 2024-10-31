@@ -29,23 +29,23 @@ repository:
 
   builtin_types:
     patterns:
-      - match: "\\bany\\b" # Matches the keyword 'any'
+      - match: "\\bany\\b" # Matches the word 'any'
         name: storage.type.any
-      - match: "\\bmaybe\\b" # Matches the keyword 'maybe'
+      - match: "\\bmaybe\\b" # Matches the word 'maybe'
         name: storage.type.maybe
-      - match: "\\bbool\\b" # Matches the keyword 'bool'
+      - match: "\\bbool\\b" # Matches the word 'bool'
         name: storage.type.boolean
-      - match: "\\b(int|float)\\b" # Matches the keywords 'int' or 'float'
+      - match: "\\b(int|float)\\b" # Matches the words 'int' or 'float'
         name: storage.type.numeric
-      - match: "\\bstring\\b" # Matches the keyword 'string'
+      - match: "\\bstring\\b" # Matches the word 'string'
         name: storage.type.string
-      - match: "\\bmap\\b" # Matches the keyword 'map'
-        name: storage.type.map
-      - match: "\\blist\\b" # Matches the keyword 'list'
+      - match: "\\bdict\\b" # Matches the word 'dict'
+        name: storage.type.dict
+      - match: "\\blist\\b" # Matches the word 'list'
         name: storage.type.list
-      - match: "\\berror\\b" # Matches the keyword 'error'
+      - match: "\\berror\\b" # Matches the word 'error'
         name: storage.type.error
-      - match: "\\bstream\\b" # Matches the keyword 'stream'
+      - match: "\\bstream\\b" # Matches the word 'stream'
         name: storage.type.stream
       - include: "#struct_type"
       - include: "#enum_type"
@@ -115,7 +115,7 @@ repository:
     match: "\\b(nil)"
     name: constant.language.nil
 
-  struct_literal: # and map literal
+  struct_literal: # and dict literal
     patterns:
       - begin: "\\{"
         end: "\\}"

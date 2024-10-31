@@ -30,6 +30,11 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.1
+
+- Updated syntax highlighting to mach latest changes in compiler
+  - `map` native type was replaced with `dict` (to avoid confusion with `Map` component)
+
 ### 0.7.0
 
 - LSP improvements

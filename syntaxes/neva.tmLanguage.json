@@ -47,8 +47,8 @@
           "name": "storage.type.string"
         },
         {
-          "match": "\\bmap\\b",
-          "name": "storage.type.map"
+          "match": "\\bdict\\b",
+          "name": "storage.type.dict"
         },
         {
           "match": "\\blist\\b",
