@@ -220,13 +220,8 @@
     "nodes": {
       "patterns": [
         {
-          "begin": "\\b(nodes)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "entity.name.section"
-            }
-          },
-          "end": "\\}",
+          "begin": "\\{",
+          "end": "---",
           "patterns": [
             {
               "include": "#nodes_body"
