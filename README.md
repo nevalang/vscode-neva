@@ -4,7 +4,7 @@
 
 This is a VScode extension for [Neva](https://github.com/nevalang/neva) - a flow based programming language with static types.
 
-Please note that you need to have a `neva.yaml` file in the root of your workspace to activate the extension.
+> **Warning**: extension only works if nevalang module is root of your workspace! I.e. `neva.y(a)ml` is at the root of the project, opened in the editor.
 
 ## Requirements
 
@@ -29,6 +29,12 @@ Currently disabled due to massive changes in the language. You can see the sourc
 See [./Contributing.md](Contributing.md)
 
 ## Release Notes
+
+### 0.7.2
+
+- Critical bugfix (LSP wasn't working at all)
+  - Added missing bundling step (via esbuild)
+  - Removed `lsp` binary from `.vscodeignore`
 
 ### 0.7.1
 

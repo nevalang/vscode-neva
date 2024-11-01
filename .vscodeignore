@@ -7,6 +7,5 @@ syntaxes/neva.tmLanguage.yml
 .gitignore
 .vscodeignore
 webview
-lsp
 tsconfig.json
 package-lock.json

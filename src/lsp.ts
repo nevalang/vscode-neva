@@ -4,7 +4,6 @@ import cp from "child_process";
 import { window, ExtensionContext, workspace } from "vscode";
 import { Trace } from "vscode-jsonrpc";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
-// import { server } from "typescript";
 
 export const clientId = "nevaLSPClient";
 export const clientName = "Neva LSP Client";
