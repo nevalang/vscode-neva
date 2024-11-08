@@ -9,13 +9,6 @@ import {
 	github.com/nevalang/x
 }
 
-#extern(bool_parser)
-pub def BoolParser(s string) (res bool, err error)
-
-type Primitive Num | string | bool
-
-pub type Num int | float
-
 type User struct {
     age int
     name string
@@ -24,38 +17,34 @@ type User struct {
     }
 }
 
-type {
-    User struct {
-        age int
-        name string
-        bestFriend struct {
-            isDog bool // should be true
-        }
+pub type Primitive union {
+    Bool bool
+    String string
+    Num union {
+        Int int
+        Float float
     }
-    pub Primitive Num | string | bool
-    pub Users list<User>
 }
 
-interface IStreamHandler<T>(
-    seq stream<T>
-) (res int)
+pub type Users list<User>
+
+interface IStreamHandler<T>(seq stream<T>) (res T)
 
 pub interface IListStreamer<T>(l list<T>) (seq stream<T>)
 
-interface {
-    IStreamHandler<T>(seq stream<T>) (res T)
-    pub IListStreamer<T>(l list<T>) (seq stream<T>)
-}
-
 const greeting string = 'Hello, World!'
-
-const greet string = "Hello, world!"
 
 pub const nums list<int> = [1, 2, 3, 4, 5]
 
 const pi float = 3.14
 const greet string = "Hello, world!"
-const pub nums list<int> = [1, 2, 3, 4, 5]
+pub const nums list<int> = [1, 2, 3, 4, 5]
+
+#extern(bool_parser)
+pub def BoolParser(s string) (res bool, err error)
+
+const b = true
+const b2 = false
 
 def Main(start any) (stop any) {
 	printer Printer<string>

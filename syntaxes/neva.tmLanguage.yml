@@ -49,6 +49,7 @@ repository:
         name: storage.type.stream
       - include: "#struct_type"
       - include: "#enum_type"
+      - include: "#union_type"
 
   struct_type:
     patterns:
@@ -69,6 +70,17 @@ repository:
             name: storage.type.enum
         end: "\\}"
         name: variable.other.enummember
+
+  union_type:
+    patterns:
+      - begin: "\\b(union)\\s*\\{"
+        beginCaptures:
+          "1":
+            name: storage.type.union
+        end: "\\}"
+        patterns:
+          - include: "#builtin_types" # For nested types
+          - include: "#comments"
 
   # ----------------------------------------------------------------
   # CONSTANT LITERALS
@@ -174,6 +186,10 @@ repository:
       - include: "#bool_literals"
       - include: "#num_literals"
       - include: "#string_literals"
+      - begin: "\\{"
+        end: "\\}"
+        patterns:
+          - include: "#net" # Recursively include net patterns inside deferred blocks
       - match: "\\$\\w+"
         name: variable.other.constant
       - match: "->"
