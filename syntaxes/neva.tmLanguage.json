@@ -373,10 +373,13 @@
       ]
     },
     {
-      "begin": "\\b(type)",
+      "begin": "\\b(type)\\s+\\b(\\w+)\\b",
       "beginCaptures": {
         "1": {
           "name": "keyword.type"
+        },
+        "2": {
+          "name": "entity.name.type"
         }
       },
       "end": "(?=\\b(import|pub|type|const|interface|def)\\b)",
@@ -390,10 +393,13 @@
       ]
     },
     {
-      "begin": "\\b(interface)",
+      "begin": "\\b(interface)\\s+\\b(\\w+)\\b",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.interfaces"
+        },
+        "2": {
+          "name": "entity.name.type.interface"
         }
       },
       "end": "(?=\\b(import|pub|type|const|interface|def)\\b)",
@@ -403,14 +409,25 @@
         },
         {
           "include": "#comments"
+        },
+        {
+          "match": "\\b(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.parameter"
+            }
+          }
         }
       ]
     },
     {
-      "begin": "\\b(const)",
+      "begin": "\\b(const)\\s+\\b(\\w+)\\b",
       "beginCaptures": {
         "1": {
           "name": "keyword.declaration.const"
+        },
+        "2": {
+          "name": "variable.other.constant"
         }
       },
       "end": "(?=\\b(import|pub|type|const|interface|def)\\b)",
