@@ -312,10 +312,6 @@
           "name": "variable.other.constant"
         },
         {
-          "match": "->",
-          "name": "keyword.control"
-        },
-        {
           "match": "\\:(\\w+)\\b",
           "captures": {
             "1": {
@@ -344,6 +340,25 @@
         },
         {
           "include": "#comments"
+        },
+        {
+          "begin": "->",
+          "name": "keyword.control",
+          "end": "(?=\\n|$)",
+          "patterns": [
+            {
+              "begin": "\\{",
+              "end": "\\}",
+              "patterns": [
+                {
+                  "include": "#net"
+                }
+              ]
+            },
+            {
+              "include": "#net"
+            }
+          ]
         }
       ]
     }

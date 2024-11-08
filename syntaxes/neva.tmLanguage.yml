@@ -192,8 +192,6 @@ repository:
           - include: "#net" # Recursively include net patterns inside deferred blocks
       - match: "\\$\\w+"
         name: variable.other.constant
-      - match: "->"
-        name: keyword.control
       - match: "\\:(\\w+)\\b" # io port addrs
         captures:
           "1":
@@ -209,6 +207,15 @@ repository:
           "1":
             name: variable.parameter
       - include: "#comments"
+      - begin: "->"
+        name: keyword.control
+        end: "(?=\\n|$)" # Matches either a newline or end of input, using positive lookahead
+        patterns:
+          - begin: "\\{"
+            end: "\\}"
+            patterns:
+              - include: "#net" # Allow recursion for nested patterns
+          - include: "#net" # Include other net patterns after ->
 
 # ================================================================
 # PATTERNS (actual rules)
