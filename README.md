@@ -30,6 +30,12 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.3
+
+- Syntax highlighing fixes
+  - Deferred connections
+  - Some more minor fixes due to new syntax
+
 ### 0.7.2
 
 - Critical bugfix (LSP wasn't working at all)
