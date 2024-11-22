@@ -30,6 +30,10 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.4
+
+- Updated LSP to match latest syntax changes
+
 ### 0.7.3
 
 - Syntax highlighing fixes
