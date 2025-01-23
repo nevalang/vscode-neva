@@ -39,7 +39,7 @@ export function setupLsp(
   } else {
     serverOptions = async () => {
       const binaryName = getPlatformBinary();
-      const binaryPath = context.asAbsolutePath(path.join("bin", binaryName)); // compiled lsp binaries must be here
+      const binaryPath = context.asAbsolutePath(path.join("bin", binaryName));
       const serverProcess = cp.spawn(binaryPath);
 
       serverProcess.stdout.on("data", (data) => console.info(data.toString()));
@@ -78,30 +78,51 @@ export function setupLsp(
   return client;
 }
 
-function getPlatformBinary(): string {
+type BinaryName =
+  | "neva-lsp-windows-arm64.exe"
+  | "neva-lsp-windows-amd64.exe"
+  | "neva-lsp-linux-arm64"
+  | "neva-lsp-linux-amd64"
+  | "neva-lsp-darwin-arm64"
+  | "neva-lsp-darwin-amd64";
+
+function getPlatformBinary(): BinaryName | never {
   const platform = os.platform();
   const arch = os.arch();
 
-  let binaryName = "";
+  console.log(`platform: ${platform}, arch: ${arch}`);
+
+  if (!["win32", "linux", "darwin"].includes(platform)) {
+    window.showErrorMessage(`Unsupported platform: ${platform}`);
+    throw new Error(`Unsupported platform: ${platform}`);
+  } else if (!["arm64", "amd64"].includes(arch)) {
+    window.showErrorMessage(`Unsupported architecture: ${arch}`);
+    throw new Error(`Unsupported architecture: ${arch}`);
+  }
+
+  let binaryName: BinaryName;
   switch (platform) {
     case "win32":
-      binaryName =
-        arch === "arm64"
-          ? "neva-lsp-windows-arm64.exe"
-          : "neva-lsp-windows-amd64.exe";
+      binaryName = {
+        arm64: "neva-lsp-windows-arm64.exe",
+        amd64: "neva-lsp-windows-amd64.exe",
+      }[arch] as BinaryName;
       break;
     case "linux":
-      binaryName =
-        arch === "arm64" ? "neva-lsp-linux-arm64" : "neva-lsp-linux-amd64";
+      binaryName = {
+        arm64: "neva-lsp-linux-arm64",
+        amd64: "neva-lsp-linux-amd64",
+      }[arch] as BinaryName;
       break;
     case "darwin":
-      binaryName =
-        arch === "arm64" ? "neva-lsp-darwin-arm64" : "neva-lsp-darwin-amd64";
+      binaryName = {
+        arm64: "neva-lsp-darwin-arm64",
+        amd64: "neva-lsp-darwin-amd64",
+      }[arch] as BinaryName;
       break;
     default:
-      window.showErrorMessage(`Unsupported platform: ${platform}`);
       throw new Error(`Unsupported platform: ${platform}`);
   }
 
-  return path.join(__dirname, "binaries", binaryName);
+  return binaryName;
 }
