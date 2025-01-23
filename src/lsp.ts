@@ -1,6 +1,7 @@
 import path from "path";
 import net from "net";
 import cp from "child_process";
+import * as os from "os";
 import { window, ExtensionContext, workspace } from "vscode";
 import { Trace } from "vscode-jsonrpc";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
@@ -37,7 +38,9 @@ export function setupLsp(
     };
   } else {
     serverOptions = async () => {
-      const serverProcess = cp.spawn(context.asAbsolutePath(path.join("lsp")));
+      const binaryName = getPlatformBinary();
+      const binaryPath = context.asAbsolutePath(path.join("bin", binaryName)); // compiled lsp binaries must be here
+      const serverProcess = cp.spawn(binaryPath);
 
       serverProcess.stdout.on("data", (data) => console.info(data.toString()));
       serverProcess.stderr.on("data", (data) => console.error(data.toString()));
@@ -73,4 +76,32 @@ export function setupLsp(
     .catch(console.error);
 
   return client;
+}
+
+function getPlatformBinary(): string {
+  const platform = os.platform();
+  const arch = os.arch();
+
+  let binaryName = "";
+  switch (platform) {
+    case "win32":
+      binaryName =
+        arch === "arm64"
+          ? "neva-lsp-windows-arm64.exe"
+          : "neva-lsp-windows-amd64.exe";
+      break;
+    case "linux":
+      binaryName =
+        arch === "arm64" ? "neva-lsp-linux-arm64" : "neva-lsp-linux-amd64";
+      break;
+    case "darwin":
+      binaryName =
+        arch === "arm64" ? "neva-lsp-darwin-arm64" : "neva-lsp-darwin-amd64";
+      break;
+    default:
+      window.showErrorMessage(`Unsupported platform: ${platform}`);
+      throw new Error(`Unsupported platform: ${platform}`);
+  }
+
+  return path.join(__dirname, "binaries", binaryName);
 }

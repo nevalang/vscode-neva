@@ -30,6 +30,12 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.5
+
+- Added support for other OS/Arch including Windows and Linux arm64/amd64
+- Fixed bug when LSP did lookup higher than opened workspace
+- Some other minor bug-fixes
+
 ### 0.7.4
 
 - Updated LSP to match latest syntax changes

@@ -21,6 +21,7 @@ export async function activate(context: ExtensionContext) {
       getPreviewCommand(context, lspClient)
     )
   );
+
   console.info("preview command registered");
 }
 

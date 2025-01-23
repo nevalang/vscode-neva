@@ -136,4 +136,4 @@ dist
 .env
 
 # language server build
-lsp
+bin
