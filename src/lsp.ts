@@ -86,19 +86,34 @@ type BinaryName =
   | "neva-lsp-darwin-arm64"
   | "neva-lsp-darwin-amd64";
 
+type PossibleArch =
+  | "arm"
+  | "arm64"
+  | "ia32"
+  | "mips"
+  | "mipsel"
+  | "ppc"
+  | "ppc64"
+  | "s390"
+  | "s390x"
+  | "x32"
+  | "x64";
+
 function getPlatformBinary(): BinaryName | never {
   const platform = os.platform();
-  const arch = os.arch();
+  const arch = os.arch() as PossibleArch;
 
   console.log(`platform: ${platform}, arch: ${arch}`);
 
   if (!["win32", "linux", "darwin"].includes(platform)) {
     window.showErrorMessage(`Unsupported platform: ${platform}`);
     throw new Error(`Unsupported platform: ${platform}`);
-  } else if (!["arm64", "amd64"].includes(arch)) {
+  } else if (!["arm64", "amd64", "x64"].includes(arch)) {
     window.showErrorMessage(`Unsupported architecture: ${arch}`);
     throw new Error(`Unsupported architecture: ${arch}`);
   }
+
+  const normalizedArch = (arch === "x64" ? "amd64" : arch) as "arm64" | "amd64";
 
   let binaryName: BinaryName;
   switch (platform) {
@@ -106,19 +121,19 @@ function getPlatformBinary(): BinaryName | never {
       binaryName = {
         arm64: "neva-lsp-windows-arm64.exe",
         amd64: "neva-lsp-windows-amd64.exe",
-      }[arch] as BinaryName;
+      }[normalizedArch] as BinaryName;
       break;
     case "linux":
       binaryName = {
         arm64: "neva-lsp-linux-arm64",
         amd64: "neva-lsp-linux-amd64",
-      }[arch] as BinaryName;
+      }[normalizedArch] as BinaryName;
       break;
     case "darwin":
       binaryName = {
         arm64: "neva-lsp-darwin-arm64",
         amd64: "neva-lsp-darwin-amd64",
-      }[arch] as BinaryName;
+      }[normalizedArch] as BinaryName;
       break;
     default:
       throw new Error(`Unsupported platform: ${platform}`);

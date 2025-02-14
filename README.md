@@ -30,6 +30,12 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.6
+
+- Added missing support for `x64` platform for linux (alias for amd64)
+- Updated Neva compiler version that includes critical bug-fixes
+- Minor refactor - remove unused webview-related TS code
+
 ### 0.7.5
 
 - Added support for other OS/Arch including Windows and Linux arm64/amd64
@@ -42,7 +48,7 @@ See [./Contributing.md](Contributing.md)
 
 ### 0.7.3
 
-- Syntax highlighing fixes
+  - Syntax highlighting fixes
   - Deferred connections
   - Some more minor fixes due to new syntax
 
