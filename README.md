@@ -30,6 +30,21 @@ See [./Contributing.md](Contributing.md)
 
 ## Release Notes
 
+### 0.7.7
+
+- Integrated Neva LSP core language feature set from `nevalang/neva` `main`:
+  - completion
+  - hover
+  - go to definition
+  - find references
+  - rename / prepare rename
+  - document symbols / outline
+  - code lens + resolve
+  - semantic tokens
+- Added packaging guard (`npm run check:lsp-binaries`) to ensure all required OS/arch LSP binaries are bundled before `vsce package`.
+- Added a release smoke-test checklist: [./docs/lsp-smoke-checklist.md](./docs/lsp-smoke-checklist.md).
+- LSP protocol tracing is now configurable with `neva.trace.server` (`off`, `messages`, `verbose`), defaulting to `off` for production.
+
 ### 0.7.6
 
 - Added missing support for `x64` platform for linux (alias for amd64)

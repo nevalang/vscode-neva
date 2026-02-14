@@ -9,6 +9,8 @@ import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 export const clientId = "nevaLSPClient";
 export const clientName = "Neva LSP Client";
 
+type TraceMode = "off" | "messages" | "verbose";
+
 export function setupLsp(
   context: ExtensionContext,
   isDebug: boolean
@@ -66,7 +68,17 @@ export function setupLsp(
     },
   });
 
-  client.setTrace(Trace.Verbose);
+  const traceMode = workspace
+    .getConfiguration("neva")
+    .get<TraceMode>("trace.server", isDebug ? "verbose" : "off");
+
+  client.setTrace(
+    {
+      off: Trace.Off,
+      messages: Trace.Messages,
+      verbose: Trace.Verbose,
+    }[traceMode]
+  );
 
   client
     .start()
