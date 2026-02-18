@@ -18,7 +18,7 @@ If you use VSCode, you can use `Run Extension` debug task. This will allow to sp
 
 After you make changes to LSP-server, make sure you compile binaries for all supported platforms and put them into `bin` directory in this repo. When you'll use `make pkg` the `vsce` will pack those binaries into vscode extension archive.
 
-In CI, LSP binaries are built from `nevalang/neva` directly (see `.github/workflows/ci.yml`) and downloaded into `bin/` before packaging. No git submodule is required.
+In CI, LSP binaries are built from `nevalang/neva-lsp` directly (see `.github/workflows/ci.yml`) and downloaded into `bin/` before packaging. No git submodule is required.
 
 ### Testing
 

@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       neva_ref:
-        description: "nevalang/neva ref (branch, tag or SHA)"
+        description: "nevalang/neva-lsp ref (branch, tag or SHA)"
         required: false
         default: "main"
 
@@ -66,10 +66,10 @@ jobs:
             echo "value=main" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout nevalang/neva
+      - name: Checkout nevalang/neva-lsp
         uses: actions/checkout@v4
         with:
-          repository: nevalang/neva
+          repository: nevalang/neva-lsp
           ref: ${{ steps.neva-ref.outputs.value }}
           path: neva-src
 
