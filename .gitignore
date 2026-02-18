@@ -131,6 +131,7 @@ dist
 
 # vsce (vscode extension publisher)
 *.vsix
+bin/
 
 # env
 .env
