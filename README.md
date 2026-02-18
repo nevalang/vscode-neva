@@ -20,6 +20,22 @@ This is a VScode extension for [Neva](https://github.com/nevalang/neva) - a flow
 
 Error messages occur as you type in the _problems_ panel
 
+### Run CodeLens
+
+`▶ Run` appears above `def Main` and runs `neva run` in a VS Code terminal.
+
+### Snippets
+
+Basic snippets are available for core language constructs:
+
+- `import`
+- `main`
+- `def`
+- `pubdef`
+- `struct`
+- `union`
+- `const`
+
 ### Visual Editor (WIP)
 
 Currently disabled due to massive changes in the language. You can see the source code in the `webview` directory.
@@ -27,6 +43,30 @@ Currently disabled due to massive changes in the language. You can see the sourc
 ## Contributing
 
 See [./Contributing.md](Contributing.md)
+
+### Open VSX
+
+Package: `npm run package:vsix`
+
+Publish (requires `OPEN_VSX_TOKEN`): `npm run publish:openvsx`
+
+### VS Code Marketplace (CI/CD)
+
+The repository includes automated publishing on GitHub Release:
+
+- Workflow: `.github/workflows/release-marketplace.yml`
+- Trigger: published GitHub release (or manual `workflow_dispatch`)
+- Behavior: fetches `nevalang/neva@main`, rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace.
+
+Required secret in GitHub repository settings:
+
+- `VSCE_PAT` - token with publish rights for publisher `nevalang`
+
+Release flow:
+
+1. Bump `package.json` version (for example `0.7.8`) and commit.
+2. Create git tag `v0.7.8` and GitHub Release from that tag.
+3. Workflow validates that tag version matches `package.json`, then publishes automatically.
 
 ## Release Notes
 

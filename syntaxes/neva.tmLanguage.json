@@ -66,9 +66,6 @@
           "include": "#struct_type"
         },
         {
-          "include": "#enum_type"
-        },
-        {
           "include": "#union_type"
         }
       ]
@@ -91,20 +88,6 @@
               "include": "#comments"
             }
           ]
-        }
-      ]
-    },
-    "enum_type": {
-      "patterns": [
-        {
-          "begin": "\\b(enum)\\s*\\{",
-          "beginCaptures": {
-            "1": {
-              "name": "storage.type.enum"
-            }
-          },
-          "end": "\\}",
-          "name": "variable.other.enummember"
         }
       ]
     },
@@ -144,10 +127,28 @@
           "include": "#string_literals"
         },
         {
+          "include": "#union_literal"
+        },
+        {
           "include": "#list_literal"
         },
         {
           "include": "#struct_literal"
+        }
+      ]
+    },
+    "union_literal": {
+      "patterns": [
+        {
+          "match": "\\b((?:\\w+\\.)?\\w+)::(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "entity.name.type"
+            },
+            "2": {
+              "name": "variable.other.enummember"
+            }
+          }
         }
       ]
     },
@@ -299,13 +300,11 @@
           "include": "#string_literals"
         },
         {
-          "begin": "\\{",
-          "end": "\\}",
-          "patterns": [
-            {
-              "include": "#net"
-            }
-          ]
+          "include": "#union_literal"
+        },
+        {
+          "match": "\\[\\*\\]",
+          "name": "keyword.operator"
         },
         {
           "match": "\\$\\w+",

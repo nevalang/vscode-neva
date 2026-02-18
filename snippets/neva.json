@@ -1,0 +1,67 @@
+{
+  "Import Block": {
+    "prefix": "import",
+    "description": "Import block",
+    "body": [
+      "import {",
+      "    ${1:fmt}",
+      "    ${2:runtime}",
+      "}"
+    ]
+  },
+  "Main Flow": {
+    "prefix": "main",
+    "description": "Main entry flow",
+    "body": [
+      "def Main(start any) (stop any) {",
+      "    ---",
+      "    :start -> :stop",
+      "}"
+    ]
+  },
+  "Flow Definition": {
+    "prefix": "def",
+    "description": "Flow definition",
+    "body": [
+      "def ${1:Name}(${2:data} ${3:any}) (${4:res} ${5:any}) {",
+      "    ---",
+      "    :${2:data} -> :${4:res}",
+      "}"
+    ]
+  },
+  "Public Flow Definition": {
+    "prefix": "pubdef",
+    "description": "Public flow definition",
+    "body": [
+      "pub def ${1:Name}(${2:data} ${3:any}) (${4:res} ${5:any}) {",
+      "    ---",
+      "    :${2:data} -> :${4:res}",
+      "}"
+    ]
+  },
+  "Type Struct": {
+    "prefix": "struct",
+    "description": "Struct type definition",
+    "body": [
+      "type ${1:Name} struct {",
+      "    ${2:field} ${3:string}",
+      "}"
+    ]
+  },
+  "Type Union": {
+    "prefix": "union",
+    "description": "Union type definition",
+    "body": [
+      "type ${1:Name} union {",
+      "    ${2:First}",
+      "}"
+    ]
+  },
+  "Const Declaration": {
+    "prefix": "const",
+    "description": "Typed constant declaration",
+    "body": [
+      "const ${1:name} ${2:string} = ${3:'value'}"
+    ]
+  }
+}

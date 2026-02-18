@@ -63,6 +63,12 @@
         }
       }
     },
+    "commands": [
+      {
+        "command": "neva.runMain",
+        "title": "Neva: Run Main"
+      }
+    ],
     "languages": [
       {
         "id": "neva",
@@ -87,6 +93,12 @@
         "language": "neva",
         "scopeName": "source.neva",
         "path": "./syntaxes/neva.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "neva",
+        "path": "./snippets/neva.json"
       }
     ]
   },
@@ -119,6 +131,8 @@
     "build:ts": "tsc --noEmit && node esbuild.js --production",
     "build:syntax": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
     "build": "npm-run-all build:*",
+    "package:vsix": "npx -y @vscode/vsce@2.24.0 package",
+    "publish:openvsx": "npx -y ovsx@0.8.1 publish -p $OPEN_VSX_TOKEN",
     "watch:syntax": "nodemon --delay 1 --watch syntaxes/neva.tmLanguage.yml --exec npm run build:syntax",
     "watch:typecheck": "tsc --noEmit --watch --project tsconfig.json",
     "watch:esbuild": "node esbuild.js --watch",

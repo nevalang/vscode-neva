@@ -48,7 +48,6 @@ repository:
       - match: "\\bstream\\b" # Matches the word 'stream'
         name: storage.type.stream
       - include: "#struct_type"
-      - include: "#enum_type"
       - include: "#union_type"
 
   struct_type:
@@ -61,15 +60,6 @@ repository:
         patterns:
           - include: "#builtin_types" # recursion
           - include: "#comments"
-
-  enum_type:
-    patterns:
-      - begin: "\\b(enum)\\s*\\{"
-        beginCaptures:
-          "1":
-            name: storage.type.enum
-        end: "\\}"
-        name: variable.other.enummember
 
   union_type:
     patterns:
@@ -92,8 +82,18 @@ repository:
       - include: "#bool_literals"
       - include: "#num_literals"
       - include: "#string_literals"
+      - include: "#union_literal"
       - include: "#list_literal"
       - include: "#struct_literal"
+
+  union_literal:
+    patterns:
+      - match: "\\b((?:\\w+\\.)?\\w+)::(\\w+)\\b"
+        captures:
+          "1":
+            name: entity.name.type
+          "2":
+            name: variable.other.enummember
 
   num_literals:
     patterns:
@@ -186,10 +186,9 @@ repository:
       - include: "#bool_literals"
       - include: "#num_literals"
       - include: "#string_literals"
-      - begin: "\\{"
-        end: "\\}"
-        patterns:
-          - include: "#net" # Recursively include net patterns inside deferred blocks
+      - include: "#union_literal"
+      - match: "\\[\\*\\]"
+        name: keyword.operator
       - match: "\\$\\w+"
         name: variable.other.constant
       - match: "\\:(\\w+)\\b" # io port addrs

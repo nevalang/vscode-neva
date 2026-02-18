@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import net from "net";
 import cp from "child_process";
 import * as os from "os";
@@ -42,6 +43,12 @@ export function setupLsp(
     serverOptions = async () => {
       const binaryName = getPlatformBinary();
       const binaryPath = context.asAbsolutePath(path.join("bin", binaryName));
+      if (!fs.existsSync(binaryPath)) {
+        window.showErrorMessage(
+          `Neva LSP binary not found: ${binaryPath}. Reinstall the extension or update binaries.`
+        );
+        throw new Error(`Neva LSP binary not found: ${binaryPath}`);
+      }
       const serverProcess = cp.spawn(binaryPath);
 
       serverProcess.stdout.on("data", (data) => console.info(data.toString()));
@@ -95,6 +102,7 @@ type BinaryName =
   | "neva-lsp-windows-amd64.exe"
   | "neva-lsp-linux-arm64"
   | "neva-lsp-linux-amd64"
+  | "neva-lsp-linux-loong64"
   | "neva-lsp-darwin-arm64"
   | "neva-lsp-darwin-amd64";
 
@@ -108,6 +116,7 @@ type PossibleArch =
   | "ppc64"
   | "s390"
   | "s390x"
+  | "loong64"
   | "x32"
   | "x64";
 
@@ -120,12 +129,22 @@ function getPlatformBinary(): BinaryName | never {
   if (!["win32", "linux", "darwin"].includes(platform)) {
     window.showErrorMessage(`Unsupported platform: ${platform}`);
     throw new Error(`Unsupported platform: ${platform}`);
-  } else if (!["arm64", "amd64", "x64"].includes(arch)) {
+  } else if (!["arm64", "amd64", "x64", "loong64"].includes(arch)) {
     window.showErrorMessage(`Unsupported architecture: ${arch}`);
     throw new Error(`Unsupported architecture: ${arch}`);
   }
 
-  const normalizedArch = (arch === "x64" ? "amd64" : arch) as "arm64" | "amd64";
+  const normalizedArch = (arch === "x64" ? "amd64" : arch) as
+    | "arm64"
+    | "amd64"
+    | "loong64";
+
+  if (normalizedArch === "loong64" && platform !== "linux") {
+    window.showErrorMessage(
+      `Unsupported architecture for ${platform}: ${normalizedArch}`
+    );
+    throw new Error(`Unsupported architecture for ${platform}: ${normalizedArch}`);
+  }
 
   let binaryName: BinaryName;
   switch (platform) {
@@ -133,19 +152,20 @@ function getPlatformBinary(): BinaryName | never {
       binaryName = {
         arm64: "neva-lsp-windows-arm64.exe",
         amd64: "neva-lsp-windows-amd64.exe",
-      }[normalizedArch] as BinaryName;
+      }[normalizedArch as "arm64" | "amd64"] as BinaryName;
       break;
     case "linux":
       binaryName = {
         arm64: "neva-lsp-linux-arm64",
         amd64: "neva-lsp-linux-amd64",
+        loong64: "neva-lsp-linux-loong64",
       }[normalizedArch] as BinaryName;
       break;
     case "darwin":
       binaryName = {
         arm64: "neva-lsp-darwin-arm64",
         amd64: "neva-lsp-darwin-amd64",
-      }[normalizedArch] as BinaryName;
+      }[normalizedArch as "arm64" | "amd64"] as BinaryName;
       break;
     default:
       throw new Error(`Unsupported platform: ${platform}`);
