@@ -11,7 +11,7 @@ on:
       neva_ref:
         description: "nevalang/neva-lsp ref (branch, tag or SHA)"
         required: false
-        default: "main"
+        default: "master"
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -63,7 +63,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
           else
-            echo "value=main" >> "$GITHUB_OUTPUT"
+            echo "value=master" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout nevalang/neva-lsp
