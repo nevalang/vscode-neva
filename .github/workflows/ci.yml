@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      neva_ref:
+        description: "nevalang/neva ref (branch, tag or SHA)"
+        required: false
+        default: "main"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  build-lsp-binaries:
+    name: Build LSP ${{ matrix.target.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: darwin-amd64
+            goos: darwin
+            goarch: amd64
+            output: neva-lsp-darwin-amd64
+          - name: darwin-arm64
+            goos: darwin
+            goarch: arm64
+            output: neva-lsp-darwin-arm64
+          - name: linux-amd64
+            goos: linux
+            goarch: amd64
+            output: neva-lsp-linux-amd64
+          - name: linux-arm64
+            goos: linux
+            goarch: arm64
+            output: neva-lsp-linux-arm64
+          - name: windows-amd64
+            goos: windows
+            goarch: amd64
+            output: neva-lsp-windows-amd64.exe
+          - name: windows-arm64
+            goos: windows
+            goarch: arm64
+            output: neva-lsp-windows-arm64.exe
+
+    steps:
+      - name: Checkout extension repository
+        uses: actions/checkout@v4
+
+      - name: Resolve neva ref
+        id: neva-ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
+            echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=main" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout nevalang/neva
+        uses: actions/checkout@v4
+        with:
+          repository: nevalang/neva
+          ref: ${{ steps.neva-ref.outputs.value }}
+          path: neva-src
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: neva-src/go.mod
+
+      - name: Build LSP binary
+        run: |
+          mkdir -p bin
+          cd neva-src
+          GOOS=${{ matrix.target.goos }} GOARCH=${{ matrix.target.goarch }} \
+            go build -ldflags="-s -w" -o "../bin/${{ matrix.target.output }}" ./cmd/lsp
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lsp-${{ matrix.target.name }}
+          path: bin/${{ matrix.target.output }}
+          if-no-files-found: error
+
+  build-extension:
+    name: Build VSIX
+    needs:
+      - build-lsp-binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout extension repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Download LSP binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: lsp-*
+          path: bin
+          merge-multiple: true
+
+      - name: Verify packaged binaries
+        run: |
+          test -f bin/neva-lsp-darwin-amd64
+          test -f bin/neva-lsp-darwin-arm64
+          test -f bin/neva-lsp-linux-amd64
+          test -f bin/neva-lsp-linux-arm64
+          test -f bin/neva-lsp-windows-amd64.exe
+          test -f bin/neva-lsp-windows-arm64.exe
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Package VSIX
+        run: npx vsce package
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-neva-vsix
+          path: '*.vsix'
+          if-no-files-found: error
