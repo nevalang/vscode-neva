@@ -11,7 +11,7 @@ on:
       neva_ref:
         description: "nevalang/neva-lsp ref (branch, tag or SHA)"
         required: false
-        default: "master"
+        default: ""
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -62,6 +62,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
+            echo "value=main" >> "$GITHUB_OUTPUT"
           else
             echo "value=master" >> "$GITHUB_OUTPUT"
           fi
@@ -127,12 +129,19 @@ jobs:
           test -f bin/neva-lsp-linux-arm64
           test -f bin/neva-lsp-windows-amd64.exe
           test -f bin/neva-lsp-windows-arm64.exe
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build extension
         run: npm run build
+
+      - name: Run extension integration smoke tests
+        run: xvfb-run -a npm run test:integration
 
       - name: Package VSIX
         run: npx vsce package

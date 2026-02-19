@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      neva_ref:
+        description: "nevalang/neva-lsp ref (branch, tag or SHA)"
+        required: false
+        default: ""
 
 concurrency:
   group: marketplace-release
@@ -27,11 +32,22 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Resolve neva ref
+        id: neva-ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
+            echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
+            echo "value=main" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=master" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout neva-lsp
         uses: actions/checkout@v4
         with:
           repository: nevalang/neva-lsp
-          ref: master
+          ref: ${{ steps.neva-ref.outputs.value }}
           path: neva-lsp
 
       - name: Setup Go
@@ -51,6 +67,13 @@ jobs:
       - name: Build LSP binaries from neva-lsp
         run: ./scripts/release/build-lsp-from-neva-main.sh ./neva-lsp ./bin
 
+      - name: Ensure executable bits for unix binaries
+        run: |
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
+
       - name: Verify release tag matches package version
         if: github.event_name == 'release'
         shell: bash
@@ -68,6 +91,9 @@ jobs:
 
       - name: Build extension
         run: npm run build
+
+      - name: Run extension integration smoke tests
+        run: xvfb-run -a npm run test:integration
 
       - name: Package extension
         run: npx -y @vscode/vsce@2.24.0 package -o vscode-nevalang.vsix
