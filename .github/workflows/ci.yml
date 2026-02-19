@@ -11,7 +11,7 @@ on:
       neva_ref:
         description: "nevalang/neva-lsp ref (branch, tag or SHA)"
         required: false
-        default: "main"
+        default: ""
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -62,8 +62,10 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          else
+          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
             echo "value=main" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=master" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout nevalang/neva-lsp

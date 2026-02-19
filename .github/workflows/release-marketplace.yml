@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      neva_ref:
+        description: "nevalang/neva-lsp ref (branch, tag or SHA)"
+        required: false
+        default: ""
 
 concurrency:
   group: marketplace-release
@@ -27,11 +32,22 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Resolve neva ref
+        id: neva-ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
+            echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
+            echo "value=main" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=master" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout neva-lsp
         uses: actions/checkout@v4
         with:
           repository: nevalang/neva-lsp
-          ref: main
+          ref: ${{ steps.neva-ref.outputs.value }}
           path: neva-lsp
 
       - name: Setup Go
