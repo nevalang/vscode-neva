@@ -9,6 +9,7 @@ Use this checklist before publishing a new extension version that bundles update
    - `neva-lsp-windows-amd64.exe`
    - `neva-lsp-linux-arm64`
    - `neva-lsp-linux-amd64`
+   - `neva-lsp-linux-loong64`
    - `neva-lsp-darwin-arm64`
    - `neva-lsp-darwin-amd64`
 2. Run:

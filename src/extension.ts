@@ -1,3 +1,4 @@
+import path from "path";
 import {
   commands,
   CodeLens,
@@ -17,9 +18,10 @@ import { setupLsp } from "./lsp";
 
 let lspClient: LanguageClient;
 let runTerminal = undefined as ReturnType<typeof window.createTerminal> | undefined;
+let runTerminalCwd = "";
 
 const runMainCommandId = "neva.runMain";
-const mainDefRegex = /^\s*(pub\s+)?def\s+Main\b/gm;
+const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
 
 function provideRunCodeLenses(document: TextDocument) {
   const text = document.getText();
@@ -51,15 +53,19 @@ function runNeva(uri?: Uri) {
     return;
   }
 
-  if (!runTerminal || runTerminal.exitStatus) {
+  const runCwd = uri ? path.dirname(uri.fsPath) : folder.uri.fsPath;
+
+  if (!runTerminal || runTerminal.exitStatus || runTerminalCwd !== runCwd) {
+    runTerminal?.dispose();
     runTerminal = window.createTerminal({
       name: "Neva Run",
-      cwd: folder.uri.fsPath,
+      cwd: runCwd,
     });
+    runTerminalCwd = runCwd;
   }
 
   runTerminal.show(true);
-  runTerminal.sendText("neva run", true);
+  runTerminal.sendText("neva run .", true);
 }
 
 const runMainCodeLensProvider = {

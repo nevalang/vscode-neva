@@ -82,8 +82,12 @@ jobs:
         run: |
           mkdir -p bin
           cd neva-src
+          LSP_ENTRY=./cmd/lsp
+          if [ ! -d "$LSP_ENTRY" ]; then
+            LSP_ENTRY=.
+          fi
           GOOS=${{ matrix.target.goos }} GOARCH=${{ matrix.target.goarch }} \
-            go build -ldflags="-s -w" -o "../bin/${{ matrix.target.output }}" ./cmd/lsp
+            go build -ldflags="-s -w" -o "../bin/${{ matrix.target.output }}" "$LSP_ENTRY"
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4

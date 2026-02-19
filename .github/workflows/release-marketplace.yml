@@ -27,17 +27,17 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Checkout neva main
+      - name: Checkout neva-lsp
         uses: actions/checkout@v4
         with:
-          repository: nevalang/neva
-          ref: main
-          path: neva-main
+          repository: nevalang/neva-lsp
+          ref: master
+          path: neva-lsp
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: neva-main/go.mod
+          go-version-file: neva-lsp/go.mod
 
       - name: Validate required secret
         shell: bash
@@ -48,8 +48,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build LSP binaries from neva main
-        run: ./scripts/release/build-lsp-from-neva-main.sh ./neva-main ./bin
+      - name: Build LSP binaries from neva-lsp
+        run: ./scripts/release/build-lsp-from-neva-main.sh ./neva-lsp ./bin
 
       - name: Verify release tag matches package version
         if: github.event_name == 'release'

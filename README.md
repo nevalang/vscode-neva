@@ -70,6 +70,12 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.9
+
+- Updated bundled `neva-lsp` binaries to use Neva workspace indexing that does not require a `Main` package in module root.
+- Fixed `▶ Run` CodeLens placement to stay anchored to the `def Main` line.
+- Fixed `▶ Run` command to execute in the current file package (`neva run .` from package directory), so module-root workspaces with subdirectory packages run correctly.
+
 ### 0.7.8
 
 - Integrated Neva LSP core language feature set from `nevalang/neva-lsp`:
