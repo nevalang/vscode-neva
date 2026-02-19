@@ -16,6 +16,7 @@ Use this checklist before publishing a new extension version that bundles update
 
 ```bash
 npm run check:lsp-binaries
+npm run test:integration
 ```
 
 ## 2. Feature smoke test in VS Code

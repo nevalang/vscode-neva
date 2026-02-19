@@ -23,7 +23,24 @@ Marketplace publishing is release-only: the workflow publishes to VS Code Market
 
 ### Testing
 
-After you made/debugged changes you need to test extension locally. To do that use `make pkg` command, then open `Extensions` in VSCode and select `INSTALL from vsix...` option, finally chose generated vsce package file and restart extentions/editor.
+Run automated extension smoke tests locally:
+
+```bash
+npm run test:integration
+```
+
+This launches a VS Code extension host against the `./test` workspace and verifies:
+
+- extension activation and command registration
+- language-server diagnostics flow end-to-end
+
+If you need a manual verification pass before release, you can still package and install the VSIX:
+
+```bash
+make pkg
+```
+
+Then in VS Code open `Extensions` -> `Install from VSIX...`, choose the generated package, and restart the editor.
 
 ## Production
 
