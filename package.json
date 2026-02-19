@@ -67,6 +67,14 @@
       {
         "command": "neva.runMain",
         "title": "Neva: Run Main"
+      },
+      {
+        "command": "neva.openTextualMode",
+        "title": "Neva: Open Textual Mode"
+      },
+      {
+        "command": "neva.openVisualMode",
+        "title": "Neva: Open Visual Mode"
       }
     ],
     "languages": [
@@ -100,7 +108,21 @@
         "language": "neva",
         "path": "./snippets/neva.json"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "neva.openTextualMode",
+          "when": "neva.activeEditorIsNeva && neva.editorMode != textual",
+          "group": "navigation@10"
+        },
+        {
+          "command": "neva.openVisualMode",
+          "when": "neva.activeEditorIsNeva && neva.editorMode != visual",
+          "group": "navigation@11"
+        }
+      ]
+    }
   },
   "activationEvents": [
     "workspaceContains:neva.yml",
