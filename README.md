@@ -70,6 +70,10 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.8
+
+- Documentation update for the new release process and version bump.
+
 ### 0.7.7
 
 - Integrated Neva LSP core language feature set from `nevalang/neva` `main`:
