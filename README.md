@@ -56,7 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: fetches `nevalang/neva@main`, rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace.
+- Behavior: fetches `nevalang/neva-lsp@main`, rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace.
 
 Required secret in GitHub repository settings:
 
@@ -72,11 +72,7 @@ Release flow:
 
 ### 0.7.8
 
-- Documentation update for the new release process and version bump.
-
-### 0.7.7
-
-- Integrated Neva LSP core language feature set from `nevalang/neva` `main`:
+- Integrated Neva LSP core language feature set from `nevalang/neva-lsp`:
   - completion
   - hover
   - go to definition
@@ -88,6 +84,7 @@ Release flow:
 - Added packaging guard (`npm run check:lsp-binaries`) to ensure all required OS/arch LSP binaries are bundled before `vsce package`.
 - Added a release smoke-test checklist: [./docs/lsp-smoke-checklist.md](./docs/lsp-smoke-checklist.md).
 - LSP protocol tracing is now configurable with `neva.trace.server` (`off`, `messages`, `verbose`), defaulting to `off` for production.
+- Documentation update for the new release process and version bump.
 
 ### 0.7.6
 

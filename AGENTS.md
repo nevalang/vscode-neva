@@ -7,7 +7,7 @@ Follow these instructions when working in this repository.
 1. Use `gh` CLI for GitHub context (issues/PRs). Fall back to web browsing only when `gh` is insufficient.
 2. Prefer small, incremental changes. After each feature implementation, report back with what changed and how to verify.
 3. Do **not** push to `main` or release a new extension version without explicit approval.
-4. The Neva compiler/LSP lives in `/Users/emil/projects/neva` (read-only). Use it for reference and to build LSP binaries when needed.
+4. The Neva compiler lives in `/Users/emil/projects/neva` (read-only). The LSP server lives in `nevalang/neva-lsp` and should be sourced from its remote `main` when updating binaries.
 5. Assume the current Neva language is `main` (ahead of v0.34); deferred connections are **not** supported and should not be encoded in the extension (syntax highlighting, docs, etc.).
 6. Keep the extension compatible with VS Code stable.
 
@@ -26,7 +26,7 @@ Follow these instructions when working in this repository.
 
 ## 4) LSP Binaries
 
-- LSP server source is in `/Users/emil/projects/neva/cmd/lsp`.
+- LSP server source is in `https://github.com/nevalang/neva-lsp` (`main` branch).
 - If updating LSP binaries, build for all supported OS/arch and place them under `bin/`.
 - The extension selects a binary by platform/arch in `src/lsp.ts`.
 
@@ -38,4 +38,5 @@ Follow these instructions when working in this repository.
 ## 6) Reference Links
 
 - Issues: https://github.com/nevalang/vscode-neva/issues
-- Neva repo (main): `/Users/emil/projects/neva`
+- Neva compiler repo (main): `/Users/emil/projects/neva`
+- Neva LSP repo: https://github.com/nevalang/neva-lsp
