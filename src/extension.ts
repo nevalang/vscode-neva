@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import {
   commands,
   CodeLens,
@@ -10,6 +11,8 @@ import {
   EventEmitter,
   ExtensionContext,
   languages,
+  Location,
+  Position,
   Range,
   TextDocument,
   TextEditor,
@@ -25,6 +28,7 @@ let runTerminal = undefined as ReturnType<typeof window.createTerminal> | undefi
 let runTerminalCwd = "";
 
 const runMainCommandId = "neva.runMain";
+const showReferencesCommandId = "neva.showReferences";
 const setTextualModeCommandId = "neva.openTextualMode";
 const setVisualModeCommandId = "neva.openVisualMode";
 const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
@@ -66,18 +70,136 @@ function runNeva(uri?: Uri) {
   }
 
   const runCwd = uri ? path.dirname(uri.fsPath) : folder.uri.fsPath;
+  const invocation = resolveRunInvocation(runCwd, getConfiguredCliPath());
 
-  if (!runTerminal || runTerminal.exitStatus || runTerminalCwd !== runCwd) {
+  if (
+    !runTerminal ||
+    runTerminal.exitStatus ||
+    runTerminalCwd !== invocation.terminalCwd
+  ) {
     runTerminal?.dispose();
     runTerminal = window.createTerminal({
       name: "Neva Run",
-      cwd: runCwd,
+      cwd: invocation.terminalCwd,
     });
-    runTerminalCwd = runCwd;
+    runTerminalCwd = invocation.terminalCwd;
   }
 
   runTerminal.show(true);
-  runTerminal.sendText("neva run .", true);
+  runTerminal.sendText(invocation.command, true);
+}
+
+function getConfiguredCliPath() {
+  return (
+    workspace.getConfiguration("neva").get<string>("cli.path", "neva") ?? "neva"
+  );
+}
+
+function resolveRunInvocation(runCwd: string, cliPath = "neva") {
+  const compilerWorkspaceRoot = findNearestNevaCompilerRoot(runCwd);
+  if (compilerWorkspaceRoot) {
+    const relativeTarget = formatRelativeTarget(compilerWorkspaceRoot, runCwd);
+    return {
+      terminalCwd: compilerWorkspaceRoot,
+      command: `go run ./cmd/neva run ${relativeTarget}`,
+    };
+  }
+
+  return {
+    terminalCwd: runCwd,
+    command: `${cliPath} run .`,
+  };
+}
+
+function findNearestNevaCompilerRoot(startPath: string) {
+  let currentPath = path.resolve(startPath);
+
+  while (true) {
+    if (isNevaCompilerWorkspace(currentPath)) {
+      return currentPath;
+    }
+
+    const parentPath = path.dirname(currentPath);
+    if (parentPath === currentPath) {
+      break;
+    }
+    currentPath = parentPath;
+  }
+
+  return undefined;
+}
+
+function isNevaCompilerWorkspace(folderPath: string) {
+  const goModPath = path.join(folderPath, "go.mod");
+  const localNevaCliPath = path.join(folderPath, "cmd", "neva", "main.go");
+  if (!fs.existsSync(goModPath) || !fs.existsSync(localNevaCliPath)) {
+    return false;
+  }
+
+  try {
+    const goMod = fs.readFileSync(goModPath, "utf8");
+    return /^module[ \t]+github\.com\/nevalang\/neva\b/m.test(goMod);
+  } catch {
+    return false;
+  }
+}
+
+function formatRelativeTarget(folderPath: string, runCwd: string) {
+  const relativePath = path.relative(folderPath, runCwd);
+  if (!relativePath || relativePath === ".") {
+    return ".";
+  }
+
+  const normalizedRelativePath = relativePath.split(path.sep).join("/");
+  if (normalizedRelativePath.startsWith(".")) {
+    return normalizedRelativePath;
+  }
+  return `./${normalizedRelativePath}`;
+}
+
+type LspPosition = { line?: number; character?: number };
+type LspRange = { start?: LspPosition; end?: LspPosition };
+type LspLocation = { uri?: string; range?: LspRange };
+
+function toPosition(value: unknown): Position | undefined {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+  const maybe = value as LspPosition;
+  if (typeof maybe.line !== "number" || typeof maybe.character !== "number") {
+    return undefined;
+  }
+  return new Position(maybe.line, maybe.character);
+}
+
+function toLocation(value: unknown): Location | undefined {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+  const maybe = value as LspLocation;
+  if (typeof maybe.uri !== "string") {
+    return undefined;
+  }
+  const start = toPosition(maybe.range?.start);
+  const end = toPosition(maybe.range?.end);
+  if (!start || !end) {
+    return undefined;
+  }
+  return new Location(Uri.parse(maybe.uri), new Range(start, end));
+}
+
+function showReferences(uriArg: unknown, posArg: unknown, locationsArg: unknown) {
+  const uri = typeof uriArg === "string" ? Uri.parse(uriArg) : undefined;
+  const position = toPosition(posArg);
+  const locations = Array.isArray(locationsArg)
+    ? locationsArg.map(toLocation).filter((location): location is Location => location !== undefined)
+    : [];
+
+  if (!uri || !position || locations.length === 0) {
+    return;
+  }
+
+  void commands.executeCommand("editor.action.showReferences", uri, position, locations);
 }
 
 async function updateActiveEditorContext(editor: TextEditor | undefined) {
@@ -120,6 +242,7 @@ export async function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     commands.registerCommand(runMainCommandId, runNeva),
+    commands.registerCommand(showReferencesCommandId, showReferences),
     commands.registerCommand(setTextualModeCommandId, () => setEditorMode("textual")),
     commands.registerCommand(setVisualModeCommandId, () => setEditorMode("visual")),
     commands.registerCommand("neva.getEditorMode", () => currentMode),
@@ -148,5 +271,6 @@ export function getApi() {
     getEditorMode: () => currentMode,
     onDidChangeEditorMode: onDidChangeEditorModeEmitter.event as Event<NevaEditorMode>,
     setEditorMode,
+    resolveRunInvocationForTests: resolveRunInvocation,
   };
 }

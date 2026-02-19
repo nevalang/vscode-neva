@@ -9,7 +9,7 @@
   },
   "description": "VSCode extension for Neva programming language",
   "publisher": "nevalang",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"
@@ -60,6 +60,11 @@
           ],
           "default": "off",
           "markdownDescription": "Controls LSP protocol trace logging in the Neva extension output channels."
+        },
+        "neva.cli.path": {
+          "type": "string",
+          "default": "neva",
+          "markdownDescription": "Path to the Neva CLI executable used by `Neva: Run Main` when not running inside the Neva compiler repository."
         }
       }
     },

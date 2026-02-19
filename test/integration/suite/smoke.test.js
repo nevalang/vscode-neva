@@ -1,4 +1,6 @@
 const assert = require('assert');
+const fs = require('fs/promises');
+const os = require('os');
 const path = require('path');
 const vscode = require('vscode');
 
@@ -25,6 +27,7 @@ suite('Neva extension smoke tests', () => {
   const extensionId = 'nevalang.vscode-nevalang';
   const testFilePath = path.resolve(__dirname, '../../main/main.neva');
 
+  let extensionApi;
   let document;
 
   suiteSetup(async function suiteSetup() {
@@ -33,7 +36,7 @@ suite('Neva extension smoke tests', () => {
     const extension = vscode.extensions.getExtension(extensionId);
     assert.ok(extension, `Extension ${extensionId} should be installed in test host`);
 
-    await extension.activate();
+    extensionApi = await extension.activate();
 
     document = await vscode.workspace.openTextDocument(testFilePath);
     await vscode.window.showTextDocument(document, { preview: false });
@@ -71,5 +74,29 @@ suite('Neva extension smoke tests', () => {
         .map((diagnostic) => diagnostic.message)
         .join('; ')}`
     );
+  });
+
+  test('resolves run invocation from nearest Neva compiler root', async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'neva-run-'));
+    const compilerRoot = path.join(tempRoot, 'workspace', 'neva');
+    const runCwd = path.join(compilerRoot, 'examples', '99_bottles');
+
+    try {
+      await fs.mkdir(path.join(compilerRoot, 'cmd', 'neva'), { recursive: true });
+      await fs.mkdir(runCwd, { recursive: true });
+      await fs.writeFile(
+        path.join(compilerRoot, 'go.mod'),
+        'module github.com/nevalang/neva\n'
+      );
+      await fs.writeFile(path.join(compilerRoot, 'cmd', 'neva', 'main.go'), 'package main\n');
+
+      const invocation = extensionApi.resolveRunInvocationForTests(runCwd, 'neva-custom');
+      assert.deepStrictEqual(invocation, {
+        terminalCwd: compilerRoot,
+        command: 'go run ./cmd/neva run ./examples/99_bottles',
+      });
+    } finally {
+      await fs.rm(tempRoot, { recursive: true, force: true });
+    }
   });
 });
