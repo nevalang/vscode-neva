@@ -5,10 +5,14 @@ import {
   CodeLensProvider,
   CancellationToken,
   ProviderResult,
+  Disposable,
+  Event,
+  EventEmitter,
   ExtensionContext,
   languages,
   Range,
   TextDocument,
+  TextEditor,
   Uri,
   window,
   workspace,
@@ -21,7 +25,15 @@ let runTerminal = undefined as ReturnType<typeof window.createTerminal> | undefi
 let runTerminalCwd = "";
 
 const runMainCommandId = "neva.runMain";
+const setTextualModeCommandId = "neva.openTextualMode";
+const setVisualModeCommandId = "neva.openVisualMode";
 const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
+const nevaEditorModeContextKey = "neva.editorMode";
+const nevaEditorContextKey = "neva.activeEditorIsNeva";
+
+type NevaEditorMode = "textual" | "visual";
+let currentMode: NevaEditorMode = "textual";
+const onDidChangeEditorModeEmitter = new EventEmitter<NevaEditorMode>();
 
 function provideRunCodeLenses(document: TextDocument) {
   const text = document.getText();
@@ -68,6 +80,23 @@ function runNeva(uri?: Uri) {
   runTerminal.sendText("neva run .", true);
 }
 
+async function updateActiveEditorContext(editor: TextEditor | undefined) {
+  const isNeva = editor?.document.languageId === "neva";
+  await commands.executeCommand("setContext", nevaEditorContextKey, isNeva);
+}
+
+async function setEditorMode(mode: NevaEditorMode) {
+  currentMode = mode;
+  await commands.executeCommand("setContext", nevaEditorModeContextKey, mode);
+  onDidChangeEditorModeEmitter.fire(mode);
+
+  if (mode === "visual") {
+    void window.showInformationMessage(
+      "Neva visual mode is not implemented yet. This button is a placeholder for the upcoming visual editor API."
+    );
+  }
+}
+
 const runMainCodeLensProvider = {
   provideCodeLenses(
     document: TextDocument,
@@ -86,15 +115,38 @@ export async function activate(context: ExtensionContext) {
     window.showWarningMessage(message);
   });
 
+  await setEditorMode("textual");
+  await updateActiveEditorContext(window.activeTextEditor);
+
   context.subscriptions.push(
     commands.registerCommand(runMainCommandId, runNeva),
+    commands.registerCommand(setTextualModeCommandId, () => setEditorMode("textual")),
+    commands.registerCommand(setVisualModeCommandId, () => setEditorMode("visual")),
+    commands.registerCommand("neva.getEditorMode", () => currentMode),
+    commands.registerCommand("neva.onDidChangeEditorMode", (listener: (mode: NevaEditorMode) => void): Disposable =>
+      onDidChangeEditorModeEmitter.event(listener)
+    ),
+    window.onDidChangeActiveTextEditor((editor) => {
+      void updateActiveEditorContext(editor);
+    }),
     languages.registerCodeLensProvider(
       { language: "neva", scheme: "file" },
       runMainCodeLensProvider
     )
   );
+
+  return getApi();
 }
 
 export function deactivate(): Thenable<void> | undefined {
+  onDidChangeEditorModeEmitter.dispose();
   return lspClient && lspClient.stop();
+}
+
+export function getApi() {
+  return {
+    getEditorMode: () => currentMode,
+    onDidChangeEditorMode: onDidChangeEditorModeEmitter.event as Event<NevaEditorMode>,
+    setEditorMode,
+  };
 }
