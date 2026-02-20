@@ -13,15 +13,11 @@ repository:
   comments:
     patterns:
       - name: comment.line.double-slash
-        begin: "\\/\\/" # Matches the start of a single-line comment (//)
-        beginCaptures:
-          "1":
-            name: punctuation.definition.comment
-        end: "(?:\\n|$)" # Matches the end of a line or the end of the input
+        match: "//.*$" # Matches a single-line comment
 
   pub:
     match: "\\b(pub)\\b" # Matches the keyword 'pub'
-    name: storage.modifier.public
+    name: storage.modifier
 
   # ----------------------------------------------------------------
   # TYPES
@@ -30,23 +26,23 @@ repository:
   builtin_types:
     patterns:
       - match: "\\bany\\b" # Matches the word 'any'
-        name: storage.type.any
+        name: support.type
       - match: "\\bmaybe\\b" # Matches the word 'maybe'
-        name: storage.type.maybe
+        name: support.type
       - match: "\\bbool\\b" # Matches the word 'bool'
-        name: storage.type.boolean
+        name: support.type
       - match: "\\b(int|float)\\b" # Matches the words 'int' or 'float'
-        name: storage.type.numeric
+        name: support.type
       - match: "\\bstring\\b" # Matches the word 'string'
-        name: storage.type.string
+        name: support.type
       - match: "\\bdict\\b" # Matches the word 'dict'
-        name: storage.type.dict
+        name: support.type
       - match: "\\blist\\b" # Matches the word 'list'
-        name: storage.type.list
+        name: support.type
       - match: "\\berror\\b" # Matches the word 'error'
-        name: storage.type.error
+        name: support.type
       - match: "\\bstream\\b" # Matches the word 'stream'
-        name: storage.type.stream
+        name: support.type
       - include: "#struct_type"
       - include: "#union_type"
 
@@ -55,7 +51,7 @@ repository:
       - begin: "\\b(struct)\\s*\\{"
         beginCaptures:
           "1":
-            name: keyword.struct
+            name: keyword.control
         end: "\\}"
         patterns:
           - include: "#builtin_types" # recursion
@@ -66,7 +62,7 @@ repository:
       - begin: "\\b(union)\\s*\\{"
         beginCaptures:
           "1":
-            name: storage.type.union
+            name: keyword.control
         end: "\\}"
         patterns:
           - include: "#builtin_types" # For nested types
@@ -232,7 +228,7 @@ patterns:
   - begin: "\\b(import)\\s*\\{"
     beginCaptures:
       "1":
-        name: keyword.import
+        name: keyword.control.import
     end: "\\}"
     patterns:
       - include: "#comments"
@@ -244,7 +240,7 @@ patterns:
   - begin: "\\b(type)\\s+\\b(\\w+)\\b"
     beginCaptures:
       "1":
-        name: keyword.type
+        name: keyword.control
       "2":
         name: entity.name.type
     end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
@@ -259,9 +255,9 @@ patterns:
   - begin: "\\b(interface)\\s+\\b(\\w+)\\b"
     beginCaptures:
       "1":
-        name: keyword.declaration.interfaces
+        name: keyword.control
       "2":
-        name: entity.name.type.interface
+        name: entity.name.type
     end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
@@ -278,7 +274,7 @@ patterns:
   - begin: "\\b(const)\\s+\\b(\\w+)\\b"
     beginCaptures:
       "1":
-        name: keyword.declaration.const
+        name: keyword.control
       "2":
         name: variable.other.constant
     end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
@@ -294,9 +290,9 @@ patterns:
   - begin: "\\b(def)\\s+\\b(\\w+)"
     beginCaptures:
       "1":
-        name: keyword.declaration.function
+        name: keyword.control
       "2":
-        name: entity.name.section
+        name: entity.name.function
     end: "(?=\\b(import|pub|type|const|interface|def)\\b)"
     patterns:
       - include: "#builtin_types"
