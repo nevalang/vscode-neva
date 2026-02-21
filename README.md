@@ -70,6 +70,14 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.10
+
+- Updated bundled `neva-lsp` binaries with fixes for port rename stability:
+  - rename works consistently from both signature and network references
+  - unsaved buffer changes are tracked during rename operations
+  - invalid identifier rename targets (for example `123`) are rejected
+- Improved semantic token stability after rename operations in unsaved buffers.
+
 ### 0.7.9
 
 - Updated bundled `neva-lsp` binaries to use Neva workspace indexing that does not require a `Main` package in module root.
