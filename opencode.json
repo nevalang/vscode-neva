@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/moonshotai/kimi-k2.5",
+  "default_agent": "neva-orchestrator",
+  "agent": {
+    "neva-orchestrator": {
+      "prompt": "{file:./.opencode/agents/neva-orchestrator.md}",
+      "model": "openrouter/deepseek/deepseek-v3.2"
+    },
+    "planner": {
+      "prompt": "{file:./.opencode/agents/planner.md}",
+      "model": "openrouter/moonshotai/kimi-k2.5"
+    },
+    "pr-reviewer": {
+      "prompt": "{file:./.opencode/agents/pr-reviewer.md}",
+      "model": "openrouter/moonshotai/kimi-k2.5"
+    },
+    "coder": {
+      "prompt": "{file:./.opencode/agents/coder.md}",
+      "model": "openrouter/qwen/qwen3-coder"
+    },
+    "post-merge": {
+      "prompt": "{file:./.opencode/agents/post-merge.md}",
+      "model": "openrouter/deepseek/deepseek-v3.2"
+    }
+  }
+}
