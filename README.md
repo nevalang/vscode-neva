@@ -56,7 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: fetches `nevalang/neva-lsp` (prefers `main`, falls back to `master`), rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace.
+- Behavior: fetches the immutable Neva LSP commit in [`.github/neva-lsp.ref`](.github/neva-lsp.ref), rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace. Update that file in an intentional compatibility PR; `workflow_dispatch` can temporarily override it for an explicit test run.
 
 Required secret in GitHub repository settings:
 

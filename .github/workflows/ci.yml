@@ -62,10 +62,13 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
-            echo "value=main" >> "$GITHUB_OUTPUT"
           else
-            echo "value=master" >> "$GITHUB_OUTPUT"
+            ref=$(tr -d '[:space:]' < .github/neva-lsp.ref)
+            if ! [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
+              echo ".github/neva-lsp.ref must contain a full Git commit SHA" >&2
+              exit 1
+            fi
+            echo "value=$ref" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout nevalang/neva-lsp
