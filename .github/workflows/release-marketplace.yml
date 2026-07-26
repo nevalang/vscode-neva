@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 env:
-  NEVA_TOOLS_REF: 57dfecce4c11accb32c3a6bb471f17850dbe1796
+  NEVA_TOOLS_REF: 7e66e889bc1e255dc941d98697cf58365db10cc3
 
 jobs:
   publish-marketplace:
