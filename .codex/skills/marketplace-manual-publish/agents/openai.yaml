@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manual Marketplace Publish"
+  short_description: "Safely publish a verified Neva VSIX via browser UI."
+  default_prompt: "Use $marketplace-manual-publish to prepare a Neva VSIX and guide a manual VS Code Marketplace upload."
