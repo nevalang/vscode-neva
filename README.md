@@ -70,6 +70,15 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.10
+
+- Updated the bundled LSP to `lsp/v0.1.2` with diagnostics for unsaved edits.
+- Kept completion, navigation, semantic tokens and CodeLens available while an
+  unsaved compiler error is displayed.
+- Added a daily-driver Extension Host contract covering diagnostics, language
+  features, Run and packaged Visual Mode; release packaging is verified in a
+  separate CI job.
+
 ### 0.7.9
 
 - Updated bundled `neva-lsp` binaries to use Neva workspace indexing that does not require a `Main` package in module root.
