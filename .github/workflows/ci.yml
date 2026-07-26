@@ -15,8 +15,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  daily-driver-contract:
-    name: Daily-driver contract
+  extension-integration-contract:
+    name: Extension integration contract
     runs-on: ubuntu-latest
     steps:
       - name: Checkout extension repository
@@ -54,8 +54,8 @@ jobs:
       - name: Build extension
         run: npm run build
 
-      - name: Run extension integration smoke tests
-        run: xvfb-run -a npm run test:integration
+      - name: Run Extension Host integration contract
+        run: xvfb-run -a npm run test:extension-integration
 
   package-vsix:
     name: Package VSIX

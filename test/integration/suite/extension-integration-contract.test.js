@@ -34,7 +34,7 @@ function completionItems(result) {
   return Array.isArray(result) ? result : result?.items || [];
 }
 
-suite('Neva daily-driver contract', () => {
+suite('Neva Extension Host integration contract', () => {
   let extension;
   let api;
   let mainDocument;

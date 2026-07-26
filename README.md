@@ -75,7 +75,7 @@ Release flow:
 - Updated the bundled LSP to `lsp/v0.1.2` with diagnostics for unsaved edits.
 - Kept completion, navigation, semantic tokens and CodeLens available while an
   unsaved compiler error is displayed.
-- Added a daily-driver Extension Host contract covering diagnostics, language
+- Added an Extension Host integration contract covering diagnostics, language
   features, Run and packaged Visual Mode; release packaging is verified in a
   separate CI job.
 
