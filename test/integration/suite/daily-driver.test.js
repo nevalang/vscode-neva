@@ -110,14 +110,24 @@ suite('Neva daily-driver contract', () => {
     const references = await vscode.commands.executeCommand('vscode.executeReferenceProvider', mainDocument.uri, echoDefinition);
     assert.ok(references?.length >= 2, 'Expected declaration and use references for Echo');
 
-    const rename = await vscode.commands.executeCommand(
-      'vscode.executeDocumentRenameProvider', mainDocument.uri, echoDefinition, 'EchoRenamed'
-    );
-    assert.ok(rename?.changes || rename?.documentChanges, 'Expected rename workspace edit for Echo');
-
     const symbols = await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', mainDocument.uri);
     assert.ok(symbols?.some((symbol) => symbol.name === 'Echo'));
     assert.ok(symbols?.some((symbol) => symbol.name === 'Main'));
+
+    const originalText = mainDocument.getText();
+    const rename = await vscode.commands.executeCommand(
+      'vscode.executeDocumentRenameProvider', mainDocument.uri, echoDefinition, 'EchoRenamed'
+    );
+    assert.ok(rename, 'Expected rename workspace edit for Echo');
+    try {
+      assert.ok(await vscode.workspace.applyEdit(rename), 'Expected VS Code to apply the rename edit');
+      assert.ok(mainDocument.getText().includes('def EchoRenamed'), 'Expected renamed declaration');
+      assert.ok(mainDocument.getText().includes('echo EchoRenamed'), 'Expected renamed reference');
+    } finally {
+      const restore = new vscode.WorkspaceEdit();
+      restore.replace(mainDocument.uri, new vscode.Range(0, 0, mainDocument.lineCount, 0), originalText);
+      assert.ok(await vscode.workspace.applyEdit(restore));
+    }
   });
 
   test('provides semantic tokens and the Run CodeLens', async () => {
