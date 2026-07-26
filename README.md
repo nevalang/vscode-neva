@@ -56,7 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: fetches the exact Neva Tools commit recorded in the workflow (unless manually overridden), rebuilds `cmd/neva-lsp` for all targets, builds the shared visual-editor bundle, packages extension, and publishes to Marketplace.
+- Behavior: validates the checked-in Neva Tools release-and-commit lock (unless manually overridden), rebuilds `cmd/neva-lsp` for all targets, builds the shared visual-editor bundle, packages extension, and publishes to Marketplace.
 
 Required secret in GitHub repository settings:
 

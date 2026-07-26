@@ -6,8 +6,8 @@ Follow these instructions when working in this repository.
 
 1. Use `gh` CLI for GitHub context (issues/PRs). Fall back to web browsing only when `gh` is insufficient.
 2. Prefer small, incremental changes. After each feature implementation, report back with what changed and how to verify.
-3. Do **not** push to `main` or release a new extension version without explicit approval.
-4. The Neva compiler lives in `/Users/emil/projects/neva` (read-only). Neva tools live in `nevalang/neva-tools`; source the LSP from its remote `main` when updating binaries.
+3. Do **not** push to `main` or release a new extension version without explicit approval. Open pull requests ready for review by default; use draft only when there is a stated blocker. CI runs for both states.
+4. The Neva compiler lives in `/Users/emil/projects/neva` (read-only). Neva tools live in `nevalang/neva-tools`; use the checked-in `.github/neva-tools.lock` when updating bundled binaries or the visual-editor bundle.
 5. Assume the current Neva language is `main` (ahead of v0.34); deferred connections are **not** supported and should not be encoded in the extension (syntax highlighting, docs, etc.).
 6. Keep the extension compatible with VS Code stable.
 

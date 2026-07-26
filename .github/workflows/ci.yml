@@ -19,7 +19,6 @@ concurrency:
 
 env:
   NODE_VERSION: "20"
-  NEVA_TOOLS_REF: 7e66e889bc1e255dc941d98697cf58365db10cc3
 
 jobs:
   build-lsp-binaries:
@@ -58,26 +57,22 @@ jobs:
       - name: Checkout extension repository
         uses: actions/checkout@v4
 
-      - name: Resolve Neva Tools ref
-        id: neva-ref
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
-            echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=${NEVA_TOOLS_REF}" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Resolve and validate Neva Tools lock
+        id: neva-tools
+        run: bash .github/scripts/resolve-neva-tools-lock.sh "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || '' }}"
 
       - name: Checkout nevalang/neva-tools
         uses: actions/checkout@v4
         with:
           repository: nevalang/neva-tools
-          ref: ${{ steps.neva-ref.outputs.value }}
+          ref: ${{ steps.neva-tools.outputs.ref }}
           path: neva-src
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: neva-src/go.mod
+          cache-dependency-path: neva-src/go.sum
 
       - name: Build LSP binary
         run: |
@@ -104,6 +99,10 @@ jobs:
       - name: Checkout extension repository
         uses: actions/checkout@v4
 
+      - name: Resolve and validate Neva Tools lock
+        id: neva-tools
+        run: bash .github/scripts/resolve-neva-tools-lock.sh "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || '' }}"
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -114,7 +113,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: nevalang/neva-tools
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || env.NEVA_TOOLS_REF }}
+          ref: ${{ steps.neva-tools.outputs.ref }}
           path: neva-tools
 
       - name: Build shared visual-editor WebView bundle
