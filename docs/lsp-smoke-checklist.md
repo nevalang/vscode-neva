@@ -1,6 +1,6 @@
 # Neva LSP Smoke Checklist
 
-Use this checklist before publishing a new extension version that bundles updated Neva language-server binaries. The automated daily-driver contract is the release gate; this document covers the remaining visual/manual checks.
+Use this checklist before publishing a new extension version that bundles updated Neva language-server binaries. The automated Extension Host integration contract is the release gate; this document covers the remaining visual/manual checks.
 
 ## 1. Bundle check
 
@@ -16,7 +16,7 @@ Use this checklist before publishing a new extension version that bundles update
 
 ```bash
 npm run check:lsp-binaries
-npm run test:integration
+npm run test:extension-integration
 ```
 
 ## 2. Feature smoke test in VS Code

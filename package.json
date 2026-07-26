@@ -156,7 +156,7 @@
     "build:syntax": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
     "build": "npm-run-all build:*",
     "test:integration": "node ./test/integration/runTest.js",
-    "test:daily-driver": "npm run test:integration",
+    "test:extension-integration": "npm run test:integration",
     "test": "npm run build && npm run test:integration",
     "package:vsix": "npx -y @vscode/vsce@2.24.0 package",
     "publish:openvsx": "npx -y ovsx@0.8.1 publish -p $OPEN_VSX_TOKEN",
