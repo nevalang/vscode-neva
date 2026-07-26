@@ -56,7 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: fetches `nevalang/neva-lsp` (prefers `main`, falls back to `master`), rebuilds all LSP binaries, builds and packages extension, publishes to Marketplace.
+- Behavior: fetches `nevalang/neva-tools` (prefers `main`, falls back to `master`), rebuilds `cmd/neva-lsp` for all targets, builds and packages extension, publishes to Marketplace.
 
 Required secret in GitHub repository settings:
 
@@ -78,7 +78,7 @@ Release flow:
 
 ### 0.7.8
 
-- Integrated Neva LSP core language feature set from `nevalang/neva-lsp`:
+- Integrated Neva LSP core language feature set from `nevalang/neva-tools`:
   - completion
   - hover
   - go to definition

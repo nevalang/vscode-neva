@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NEVA_DIR="${1:-./neva-lsp}"
+NEVA_DIR="${1:-./neva-tools}"
 OUT_DIR="${2:-./bin}"
 
 if [[ ! -f "$NEVA_DIR/go.mod" ]]; then
@@ -12,14 +12,10 @@ fi
 mkdir -p "$OUT_DIR"
 pushd "$NEVA_DIR" >/dev/null
 
-LSP_ENTRY="./cmd/lsp"
+LSP_ENTRY="./cmd/neva-lsp"
 if [[ ! -d "$LSP_ENTRY" ]]; then
-  if [[ -f "./main.go" ]]; then
-    LSP_ENTRY="."
-  else
-    echo "Unable to locate LSP entrypoint (expected ./cmd/lsp or ./main.go)" >&2
-    exit 1
-  fi
+  echo "Unable to locate LSP entrypoint at $LSP_ENTRY" >&2
+  exit 1
 fi
 
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "$OUT_DIR/neva-lsp-darwin-amd64" "$LSP_ENTRY"
