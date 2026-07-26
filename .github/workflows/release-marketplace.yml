@@ -4,11 +4,6 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-    inputs:
-      neva_ref:
-        description: "nevalang/neva-tools ref override (branch, tag or SHA)"
-        required: false
-        default: ""
 
 concurrency:
   group: marketplace-release
@@ -26,51 +21,15 @@ jobs:
       - name: Checkout vscode-neva
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+      - name: Download locked Neva LSP release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/download-neva-lsp-release.sh bin
 
-      - name: Resolve and validate Neva Tools lock
-        id: neva-tools
-        run: bash .github/scripts/resolve-neva-tools-lock.sh "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || '' }}"
-
-      - name: Checkout neva-tools
-        uses: actions/checkout@v4
-        with:
-          repository: nevalang/neva-tools
-          ref: ${{ steps.neva-tools.outputs.ref }}
-          path: neva-tools
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: neva-tools/go.mod
-          cache-dependency-path: neva-tools/go.sum
-
-      - name: Build shared visual-editor WebView bundle
-        working-directory: neva-tools/web
-        run: |
-          npm ci
-          npm run build:vscode
-
-      - name: Copy shared visual-editor bundle
-        run: |
-          mkdir -p dist
-          cp -R neva-tools/dist/webview dist/webview
-
-      - name: Validate required secret
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -z "${VSCE_PAT:-}" ]]; then
-            echo "Repository secret VSCE_PAT is missing" >&2
-            exit 1
-          fi
-
-      - name: Build LSP binaries from Neva Tools
-        run: ./scripts/release/build-lsp-from-neva-tools.sh ./neva-tools ./bin
+      - name: Download locked Neva Visual Editor release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/download-neva-visual-editor-release.sh dist
 
       - name: Ensure executable bits for unix binaries
         run: |
@@ -81,6 +40,21 @@ jobs:
 
       - name: Check packaged LSP binaries
         run: npm run check:lsp-binaries
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Validate required secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${VSCE_PAT:-}" ]]; then
+            echo "Repository secret VSCE_PAT is missing" >&2
+            exit 1
+          fi
 
       - name: Verify release tag matches package version
         if: github.event_name == 'release'

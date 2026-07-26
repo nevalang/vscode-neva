@@ -1,3 +1,0 @@
-# Human release identity and immutable source identity must move together.
-NEVA_TOOLS_VERSION=v0.1.0
-NEVA_TOOLS_COMMIT=fda3f771f370688c9ce877f233c3a1988bd52409
