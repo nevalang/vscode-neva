@@ -17,9 +17,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  NEVA_TOOLS_REF: 7e66e889bc1e255dc941d98697cf58365db10cc3
-
 jobs:
   publish-marketplace:
     runs-on: ubuntu-latest
@@ -35,26 +32,22 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Resolve Neva Tools ref
-        id: neva-ref
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
-            echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=${NEVA_TOOLS_REF}" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Resolve and validate Neva Tools lock
+        id: neva-tools
+        run: bash .github/scripts/resolve-neva-tools-lock.sh "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || '' }}"
 
       - name: Checkout neva-tools
         uses: actions/checkout@v4
         with:
           repository: nevalang/neva-tools
-          ref: ${{ steps.neva-ref.outputs.value }}
+          ref: ${{ steps.neva-tools.outputs.ref }}
           path: neva-tools
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: neva-tools/go.mod
+          cache-dependency-path: neva-tools/go.sum
 
       - name: Build shared visual-editor WebView bundle
         working-directory: neva-tools/web
