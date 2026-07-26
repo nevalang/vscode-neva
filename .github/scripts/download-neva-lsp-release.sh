@@ -6,7 +6,10 @@ OUT_DIR="${1:-bin}"
 # shellcheck source=/dev/null
 source .github/neva-lsp.lock
 
-tag_commit="$(git ls-remote "https://github.com/${NEVA_LSP_REPOSITORY}.git" "refs/tags/${NEVA_LSP_VERSION}" | awk 'NR == 1 { print $1 }')"
+tag_commit="$(git ls-remote "https://github.com/${NEVA_LSP_REPOSITORY}.git" "refs/tags/${NEVA_LSP_VERSION}^{}" | awk 'NR == 1 { print $1 }')"
+if [[ -z "$tag_commit" ]]; then
+  tag_commit="$(git ls-remote "https://github.com/${NEVA_LSP_REPOSITORY}.git" "refs/tags/${NEVA_LSP_VERSION}" | awk 'NR == 1 { print $1 }')"
+fi
 if [[ "$tag_commit" != "$NEVA_LSP_COMMIT" ]]; then
   echo "Neva LSP lock mismatch: ${NEVA_LSP_VERSION} resolves to ${tag_commit:-nothing}, expected ${NEVA_LSP_COMMIT}" >&2
   exit 1
