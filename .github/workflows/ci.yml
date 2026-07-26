@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       neva_ref:
-        description: "nevalang/neva-tools ref (branch, tag or SHA)"
+        description: "nevalang/neva-tools ref override (branch, tag or SHA)"
         required: false
         default: ""
 
@@ -19,6 +19,7 @@ concurrency:
 
 env:
   NODE_VERSION: "20"
+  NEVA_TOOLS_REF: 57dfecce4c11accb32c3a6bb471f17850dbe1796
 
 jobs:
   build-lsp-binaries:
@@ -62,10 +63,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-tools refs/heads/main >/dev/null 2>&1; then
-            echo "value=main" >> "$GITHUB_OUTPUT"
           else
-            echo "value=master" >> "$GITHUB_OUTPUT"
+            echo "value=${NEVA_TOOLS_REF}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout nevalang/neva-tools
@@ -111,6 +110,24 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      - name: Checkout Neva Tools for the shared visual editor
+        uses: actions/checkout@v4
+        with:
+          repository: nevalang/neva-tools
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.neva_ref || env.NEVA_TOOLS_REF }}
+          path: neva-tools
+
+      - name: Build shared visual-editor WebView bundle
+        working-directory: neva-tools/web
+        run: |
+          npm ci
+          npm run build:vscode
+
+      - name: Copy shared visual-editor bundle
+        run: |
+          mkdir -p dist
+          cp -R neva-tools/dist/webview dist/webview
+
       - name: Download LSP binary artifacts
         uses: actions/download-artifact@v4
         with:
@@ -130,6 +147,9 @@ jobs:
           chmod +x bin/neva-lsp-darwin-arm64
           chmod +x bin/neva-lsp-linux-amd64
           chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Install dependencies
         run: npm ci

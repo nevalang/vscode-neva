@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       neva_ref:
-        description: "nevalang/neva-tools ref (branch, tag or SHA)"
+        description: "nevalang/neva-tools ref override (branch, tag or SHA)"
         required: false
         default: ""
 
@@ -16,6 +16,9 @@ concurrency:
 
 permissions:
   contents: read
+
+env:
+  NEVA_TOOLS_REF: 57dfecce4c11accb32c3a6bb471f17850dbe1796
 
 jobs:
   publish-marketplace:
@@ -37,10 +40,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-tools refs/heads/main >/dev/null 2>&1; then
-            echo "value=main" >> "$GITHUB_OUTPUT"
           else
-            echo "value=master" >> "$GITHUB_OUTPUT"
+            echo "value=${NEVA_TOOLS_REF}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout neva-tools
@@ -54,6 +55,17 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: neva-tools/go.mod
+
+      - name: Build shared visual-editor WebView bundle
+        working-directory: neva-tools/web
+        run: |
+          npm ci
+          npm run build:vscode
+
+      - name: Copy shared visual-editor bundle
+        run: |
+          mkdir -p dist
+          cp -R neva-tools/dist/webview dist/webview
 
       - name: Validate required secret
         shell: bash
@@ -73,6 +85,9 @@ jobs:
           chmod +x bin/neva-lsp-darwin-arm64
           chmod +x bin/neva-lsp-linux-amd64
           chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Verify release tag matches package version
         if: github.event_name == 'release'

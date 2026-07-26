@@ -36,9 +36,9 @@ Basic snippets are available for core language constructs:
 - `union`
 - `const`
 
-### Visual Editor (WIP)
+### Visual Editor
 
-Currently disabled due to massive changes in the language. You can see the source code in the `webview` directory.
+`Neva: Open Visual Mode` opens the same read-only React editor as `neva-view`, directly beside the source file. It talks to the already-running language server, so it needs no separate HTTP server or browser process. Saving a `.neva` file refreshes its projection.
 
 ## Contributing
 
@@ -56,7 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: fetches `nevalang/neva-tools` (prefers `main`, falls back to `master`), rebuilds `cmd/neva-lsp` for all targets, builds and packages extension, publishes to Marketplace.
+- Behavior: fetches the exact Neva Tools commit recorded in the workflow (unless manually overridden), rebuilds `cmd/neva-lsp` for all targets, builds the shared visual-editor bundle, packages extension, and publishes to Marketplace.
 
 Required secret in GitHub repository settings:
 
