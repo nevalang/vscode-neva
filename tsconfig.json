@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "exclude": ["node_modules", ".vscode-test", "webview"]
+  "exclude": ["node_modules", ".vscode-test", "webview", "neva-tools"]
 }

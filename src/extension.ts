@@ -19,6 +19,7 @@ import {
 } from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
 import { setupLsp } from "./lsp";
+import { openVisualEditor } from "./visualEditor";
 
 let lspClient: LanguageClient;
 let runTerminal = undefined as ReturnType<typeof window.createTerminal> | undefined;
@@ -90,12 +91,10 @@ async function setEditorMode(mode: NevaEditorMode) {
   await commands.executeCommand("setContext", nevaEditorModeContextKey, mode);
   onDidChangeEditorModeEmitter.fire(mode);
 
-  if (mode === "visual") {
-    void window.showInformationMessage(
-      "Neva visual mode is not implemented yet. This button is a placeholder for the upcoming visual editor API."
-    );
-  }
+  if (mode === "visual") openVisualEditor(extensionContext, lspClient);
 }
+
+let extensionContext: ExtensionContext;
 
 const runMainCodeLensProvider = {
   provideCodeLenses(
@@ -108,6 +107,7 @@ const runMainCodeLensProvider = {
 
 export async function activate(context: ExtensionContext) {
   console.info("neva module detected, extension activated");
+  extensionContext = context;
 
   // Run language server, initialize client and establish connection
   lspClient = setupLsp(context, process.env.VSCODE_NEVA_DEBUG === "true");

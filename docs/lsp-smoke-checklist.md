@@ -31,6 +31,7 @@ Open a Neva workspace and verify each feature works end-to-end:
 - document symbols / outline
 - code lens + resolve
 - semantic tokens (declarations/references/ports)
+- `Neva: Open Visual Mode` renders the saved workspace and refreshes after save
 
 ## 3. Issue triage after verification
 

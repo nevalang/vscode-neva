@@ -6,7 +6,7 @@
 
 Extension consist of 3 parts:
 
-1. Language server (in `nevalang/neva-lsp` repo)
+1. Language server (in `nevalang/neva-tools`, at `cmd/neva-lsp`)
 2. VSCode extension in `src`
 3. Syntax highlighting grammar under `syntaxes` directory
 
@@ -16,9 +16,9 @@ If you use VSCode, you can use `Run Extension` debug task. This will allow to sp
 
 ### LSP
 
-After you make changes to LSP-server in `nevalang/neva-lsp`, make sure you compile binaries for all supported platforms and put them into `bin` directory in this repo. When you'll use `make pkg` the `vsce` will pack those binaries into vscode extension archive.
+After you make changes to the LSP in `nevalang/neva-tools`, make sure you compile binaries for all supported platforms and put them into `bin` directory in this repo. When you'll use `make pkg` the `vsce` will pack those binaries into vscode extension archive.
 
-In CI, LSP binaries are built from `nevalang/neva-lsp` directly (see `.github/workflows/ci.yml`) and downloaded into `bin/` before packaging. No git submodule is required.
+In CI, LSP binaries are built from `nevalang/neva-tools` directly (see `.github/workflows/ci.yml`) and downloaded into `bin/` before packaging. No git submodule is required.
 Marketplace publishing is release-only: the workflow publishes to VS Code Marketplace on `release.published` using the `VSCE_PAT` repository secret.
 
 ### Testing

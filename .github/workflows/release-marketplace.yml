@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       neva_ref:
-        description: "nevalang/neva-lsp ref (branch, tag or SHA)"
+        description: "nevalang/neva-tools ref override (branch, tag or SHA)"
         required: false
         default: ""
 
@@ -16,6 +16,9 @@ concurrency:
 
 permissions:
   contents: read
+
+env:
+  NEVA_TOOLS_REF: 7e66e889bc1e255dc941d98697cf58365db10cc3
 
 jobs:
   publish-marketplace:
@@ -32,28 +35,37 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Resolve neva ref
+      - name: Resolve Neva Tools ref
         id: neva-ref
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.neva_ref }}" ]; then
             echo "value=${{ github.event.inputs.neva_ref }}" >> "$GITHUB_OUTPUT"
-          elif git ls-remote --exit-code --heads https://github.com/nevalang/neva-lsp refs/heads/main >/dev/null 2>&1; then
-            echo "value=main" >> "$GITHUB_OUTPUT"
           else
-            echo "value=master" >> "$GITHUB_OUTPUT"
+            echo "value=${NEVA_TOOLS_REF}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout neva-lsp
+      - name: Checkout neva-tools
         uses: actions/checkout@v4
         with:
-          repository: nevalang/neva-lsp
+          repository: nevalang/neva-tools
           ref: ${{ steps.neva-ref.outputs.value }}
-          path: neva-lsp
+          path: neva-tools
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: neva-lsp/go.mod
+          go-version-file: neva-tools/go.mod
+
+      - name: Build shared visual-editor WebView bundle
+        working-directory: neva-tools/web
+        run: |
+          npm ci
+          npm run build:vscode
+
+      - name: Copy shared visual-editor bundle
+        run: |
+          mkdir -p dist
+          cp -R neva-tools/dist/webview dist/webview
 
       - name: Validate required secret
         shell: bash
@@ -64,8 +76,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build LSP binaries from neva-lsp
-        run: ./scripts/release/build-lsp-from-neva-main.sh ./neva-lsp ./bin
+      - name: Build LSP binaries from Neva Tools
+        run: ./scripts/release/build-lsp-from-neva-tools.sh ./neva-tools ./bin
 
       - name: Ensure executable bits for unix binaries
         run: |
@@ -73,6 +85,9 @@ jobs:
           chmod +x bin/neva-lsp-darwin-arm64
           chmod +x bin/neva-lsp-linux-amd64
           chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Verify release tag matches package version
         if: github.event_name == 'release'
