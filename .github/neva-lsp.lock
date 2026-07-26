@@ -1,0 +1,5 @@
+# Neva LSP is a component release, not a repository-wide Neva Tools release.
+NEVA_LSP_REPOSITORY=nevalang/neva-tools
+NEVA_LSP_VERSION=neva-lsp/v0.1.0
+NEVA_LSP_COMMIT=ad50073998708fa143fa85f9f410f450febe5a71
+NEVA_LSP_CHECKSUMS_SHA256=c50946a55659c43977031dac323df994984e1cf929046d7f6263dcbefbaf5adf
