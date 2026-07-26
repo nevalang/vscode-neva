@@ -15,8 +15,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  build-extension:
-    name: Build VSIX
+  daily-driver-contract:
+    name: Daily-driver contract
     runs-on: ubuntu-latest
     steps:
       - name: Checkout extension repository
@@ -56,6 +56,45 @@ jobs:
 
       - name: Run extension integration smoke tests
         run: xvfb-run -a npm run test:integration
+
+  package-vsix:
+    name: Package VSIX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout extension repository
+        uses: actions/checkout@v4
+
+      - name: Download locked Neva LSP release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/download-neva-lsp-release.sh bin
+
+      - name: Download locked Neva Visual Editor release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/download-neva-visual-editor-release.sh dist
+
+      - name: Ensure executable bits for unix binaries
+        run: |
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
 
       - name: Package VSIX
         run: npx vsce package

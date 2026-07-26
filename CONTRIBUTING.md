@@ -31,8 +31,13 @@ npm run test:integration
 
 This launches a VS Code extension host against the `./test` workspace and verifies:
 
-- extension activation and command registration
-- language-server diagnostics flow end-to-end
+- command registration and activation
+- compiler diagnostics
+- completion, hover, definition, references, rename and document outline
+- semantic tokens and the `▶ Run` CodeLens/terminal flow
+- Visual Mode opens the packaged WebView through the existing LSP, with no
+  standalone `neva-view` binary
+- required TextMate grammar scopes remain present
 
 If you need a manual verification pass before release, you can still package and install the VSIX:
 

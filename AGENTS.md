@@ -23,6 +23,10 @@ Follow these instructions when working in this repository.
 
 - Typecheck + bundle: `npm run build`
 - Regenerate TextMate grammar: `npm run build:syntax`
+- Daily-driver Extension Host contract: `npm run test:daily-driver`. It covers
+  diagnostics, language providers, semantic tokens, Run, Visual Mode opening
+  and the packaged WebView boundary; use the manual smoke checklist for visual
+  rendering and save-to-refresh on a real workspace.
 
 ## 4) LSP Binaries
 

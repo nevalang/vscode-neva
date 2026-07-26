@@ -1,6 +1,6 @@
 # Neva LSP Smoke Checklist
 
-Use this checklist before publishing a new extension version that bundles updated Neva language-server binaries.
+Use this checklist before publishing a new extension version that bundles updated Neva language-server binaries. The automated daily-driver contract is the release gate; this document covers the remaining visual/manual checks.
 
 ## 1. Bundle check
 
@@ -32,6 +32,12 @@ Open a Neva workspace and verify each feature works end-to-end:
 - code lens + resolve
 - semantic tokens (declarations/references/ports)
 - `Neva: Open Visual Mode` renders the saved workspace and refreshes after save
+
+The automated harness already verifies command registration, diagnostics,
+completion, hover, definition, references, rename, outline, semantic tokens,
+Run CodeLens and opening the packaged Visual Mode. For a release candidate,
+perform this manual pass on a real workspace to validate visual rendering and
+the save-to-refresh experience.
 
 ## 3. Issue triage after verification
 

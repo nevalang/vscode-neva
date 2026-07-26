@@ -1,3 +1,11 @@
-def Main(start) (stop) {
-    // ...
+// Echo forwards its input to its output.
+def Echo(input any) (res any) {
+    :input -> :res
+}
+
+def Main(start any) (stop any) {
+    echo Echo
+    ---
+    :start -> echo:input
+    echo:res -> :stop
 }
