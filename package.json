@@ -9,7 +9,7 @@
   },
   "description": "VSCode extension for Neva programming language",
   "publisher": "nevalang",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"
@@ -60,6 +60,12 @@
           ],
           "default": "off",
           "markdownDescription": "Controls LSP protocol trace logging in the Neva extension output channels."
+        },
+        "neva.lsp.path": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "markdownDescription": "Absolute path to a manually installed `neva-lsp` binary. When empty, the extension starts the system tool through `neva tool lsp`."
         }
       }
     },
@@ -75,6 +81,14 @@
       {
         "command": "neva.openVisualMode",
         "title": "Neva: Open Visual Mode"
+      },
+      {
+        "command": "neva.installLanguageTools",
+        "title": "Neva: Install Language Tools"
+      },
+      {
+        "command": "neva.updateLanguageTools",
+        "title": "Neva: Update Language Tools"
       }
     ],
     "languages": [
@@ -151,7 +165,6 @@
     "vscode": "^1.1.37"
   },
   "scripts": {
-    "check:lsp-binaries": "bash ./scripts/check-lsp-binaries.sh",
     "build:ts": "tsc --noEmit && node esbuild.js --production",
     "build:syntax": "js-yaml syntaxes/neva.tmLanguage.yml > syntaxes/neva.tmLanguage.json",
     "build": "npm-run-all build:*",

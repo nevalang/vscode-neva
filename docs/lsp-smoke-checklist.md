@@ -1,21 +1,15 @@
 # Neva LSP Smoke Checklist
 
-Use this checklist before publishing a new extension version that bundles updated Neva language-server binaries. The automated Extension Host integration contract is the release gate; this document covers the remaining visual/manual checks.
+Use this checklist before publishing a new extension version. The automated Extension Host integration contract is the release gate; this document covers the remaining visual/manual checks.
 
-## 1. Bundle check
+## 1. Tool resolution check
 
-1. Build/copy all expected binaries into `bin/`:
-   - `neva-lsp-windows-arm64.exe`
-   - `neva-lsp-windows-amd64.exe`
-   - `neva-lsp-linux-arm64`
-   - `neva-lsp-linux-amd64`
-   - `neva-lsp-linux-loong64`
-   - `neva-lsp-darwin-arm64`
-   - `neva-lsp-darwin-amd64`
-2. Run:
+1. Install Neva and Neva LSP using their official installers.
+2. Confirm `neva tool lsp` starts the installed system LSP.
+3. Confirm a manual `neva.lsp.path` override starts the intended binary.
+4. Run:
 
 ```bash
-npm run check:lsp-binaries
 npm run test:extension-integration
 ```
 
@@ -55,4 +49,4 @@ If smoke checks pass, close or update feature issues as shipped in that release:
 
 ## 4. Release note requirement
 
-Document that LSP core language features are now available in the extension release that includes the updated binaries.
+Document the required system-tool installation and any compatibility changes.

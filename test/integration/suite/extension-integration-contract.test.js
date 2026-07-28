@@ -57,7 +57,13 @@ suite('Neva Extension Host integration contract', () => {
 
   test('registers the promised Neva commands', async () => {
     const commands = await vscode.commands.getCommands(true);
-    for (const command of ['neva.runMain', 'neva.openTextualMode', 'neva.openVisualMode']) {
+    for (const command of [
+      'neva.runMain',
+      'neva.openTextualMode',
+      'neva.openVisualMode',
+      'neva.installLanguageTools',
+      'neva.updateLanguageTools',
+    ]) {
       assert.ok(commands.includes(command), `Expected ${command} to be registered`);
     }
   });
@@ -162,10 +168,8 @@ suite('Neva Extension Host integration contract', () => {
     );
 
     assert.ok(fs.existsSync(path.resolve(extension.extensionPath, 'dist/webview/index.html')));
-    assert.ok(
-      !fs.readdirSync(path.resolve(extension.extensionPath, 'bin')).some((file) => file.startsWith('neva-view')),
-      'VS Code package must not require a standalone neva-view binary'
-    );
+    assert.ok(!fs.existsSync(path.resolve(extension.extensionPath, 'bin')),
+      'VS Code package must not bundle language-tool binaries');
   });
 
   test('keeps the generated TextMate grammar aligned with core Neva constructs', () => {

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 OUT_DIR="${1:-bin}"
+ASSET_PATTERN="${NEVA_LSP_ASSET_PATTERN:-neva-lsp-*}"
 
 # shellcheck source=/dev/null
 source .github/neva-lsp.lock
@@ -23,5 +24,15 @@ if [[ "$(sha256sum "$OUT_DIR/SHA256SUMS" | awk '{ print $1 }')" != "$NEVA_LSP_CH
   exit 1
 fi
 
-gh release download "$NEVA_LSP_VERSION" --repo "$NEVA_LSP_REPOSITORY" --pattern 'neva-lsp-*' --dir "$OUT_DIR"
-(cd "$OUT_DIR" && sha256sum -c SHA256SUMS)
+gh release download "$NEVA_LSP_VERSION" --repo "$NEVA_LSP_REPOSITORY" --pattern "$ASSET_PATTERN" --dir "$OUT_DIR"
+
+if [[ "$ASSET_PATTERN" == 'neva-lsp-*' ]]; then
+  (cd "$OUT_DIR" && sha256sum -c SHA256SUMS)
+else
+  downloaded_asset="$(find "$OUT_DIR" -maxdepth 1 -type f -name "$ASSET_PATTERN" -exec basename {} \; | head -n 1)"
+  if [[ -z "$downloaded_asset" ]]; then
+    echo "No LSP asset matched ${ASSET_PATTERN}" >&2
+    exit 1
+  fi
+  (cd "$OUT_DIR" && grep -F "  ${downloaded_asset}" SHA256SUMS | sha256sum -c -)
+fi

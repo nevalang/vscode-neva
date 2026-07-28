@@ -28,6 +28,8 @@ let runTerminalCwd = "";
 const runMainCommandId = "neva.runMain";
 const setTextualModeCommandId = "neva.openTextualMode";
 const setVisualModeCommandId = "neva.openVisualMode";
+const installLanguageToolsCommandId = "neva.installLanguageTools";
+const updateLanguageToolsCommandId = "neva.updateLanguageTools";
 const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
 const nevaEditorModeContextKey = "neva.editorMode";
 const nevaEditorContextKey = "neva.activeEditorIsNeva";
@@ -81,6 +83,19 @@ function runNeva(uri?: Uri) {
   runTerminal.sendText("neva run .", true);
 }
 
+function installLanguageTools() {
+  const terminal = window.createTerminal("Neva Language Tools Installer");
+  const command = process.platform === "win32"
+    ? "& ([scriptblock]::Create((irm https://raw.githubusercontent.com/nevalang/neva-tools/main/scripts/install-lsp.ps1)))"
+    : "curl -fsSL https://raw.githubusercontent.com/nevalang/neva-tools/main/scripts/install-lsp.sh | sh";
+
+  terminal.show(true);
+  terminal.sendText(command, true);
+  window.showInformationMessage(
+    "Neva LSP installation was opened in a terminal. Restart VS Code after it completes."
+  );
+}
+
 async function updateActiveEditorContext(editor: TextEditor | undefined) {
   const isNeva = editor?.document.languageId === "neva";
   await commands.executeCommand("setContext", nevaEditorContextKey, isNeva);
@@ -120,6 +135,8 @@ export async function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     commands.registerCommand(runMainCommandId, runNeva),
+    commands.registerCommand(installLanguageToolsCommandId, installLanguageTools),
+    commands.registerCommand(updateLanguageToolsCommandId, installLanguageTools),
     commands.registerCommand(setTextualModeCommandId, () => setEditorMode("textual")),
     commands.registerCommand(setVisualModeCommandId, () => setEditorMode("visual")),
     commands.registerCommand("neva.getEditorMode", () => currentMode),
