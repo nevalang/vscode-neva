@@ -37,6 +37,11 @@ Follow these instructions when working in this repository.
 
 - No publishing or version bumps without explicit approval.
 - Open VSX packaging (if needed) should be done explicitly and reviewed.
+- If Marketplace publishing cannot be completed deterministically through the
+  release workflow (for example, a valid secret is unavailable or rejected),
+  use the `computer-use` skill to upload the already verified VSIX manually in
+  the official VS Code Marketplace publisher UI. Verify the published version
+  afterwards; do not treat a failed workflow as a completed release.
 
 ## 6) Reference Links
 
