@@ -9,6 +9,10 @@ This is a VScode extension for [Neva](https://github.com/nevalang/neva) - a flow
 ## Requirements
 
 - [Neva](https://github.com/nevalang/neva) programming language installed
+- [Neva LSP](https://github.com/nevalang/neva-tools) installed as a system tool.
+  Run `Neva: Install Language Tools` from the Command Palette, or follow the
+  installer instructions in Neva Tools. The extension starts it through
+  `neva tool lsp`; set `neva.lsp.path` for an offline or custom installation.
 
 ## Features
 
@@ -56,7 +60,9 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: downloads and verifies separately locked `neva-lsp` binaries and the shared visual-editor WebView bundle, packages extension, and publishes to Marketplace. `neva-view` is not part of this dependency graph.
+- Behavior: packages the shared visual-editor WebView bundle and publishes the
+  thin extension. `neva-lsp` is installed independently as a system tool;
+  `neva-view` is not part of this dependency graph.
 
 Required secret in GitHub repository settings:
 
@@ -69,6 +75,12 @@ Release flow:
 3. Workflow validates that tag version matches `package.json`, then publishes automatically.
 
 ## Release Notes
+
+### 0.7.11
+
+- Stopped bundling all platform `neva-lsp` binaries in the VSIX.
+- The extension now starts the installed system tool through `neva tool lsp`.
+- Added installation/update commands and the `neva.lsp.path` offline override.
 
 ### 0.7.10
 

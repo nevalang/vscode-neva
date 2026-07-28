@@ -21,25 +21,31 @@ jobs:
       - name: Checkout vscode-neva
         uses: actions/checkout@v4
 
-      - name: Download locked Neva LSP release
+      - name: Download test-only Neva LSP release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: bash .github/scripts/download-neva-lsp-release.sh bin
+          NEVA_LSP_ASSET_PATTERN: neva-lsp-linux-amd64
+        run: bash .github/scripts/download-neva-lsp-release.sh .test-tools
 
       - name: Download locked Neva Visual Editor release
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/scripts/download-neva-visual-editor-release.sh dist
 
-      - name: Ensure executable bits for unix binaries
+      - name: Configure system LSP test fixture
         run: |
-          chmod +x bin/neva-lsp-darwin-amd64
-          chmod +x bin/neva-lsp-darwin-arm64
-          chmod +x bin/neva-lsp-linux-amd64
-          chmod +x bin/neva-lsp-linux-arm64
-
-      - name: Check packaged LSP binaries
-        run: npm run check:lsp-binaries
+          chmod +x .test-tools/neva-lsp-linux-amd64
+          cat > .test-tools/neva <<'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if [[ "${1:-}" != tool || "${2:-}" != lsp ]]; then
+            echo "Expected: neva tool lsp" >&2
+            exit 2
+          fi
+          shift 2
+          exec "$(dirname "$0")/neva-lsp-linux-amd64" "$@"
+          EOF
+          chmod +x .test-tools/neva
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -75,10 +81,17 @@ jobs:
         run: npm run build
 
       - name: Run extension integration smoke tests
-        run: xvfb-run -a npm run test:integration
+        run: NEVA_TEST_TOOLS_DIR="$PWD/.test-tools" xvfb-run -a npm run test:integration
 
       - name: Package extension
         run: npx -y @vscode/vsce@2.24.0 package -o vscode-nevalang.vsix
+
+      - name: Assert VSIX is free of LSP binaries
+        run: |
+          if unzip -l vscode-nevalang.vsix | grep -q 'extension/bin/neva-lsp-'; then
+            echo 'VSIX must not bundle Neva LSP binaries' >&2
+            exit 1
+          fi
 
       - name: Publish to VS Code Marketplace
         run: npx -y @vscode/vsce@2.24.0 publish --packagePath vscode-nevalang.vsix -p "$VSCE_PAT"

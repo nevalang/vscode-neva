@@ -1,6 +1,7 @@
 .vscode
 docs
 node_modules
+bin
 src
 syntaxes/tests
 syntaxes/neva.tmLanguage.yml

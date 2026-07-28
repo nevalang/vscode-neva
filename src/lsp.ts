@@ -1,9 +1,7 @@
-import path from "path";
 import fs from "fs";
 import net from "net";
 import cp from "child_process";
-import * as os from "os";
-import { window, ExtensionContext, workspace } from "vscode";
+import { ExtensionContext, window, workspace } from "vscode";
 import { Trace } from "vscode-jsonrpc";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
@@ -12,14 +10,58 @@ export const clientName = "Neva LSP Client";
 
 type TraceMode = "off" | "messages" | "verbose";
 
-export function setupLsp(
-  context: ExtensionContext,
-  isDebug: boolean
-): LanguageClient {
-  console.info(
-    "initializing lsp-client, extension mode: ",
-    context.extensionMode
+interface LspLaunchCommand {
+  command: string;
+  args: string[];
+  description: string;
+}
+
+function configuredLspPath(): string | undefined {
+  const configuredPath = workspace
+    .getConfiguration("neva")
+    .get<string>("lsp.path", "")
+    .trim();
+
+  return configuredPath || undefined;
+}
+
+function resolveLspLaunchCommand(): LspLaunchCommand {
+  const lspPath = configuredLspPath();
+  if (lspPath) {
+    if (!fs.existsSync(lspPath)) {
+      throw new Error(`Configured Neva LSP path does not exist: ${lspPath}`);
+    }
+    return {
+      command: lspPath,
+      args: [],
+      description: lspPath,
+    };
+  }
+
+  return {
+    command: "neva",
+    args: ["tool", "lsp"],
+    description: "neva tool lsp",
+  };
+}
+
+async function waitForProcessStart(process: cp.ChildProcessWithoutNullStreams): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    process.once("spawn", resolve);
+    process.once("error", reject);
+  });
+}
+
+function showLspStartError(command: LspLaunchCommand, error: unknown): void {
+  const detail = error instanceof Error ? error.message : String(error);
+  window.showErrorMessage(
+    `Neva LSP could not start via ${command.description}: ${detail}. ` +
+      "Install Neva LSP, update Neva, or configure neva.lsp.path."
   );
+}
+
+export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageClient {
+  console.info("initializing lsp-client, extension mode: ", context.extensionMode);
 
   let serverOptions: ServerOptions;
   if (isDebug) {
@@ -29,9 +71,7 @@ export function setupLsp(
       await new Promise<void>((resolve, reject) => {
         const port = 6007;
         socket.connect(port, "127.0.0.1", () => {
-          console.info(
-            `TCP connection to LSP server established on port ${port}`
-          );
+          console.info(`TCP connection to LSP server established on port ${port}`);
           resolve();
         });
         socket.on("error", reject);
@@ -41,27 +81,29 @@ export function setupLsp(
     };
   } else {
     serverOptions = async () => {
-      const binaryName = getPlatformBinary();
-      const binaryPath = context.asAbsolutePath(path.join("bin", binaryName));
-      if (!fs.existsSync(binaryPath)) {
-        window.showErrorMessage(
-          `Neva LSP binary not found: ${binaryPath}. Reinstall the extension or update binaries.`
-        );
-        throw new Error(`Neva LSP binary not found: ${binaryPath}`);
+      const command = resolveLspLaunchCommand();
+      const outputChannel = window.createOutputChannel("Neva Language Server Logs");
+      context.subscriptions.push(outputChannel);
+
+      const serverProcess = cp.spawn(command.command, command.args);
+      try {
+        await waitForProcessStart(serverProcess);
+      } catch (error) {
+        outputChannel.appendLine(String(error));
+        showLspStartError(command, error);
+        throw error;
       }
-      const serverProcess = cp.spawn(binaryPath);
 
-      serverProcess.stdout.on("data", (data) => console.info(data.toString()));
-      serverProcess.stderr.on("data", (data) => console.error(data.toString()));
-      serverProcess.on("exit", (code, signal) =>
-        console.warn(`server exited with code ${code} and signal ${signal}`)
-      );
-
-      const outputChannel = window.createOutputChannel(
-        "Neva Language Server Logs"
-      );
-      serverProcess.stdout.on("data", (data) => {
-        outputChannel.appendLine(data.toString());
+      serverProcess.stdout.on("data", (data) => outputChannel.append(data.toString()));
+      serverProcess.stderr.on("data", (data) => outputChannel.append(data.toString()));
+      serverProcess.on("exit", (code, signal) => {
+        const detail = `Neva LSP exited with code ${code} and signal ${signal}`;
+        outputChannel.appendLine(detail);
+        if (code !== 0) {
+          window.showErrorMessage(
+            `${detail}. Run ${command.description} in a terminal to diagnose the tool installation.`
+          );
+        }
       });
 
       return { reader: serverProcess.stdout, writer: serverProcess.stdin };
@@ -87,89 +129,10 @@ export function setupLsp(
     }[traceMode]
   );
 
-  client
-    .start()
-    .then(() =>
-      console.info("language-server started, client connection established")
-    )
-    .catch(console.error);
+  client.start().then(
+    () => console.info("language-server started, client connection established"),
+    (error) => showLspStartError(resolveLspLaunchCommand(), error)
+  );
 
   return client;
-}
-
-type BinaryName =
-  | "neva-lsp-windows-arm64.exe"
-  | "neva-lsp-windows-amd64.exe"
-  | "neva-lsp-linux-arm64"
-  | "neva-lsp-linux-amd64"
-  | "neva-lsp-linux-loong64"
-  | "neva-lsp-darwin-arm64"
-  | "neva-lsp-darwin-amd64";
-
-type PossibleArch =
-  | "arm"
-  | "arm64"
-  | "ia32"
-  | "mips"
-  | "mipsel"
-  | "ppc"
-  | "ppc64"
-  | "s390"
-  | "s390x"
-  | "loong64"
-  | "x32"
-  | "x64";
-
-function getPlatformBinary(): BinaryName | never {
-  const platform = os.platform();
-  const arch = os.arch() as PossibleArch;
-
-  console.log(`platform: ${platform}, arch: ${arch}`);
-
-  if (!["win32", "linux", "darwin"].includes(platform)) {
-    window.showErrorMessage(`Unsupported platform: ${platform}`);
-    throw new Error(`Unsupported platform: ${platform}`);
-  } else if (!["arm64", "amd64", "x64", "loong64"].includes(arch)) {
-    window.showErrorMessage(`Unsupported architecture: ${arch}`);
-    throw new Error(`Unsupported architecture: ${arch}`);
-  }
-
-  const normalizedArch = (arch === "x64" ? "amd64" : arch) as
-    | "arm64"
-    | "amd64"
-    | "loong64";
-
-  if (normalizedArch === "loong64" && platform !== "linux") {
-    window.showErrorMessage(
-      `Unsupported architecture for ${platform}: ${normalizedArch}`
-    );
-    throw new Error(`Unsupported architecture for ${platform}: ${normalizedArch}`);
-  }
-
-  let binaryName: BinaryName;
-  switch (platform) {
-    case "win32":
-      binaryName = {
-        arm64: "neva-lsp-windows-arm64.exe",
-        amd64: "neva-lsp-windows-amd64.exe",
-      }[normalizedArch as "arm64" | "amd64"] as BinaryName;
-      break;
-    case "linux":
-      binaryName = {
-        arm64: "neva-lsp-linux-arm64",
-        amd64: "neva-lsp-linux-amd64",
-        loong64: "neva-lsp-linux-loong64",
-      }[normalizedArch] as BinaryName;
-      break;
-    case "darwin":
-      binaryName = {
-        arm64: "neva-lsp-darwin-arm64",
-        amd64: "neva-lsp-darwin-amd64",
-      }[normalizedArch as "arm64" | "amd64"] as BinaryName;
-      break;
-    default:
-      throw new Error(`Unsupported platform: ${platform}`);
-  }
-
-  return binaryName;
 }
