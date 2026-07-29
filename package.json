@@ -9,7 +9,7 @@
   },
   "description": "VSCode extension for Neva programming language",
   "publisher": "nevalang",
-  "version": "0.7.11",
+  "version": "0.7.12",
   "license": "MIT",
   "engines": {
     "vscode": "^1.78.0"
@@ -126,14 +126,9 @@
     "menus": {
       "editor/title": [
         {
-          "command": "neva.openTextualMode",
-          "when": "neva.activeEditorIsNeva && neva.editorMode != textual",
-          "group": "navigation@10"
-        },
-        {
           "command": "neva.openVisualMode",
-          "when": "neva.activeEditorIsNeva && neva.editorMode != visual",
-          "group": "navigation@11"
+          "when": "neva.activeEditorIsNeva",
+          "group": "navigation@10"
         }
       ]
     }
