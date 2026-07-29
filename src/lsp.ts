@@ -1,9 +1,14 @@
 import fs from "fs";
 import net from "net";
 import cp from "child_process";
-import { ExtensionContext, window, workspace } from "vscode";
+import { ExtensionContext, OutputChannel, window, workspace } from "vscode";
 import { Trace } from "vscode-jsonrpc";
-import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
+import {
+  CloseAction,
+  ErrorAction,
+  LanguageClient,
+  ServerOptions,
+} from "vscode-languageclient/node";
 
 export const clientId = "nevaLSPClient";
 export const clientName = "Neva LSP Client";
@@ -14,6 +19,7 @@ interface LspLaunchCommand {
   command: string;
   args: string[];
   description: string;
+  usesLegacyCliFallback?: boolean;
 }
 
 function configuredLspPath(): string | undefined {
@@ -23,6 +29,18 @@ function configuredLspPath(): string | undefined {
     .trim();
 
   return configuredPath || undefined;
+}
+
+function legacyNevaToolCli(): boolean {
+  const result = cp.spawnSync("neva", ["tool"], { encoding: "utf8" });
+  if (result.error) return false;
+
+  return `${result.stdout ?? ""}${result.stderr ?? ""}`.includes("No help topic for 'tool'");
+}
+
+function directLspOnPath(): boolean {
+  const result = cp.spawnSync("neva-lsp", ["version", "--json"], { encoding: "utf8" });
+  return !result.error && result.status === 0;
 }
 
 function resolveLspLaunchCommand(): LspLaunchCommand {
@@ -35,6 +53,18 @@ function resolveLspLaunchCommand(): LspLaunchCommand {
       command: lspPath,
       args: [],
       description: lspPath,
+    };
+  }
+
+  // Neva 0.35 and older do not have `neva tool`. If the separate LSP has
+  // already been installed, keep editor features usable while clearly
+  // signalling that Run still needs a current Neva CLI.
+  if (legacyNevaToolCli() && directLspOnPath()) {
+    return {
+      command: "neva-lsp",
+      args: [],
+      description: "neva-lsp (temporary fallback for an old Neva CLI)",
+      usesLegacyCliFallback: true,
     };
   }
 
@@ -60,8 +90,31 @@ function showLspStartError(command: LspLaunchCommand, error: unknown): void {
   );
 }
 
+function oldNevaToolMessage(): string {
+  return "Neva LSP requires a Neva CLI that supports `neva tool lsp` (Neva 0.39.0 or newer). " +
+    "Update Neva with `neva upgrade`, restart VS Code, then run `Neva: Update Language Tools`.";
+}
+
+function legacyCliFallbackMessage(): string {
+  return "Neva Language Server started directly because your Neva CLI is older than 0.39.0. " +
+    "Language features are available, but Run requires updating Neva with `neva upgrade` and restarting VS Code.";
+}
+
 export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageClient {
   console.info("initializing lsp-client, extension mode: ", context.extensionMode);
+
+  let outputChannel: OutputChannel | undefined;
+  let legacyNevaToolDetected = false;
+  let reportedProcessFailure = false;
+  let reportedLegacyCliFallback = false;
+
+  function getOutputChannel(): OutputChannel {
+    if (!outputChannel) {
+      outputChannel = window.createOutputChannel("Neva Language Server Logs");
+      context.subscriptions.push(outputChannel);
+    }
+    return outputChannel;
+  }
 
   let serverOptions: ServerOptions;
   if (isDebug) {
@@ -82,24 +135,40 @@ export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageC
   } else {
     serverOptions = async () => {
       const command = resolveLspLaunchCommand();
-      const outputChannel = window.createOutputChannel("Neva Language Server Logs");
-      context.subscriptions.push(outputChannel);
+      const logs = getOutputChannel();
 
       const serverProcess = cp.spawn(command.command, command.args);
       try {
         await waitForProcessStart(serverProcess);
       } catch (error) {
-        outputChannel.appendLine(String(error));
+        logs.appendLine(String(error));
         showLspStartError(command, error);
         throw error;
       }
 
-      serverProcess.stdout.on("data", (data) => outputChannel.append(data.toString()));
-      serverProcess.stderr.on("data", (data) => outputChannel.append(data.toString()));
+      if (command.usesLegacyCliFallback && !reportedLegacyCliFallback) {
+        reportedLegacyCliFallback = true;
+        window.showWarningMessage(legacyCliFallbackMessage());
+      }
+
+      const appendProcessOutput = (data: Buffer) => {
+        const text = data.toString();
+        logs.append(text);
+        if (command.description === "neva tool lsp" && text.includes("No help topic for 'tool'")) {
+          legacyNevaToolDetected = true;
+        }
+      };
+      serverProcess.stdout.on("data", appendProcessOutput);
+      serverProcess.stderr.on("data", appendProcessOutput);
       serverProcess.on("exit", (code, signal) => {
         const detail = `Neva LSP exited with code ${code} and signal ${signal}`;
-        outputChannel.appendLine(detail);
-        if (code !== 0) {
+        logs.appendLine(detail);
+        if (code !== 0 && !reportedProcessFailure) {
+          reportedProcessFailure = true;
+          if (legacyNevaToolDetected) {
+            window.showErrorMessage(oldNevaToolMessage());
+            return;
+          }
           window.showErrorMessage(
             `${detail}. Run ${command.description} in a terminal to diagnose the tool installation.`
           );
@@ -114,6 +183,12 @@ export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageC
     documentSelector: [{ scheme: "file", language: "neva" }],
     synchronize: {
       fileEvents: workspace.createFileSystemWatcher("**/*.*"),
+    },
+    errorHandler: {
+      error: () => ({ action: ErrorAction.Continue }),
+      closed: () => ({
+        action: legacyNevaToolDetected ? CloseAction.DoNotRestart : CloseAction.Restart,
+      }),
     },
   });
 

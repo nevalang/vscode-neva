@@ -152,20 +152,19 @@ suite('Neva Extension Host integration contract', () => {
     );
   });
 
-  test('opens the packaged Visual Mode without a standalone neva-view process', async () => {
+  test('opens Visual Mode beside the textual editor without changing editor mode', async () => {
     await vscode.window.showTextDocument(mainDocument, { preview: false });
     assert.strictEqual(api.getEditorMode(), 'textual');
 
     await vscode.commands.executeCommand('neva.openVisualMode');
     await waitFor(
-      () => api.getEditorMode() === 'visual',
-      'Timed out switching to Visual Mode'
-    );
-    await waitFor(
       () => vscode.window.tabGroups.all.flatMap((group) => group.tabs)
         .some((tab) => tab.label === 'Neva Visual Mode'),
       'Timed out opening the Visual Mode WebView'
     );
+
+    assert.strictEqual(api.getEditorMode(), 'textual',
+      'Visual Mode is an auxiliary WebView; the textual editor remains active');
 
     assert.ok(fs.existsSync(path.resolve(extension.extensionPath, 'dist/webview/index.html')));
     assert.ok(!fs.existsSync(path.resolve(extension.extensionPath, 'bin')),

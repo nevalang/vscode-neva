@@ -76,6 +76,16 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.12
+
+- Start an installed `neva-lsp` directly when an older Neva CLI does not yet
+  support `neva tool lsp`, while explaining that Run still requires a CLI
+  update.
+- Keep one LSP output channel and stop the restart loop for that known legacy
+  CLI failure.
+- Keep Visual Mode as an auxiliary view beside the text editor instead of a
+  misleading textual/visual toggle.
+
 ### 0.7.11
 
 - Stopped bundling all platform `neva-lsp` binaries in the VSIX.

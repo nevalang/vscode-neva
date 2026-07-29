@@ -102,11 +102,17 @@ async function updateActiveEditorContext(editor: TextEditor | undefined) {
 }
 
 async function setEditorMode(mode: NevaEditorMode) {
+  // Visual Mode is an auxiliary WebView beside the text document. It must not
+  // claim to replace the active textual editor, otherwise the title action
+  // turns into a misleading "Open Textual Mode" toggle.
+  if (mode === "visual") {
+    openVisualEditor(extensionContext, lspClient);
+    return;
+  }
+
   currentMode = mode;
   await commands.executeCommand("setContext", nevaEditorModeContextKey, mode);
   onDidChangeEditorModeEmitter.fire(mode);
-
-  if (mode === "visual") openVisualEditor(extensionContext, lspClient);
 }
 
 let extensionContext: ExtensionContext;
