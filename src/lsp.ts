@@ -22,6 +22,10 @@ interface LspLaunchCommand {
   usesLegacyCliFallback?: boolean;
 }
 
+interface LspEventHandlers {
+  onLegacyCliFallback?: () => void;
+}
+
 function configuredLspPath(): string | undefined {
   const configuredPath = workspace
     .getConfiguration("neva")
@@ -32,7 +36,14 @@ function configuredLspPath(): string | undefined {
 }
 
 function legacyNevaToolCli(): boolean {
-  const result = cp.spawnSync("neva", ["tool"], { encoding: "utf8" });
+  // Some legacy Neva CLIs do not report an unknown `tool` command; they wait
+  // for input instead. Never let that probe block extension activation.
+  const result = cp.spawnSync("neva", ["tool"], {
+    encoding: "utf8",
+    timeout: 1_000,
+  });
+  const error = result.error as NodeJS.ErrnoException | undefined;
+  if (error?.code === "ETIMEDOUT") return true;
   if (result.error) return false;
 
   return `${result.stdout ?? ""}${result.stderr ?? ""}`.includes("No help topic for 'tool'");
@@ -76,6 +87,8 @@ function resolveLspLaunchCommand(): LspLaunchCommand {
 }
 
 async function waitForProcessStart(process: cp.ChildProcessWithoutNullStreams): Promise<void> {
+  if (process.pid !== undefined) return;
+
   await new Promise<void>((resolve, reject) => {
     process.once("spawn", resolve);
     process.once("error", reject);
@@ -95,12 +108,11 @@ function oldNevaToolMessage(): string {
     "Update Neva with `neva upgrade`, restart VS Code, then run `Neva: Update Language Tools`.";
 }
 
-function legacyCliFallbackMessage(): string {
-  return "Neva Language Server started directly because your Neva CLI is older than 0.39.0. " +
-    "Language features are available, but Run requires updating Neva with `neva upgrade` and restarting VS Code.";
-}
-
-export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageClient {
+export function setupLsp(
+  context: ExtensionContext,
+  isDebug: boolean,
+  handlers: LspEventHandlers = {}
+): LanguageClient {
   console.info("initializing lsp-client, extension mode: ", context.extensionMode);
 
   let outputChannel: OutputChannel | undefined;
@@ -148,7 +160,7 @@ export function setupLsp(context: ExtensionContext, isDebug: boolean): LanguageC
 
       if (command.usesLegacyCliFallback && !reportedLegacyCliFallback) {
         reportedLegacyCliFallback = true;
-        window.showWarningMessage(legacyCliFallbackMessage());
+        handlers.onLegacyCliFallback?.();
       }
 
       const appendProcessOutput = (data: Buffer) => {

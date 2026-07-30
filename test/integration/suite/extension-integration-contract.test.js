@@ -63,6 +63,7 @@ suite('Neva Extension Host integration contract', () => {
       'neva.openVisualMode',
       'neva.installLanguageTools',
       'neva.updateLanguageTools',
+      'neva.upgradeCli',
     ]) {
       assert.ok(commands.includes(command), `Expected ${command} to be registered`);
     }
