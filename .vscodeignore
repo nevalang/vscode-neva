@@ -7,7 +7,6 @@ syntaxes/tests
 syntaxes/neva.tmLanguage.yml
 .gitignore
 .vscodeignore
-webview
 neva-tools
 tsconfig.json
 package-lock.json
