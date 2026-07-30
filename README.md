@@ -76,6 +76,13 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.15
+
+- Updated the Visual Editor bundle to retry its initial program request while
+  the Language Server is still building the workspace index, instead of
+  leaving Visual Mode empty.
+- Updated the pinned Neva Language Server component to `lsp/v0.1.4`.
+
 ### 0.7.14
 
 - Include the Visual Mode WebView in the packaged VSIX and verify the package
