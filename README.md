@@ -76,6 +76,12 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.13
+
+- When the extension starts the language server directly for a legacy Neva CLI,
+  offer `Neva: Upgrade CLI` from VS Code. The command opens `neva upgrade` in
+  an integrated terminal and explains that VS Code needs restarting afterward.
+
 ### 0.7.12
 
 - Start an installed `neva-lsp` directly when an older Neva CLI does not yet
