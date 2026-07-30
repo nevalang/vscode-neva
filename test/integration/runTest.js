@@ -1,6 +1,20 @@
 const path = require('path');
+const fs = require('fs');
 const process = require('process');
-const { runTests } = require('@vscode/test-electron');
+const { downloadAndUnzipVSCode, runTests } = require('@vscode/test-electron');
+
+async function vscodeExecutablePath() {
+  const downloadedPath = await downloadAndUnzipVSCode({ version: 'stable' });
+
+  // Recent macOS VS Code archives use `Code`; @vscode/test-electron 2.5.2
+  // still resolves the historical `Electron` filename.
+  if (process.platform === 'darwin' && !fs.existsSync(downloadedPath)) {
+    const codePath = path.join(path.dirname(downloadedPath), 'Code');
+    if (fs.existsSync(codePath)) return codePath;
+  }
+
+  return downloadedPath;
+}
 
 async function main() {
   try {
@@ -15,7 +29,7 @@ async function main() {
       extensionDevelopmentPath,
       extensionTestsPath,
       launchArgs: [testWorkspacePath, '--disable-extensions'],
-      version: 'stable',
+      vscodeExecutablePath: await vscodeExecutablePath(),
     });
   } catch (error) {
     console.error('Failed to run extension tests');

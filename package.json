@@ -89,6 +89,10 @@
       {
         "command": "neva.updateLanguageTools",
         "title": "Neva: Update Language Tools"
+      },
+      {
+        "command": "neva.upgradeCli",
+        "title": "Neva: Upgrade CLI"
       }
     ],
     "languages": [

@@ -30,6 +30,7 @@ const setTextualModeCommandId = "neva.openTextualMode";
 const setVisualModeCommandId = "neva.openVisualMode";
 const installLanguageToolsCommandId = "neva.installLanguageTools";
 const updateLanguageToolsCommandId = "neva.updateLanguageTools";
+const upgradeNevaCommandId = "neva.upgradeCli";
 const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
 const nevaEditorModeContextKey = "neva.editorMode";
 const nevaEditorContextKey = "neva.activeEditorIsNeva";
@@ -96,6 +97,27 @@ function installLanguageTools() {
   );
 }
 
+function upgradeNeva() {
+  const terminal = window.createTerminal("Neva Upgrade");
+  terminal.show(true);
+  terminal.sendText("neva upgrade", true);
+  window.showInformationMessage(
+    "Neva upgrade was opened in a terminal. Restart VS Code after it completes."
+  );
+}
+
+async function showLegacyCliUpgradePrompt() {
+  const selection = await window.showWarningMessage(
+    "Your Neva CLI is older than 0.39.0. Language features remain available through the installed Neva Language Server, " +
+      "but Run requires a newer Neva CLI.",
+    "Upgrade Neva"
+  );
+
+  if (selection === "Upgrade Neva") {
+    upgradeNeva();
+  }
+}
+
 async function updateActiveEditorContext(editor: TextEditor | undefined) {
   const isNeva = editor?.document.languageId === "neva";
   await commands.executeCommand("setContext", nevaEditorContextKey, isNeva);
@@ -131,7 +153,9 @@ export async function activate(context: ExtensionContext) {
   extensionContext = context;
 
   // Run language server, initialize client and establish connection
-  lspClient = setupLsp(context, process.env.VSCODE_NEVA_DEBUG === "true");
+  lspClient = setupLsp(context, process.env.VSCODE_NEVA_DEBUG === "true", {
+    onLegacyCliFallback: () => void showLegacyCliUpgradePrompt(),
+  });
   lspClient.onNotification("neva/analyzer_message", (message: string) => {
     window.showWarningMessage(message);
   });
@@ -143,6 +167,7 @@ export async function activate(context: ExtensionContext) {
     commands.registerCommand(runMainCommandId, runNeva),
     commands.registerCommand(installLanguageToolsCommandId, installLanguageTools),
     commands.registerCommand(updateLanguageToolsCommandId, installLanguageTools),
+    commands.registerCommand(upgradeNevaCommandId, upgradeNeva),
     commands.registerCommand(setTextualModeCommandId, () => setEditorMode("textual")),
     commands.registerCommand(setVisualModeCommandId, () => setEditorMode("visual")),
     commands.registerCommand("neva.getEditorMode", () => currentMode),
@@ -163,6 +188,8 @@ export async function activate(context: ExtensionContext) {
 
 export function deactivate(): Thenable<void> | undefined {
   onDidChangeEditorModeEmitter.dispose();
+  runTerminal?.dispose();
+  runTerminal = undefined;
   return lspClient && lspClient.stop();
 }
 
