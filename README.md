@@ -76,6 +76,11 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.14
+
+- Include the Visual Mode WebView in the packaged VSIX and verify the package
+  contents in CI, so the Visual Mode panel is available after installation.
+
 ### 0.7.13
 
 - When the extension starts the language server directly for a legacy Neva CLI,
