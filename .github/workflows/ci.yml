@@ -90,8 +90,12 @@ jobs:
       - name: Package VSIX
         run: npx vsce package
 
-      - name: Assert VSIX is free of LSP binaries
+      - name: Assert VSIX contains Visual Mode and no LSP binaries
         run: |
+          if ! unzip -Z1 *.vsix | grep -Fxq 'extension/dist/webview/index.html'; then
+            echo 'VSIX must bundle the Visual Mode WebView' >&2
+            exit 1
+          fi
           if unzip -l *.vsix | grep -q 'extension/bin/neva-lsp-'; then
             echo 'VSIX must not bundle Neva LSP binaries' >&2
             exit 1
