@@ -76,6 +76,11 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.16
+
+- Updated the pinned Neva Language Server component to `lsp/v0.1.5`, built
+  against the published Neva compiler `v0.40.0`.
+
 ### 0.7.15
 
 - Updated the Visual Editor bundle to retry its initial program request while
