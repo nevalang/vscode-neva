@@ -64,9 +64,13 @@ Required secret in GitHub repository settings:
 
 Release flow:
 
-1. Bump `package.json` version (for example `0.7.8`) and commit.
-2. Create git tag `v0.7.8` and GitHub Release from that tag.
-3. Workflow validates that tag version matches `package.json`, then publishes automatically.
+1. Bump `package.json` to plain `MAJOR.MINOR.PATCH` (for example `0.7.17`) and commit.
+2. Create the git tag `v0.7.17` and GitHub Release with the exact name `v0.7.17`.
+3. Run `bash scripts/validate-release-version.sh v0.7.17 v0.7.17` locally.
+4. The workflow validates the naming contract, then publishes automatically.
+
+Release naming is intentionally strict: `vMAJOR.MINOR.PATCH` only. No
+prefixes, suffixes, prerelease labels, or build metadata.
 
 ## Release Notes
 
