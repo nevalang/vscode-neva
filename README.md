@@ -9,10 +9,6 @@ This is a VScode extension for [Neva](https://github.com/nevalang/neva) - a flow
 ## Requirements
 
 - [Neva](https://github.com/nevalang/neva) programming language installed
-- [Neva LSP](https://github.com/nevalang/neva-tools) installed as a system tool.
-  Run `Neva: Install Language Tools` from the Command Palette, or follow the
-  installer instructions in Neva Tools. The extension starts it through
-  `neva tool lsp`; set `neva.lsp.path` for an offline or custom installation.
 
 ## Features
 
@@ -60,9 +56,7 @@ The repository includes automated publishing on GitHub Release:
 
 - Workflow: `.github/workflows/release-marketplace.yml`
 - Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: packages the shared visual-editor WebView bundle and publishes the
-  thin extension. `neva-lsp` is installed independently as a system tool;
-  `neva-view` is not part of this dependency graph.
+- Behavior: downloads and verifies separately locked `neva-lsp` binaries and the shared visual-editor WebView bundle, packages extension, and publishes to Marketplace. `neva-view` is not part of this dependency graph.
 
 Required secret in GitHub repository settings:
 
@@ -70,50 +64,23 @@ Required secret in GitHub repository settings:
 
 Release flow:
 
-1. Bump `package.json` version (for example `0.7.8`) and commit.
-2. Create git tag `v0.7.8` and GitHub Release from that tag.
-3. Workflow validates that tag version matches `package.json`, then publishes automatically.
+1. Bump `package.json` to plain `MAJOR.MINOR.PATCH` (for example `0.7.17`) and commit.
+2. Create the git tag `v0.7.17` and GitHub Release with the exact name `v0.7.17`.
+3. Run `bash scripts/validate-release-version.sh v0.7.17 v0.7.17` locally.
+4. The workflow validates the naming contract, then publishes automatically.
+
+Release naming is intentionally strict: `vMAJOR.MINOR.PATCH` only. No
+prefixes, suffixes, prerelease labels, or build metadata.
 
 ## Release Notes
 
-### 0.7.16
+### 0.7.17
 
-- Updated the pinned Neva Language Server component to `lsp/v0.1.5`, built
-  against the published Neva compiler `v0.40.0`.
-
-### 0.7.15
-
-- Updated the Visual Editor bundle to retry its initial program request while
-  the Language Server is still building the workspace index, instead of
-  leaving Visual Mode empty.
-- Updated the pinned Neva Language Server component to `lsp/v0.1.4`.
-
-### 0.7.14
-
-- Include the Visual Mode WebView in the packaged VSIX and verify the package
-  contents in CI, so the Visual Mode panel is available after installation.
-
-### 0.7.13
-
-- When the extension starts the language server directly for a legacy Neva CLI,
-  offer `Neva: Upgrade CLI` from VS Code. The command opens `neva upgrade` in
-  an integrated terminal and explains that VS Code needs restarting afterward.
-
-### 0.7.12
-
-- Start an installed `neva-lsp` directly when an older Neva CLI does not yet
-  support `neva tool lsp`, while explaining that Run still requires a CLI
-  update.
-- Keep one LSP output channel and stop the restart loop for that known legacy
-  CLI failure.
-- Keep Visual Mode as an auxiliary view beside the text editor instead of a
-  misleading textual/visual toggle.
-
-### 0.7.11
-
-- Stopped bundling all platform `neva-lsp` binaries in the VSIX.
-- The extension now starts the installed system tool through `neva tool lsp`.
-- Added installation/update commands and the `neva.lsp.path` offline override.
+- Restored bundled, checksum-verified Neva LSP binaries so the extension works
+  immediately after installation without downloading tools at runtime.
+- Updated the bundled LSP to `lsp/v0.1.6`, which includes the Neva v0.41.0
+  formatter.
+- Updated the bundled Visual Mode WebView to `visual-editor/v0.1.1`.
 
 ### 0.7.10
 

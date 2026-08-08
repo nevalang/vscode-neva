@@ -17,7 +17,7 @@ if [[ "$tag_commit" != "$NEVA_LSP_COMMIT" ]]; then
 fi
 
 mkdir -p "$OUT_DIR"
-gh release download "$NEVA_LSP_VERSION" --repo "$NEVA_LSP_REPOSITORY" --pattern SHA256SUMS --dir "$OUT_DIR"
+gh release download "$NEVA_LSP_VERSION" --repo "$NEVA_LSP_REPOSITORY" --pattern SHA256SUMS --pattern LSP-MANIFEST.json --dir "$OUT_DIR"
 
 if [[ "$(sha256sum "$OUT_DIR/SHA256SUMS" | awk '{ print $1 }')" != "$NEVA_LSP_CHECKSUMS_SHA256" ]]; then
   echo 'Neva LSP checksum manifest does not match the lock' >&2

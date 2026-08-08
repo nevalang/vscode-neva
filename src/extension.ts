@@ -28,9 +28,6 @@ let runTerminalCwd = "";
 const runMainCommandId = "neva.runMain";
 const setTextualModeCommandId = "neva.openTextualMode";
 const setVisualModeCommandId = "neva.openVisualMode";
-const installLanguageToolsCommandId = "neva.installLanguageTools";
-const updateLanguageToolsCommandId = "neva.updateLanguageTools";
-const upgradeNevaCommandId = "neva.upgradeCli";
 const mainDefRegex = /^[ \t]*(pub[ \t]+)?def[ \t]+Main\b/gm;
 const nevaEditorModeContextKey = "neva.editorMode";
 const nevaEditorContextKey = "neva.activeEditorIsNeva";
@@ -84,57 +81,17 @@ function runNeva(uri?: Uri) {
   runTerminal.sendText("neva run .", true);
 }
 
-function installLanguageTools() {
-  const terminal = window.createTerminal("Neva Language Tools Installer");
-  const command = process.platform === "win32"
-    ? "& ([scriptblock]::Create((irm https://raw.githubusercontent.com/nevalang/neva-tools/main/scripts/install-lsp.ps1)))"
-    : "curl -fsSL https://raw.githubusercontent.com/nevalang/neva-tools/main/scripts/install-lsp.sh | sh";
-
-  terminal.show(true);
-  terminal.sendText(command, true);
-  window.showInformationMessage(
-    "Neva LSP installation was opened in a terminal. Restart VS Code after it completes."
-  );
-}
-
-function upgradeNeva() {
-  const terminal = window.createTerminal("Neva Upgrade");
-  terminal.show(true);
-  terminal.sendText("neva upgrade", true);
-  window.showInformationMessage(
-    "Neva upgrade was opened in a terminal. Restart VS Code after it completes."
-  );
-}
-
-async function showLegacyCliUpgradePrompt() {
-  const selection = await window.showWarningMessage(
-    "Your Neva CLI is older than 0.39.0. Language features remain available through the installed Neva Language Server, " +
-      "but Run requires a newer Neva CLI.",
-    "Upgrade Neva"
-  );
-
-  if (selection === "Upgrade Neva") {
-    upgradeNeva();
-  }
-}
-
 async function updateActiveEditorContext(editor: TextEditor | undefined) {
   const isNeva = editor?.document.languageId === "neva";
   await commands.executeCommand("setContext", nevaEditorContextKey, isNeva);
 }
 
 async function setEditorMode(mode: NevaEditorMode) {
-  // Visual Mode is an auxiliary WebView beside the text document. It must not
-  // claim to replace the active textual editor, otherwise the title action
-  // turns into a misleading "Open Textual Mode" toggle.
-  if (mode === "visual") {
-    openVisualEditor(extensionContext, lspClient);
-    return;
-  }
-
   currentMode = mode;
   await commands.executeCommand("setContext", nevaEditorModeContextKey, mode);
   onDidChangeEditorModeEmitter.fire(mode);
+
+  if (mode === "visual") openVisualEditor(extensionContext, lspClient);
 }
 
 let extensionContext: ExtensionContext;
@@ -153,9 +110,7 @@ export async function activate(context: ExtensionContext) {
   extensionContext = context;
 
   // Run language server, initialize client and establish connection
-  lspClient = setupLsp(context, process.env.VSCODE_NEVA_DEBUG === "true", {
-    onLegacyCliFallback: () => void showLegacyCliUpgradePrompt(),
-  });
+  lspClient = setupLsp(context, process.env.VSCODE_NEVA_DEBUG === "true");
   lspClient.onNotification("neva/analyzer_message", (message: string) => {
     window.showWarningMessage(message);
   });
@@ -165,9 +120,6 @@ export async function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     commands.registerCommand(runMainCommandId, runNeva),
-    commands.registerCommand(installLanguageToolsCommandId, installLanguageTools),
-    commands.registerCommand(updateLanguageToolsCommandId, installLanguageTools),
-    commands.registerCommand(upgradeNevaCommandId, upgradeNeva),
     commands.registerCommand(setTextualModeCommandId, () => setEditorMode("textual")),
     commands.registerCommand(setVisualModeCommandId, () => setEditorMode("visual")),
     commands.registerCommand("neva.getEditorMode", () => currentMode),
@@ -188,8 +140,6 @@ export async function activate(context: ExtensionContext) {
 
 export function deactivate(): Thenable<void> | undefined {
   onDidChangeEditorModeEmitter.dispose();
-  runTerminal?.dispose();
-  runTerminal = undefined;
   return lspClient && lspClient.stop();
 }
 

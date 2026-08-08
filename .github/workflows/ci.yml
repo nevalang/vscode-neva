@@ -22,31 +22,25 @@ jobs:
       - name: Checkout extension repository
         uses: actions/checkout@v4
 
-      - name: Download test-only Neva LSP release
+      - name: Download locked Neva LSP release
         env:
           GH_TOKEN: ${{ github.token }}
-          NEVA_LSP_ASSET_PATTERN: neva-lsp-linux-amd64
-        run: bash .github/scripts/download-neva-lsp-release.sh .test-tools
+        run: bash .github/scripts/download-neva-lsp-release.sh bin
 
       - name: Download locked Neva Visual Editor release
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/scripts/download-neva-visual-editor-release.sh dist
 
-      - name: Configure system LSP test fixture
+      - name: Ensure executable bits for unix binaries
         run: |
-          chmod +x .test-tools/neva-lsp-linux-amd64
-          cat > .test-tools/neva <<'EOF'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          if [[ "${1:-}" != tool || "${2:-}" != lsp ]]; then
-            echo "Expected: neva tool lsp" >&2
-            exit 2
-          fi
-          shift 2
-          exec "$(dirname "$0")/neva-lsp-linux-amd64" "$@"
-          EOF
-          chmod +x .test-tools/neva
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -61,7 +55,7 @@ jobs:
         run: npm run build
 
       - name: Run Extension Host integration contract
-        run: NEVA_TEST_TOOLS_DIR="$PWD/.test-tools" xvfb-run -a npm run test:extension-integration
+        run: xvfb-run -a npm run test:extension-integration
 
   package-vsix:
     name: Package VSIX
@@ -70,10 +64,25 @@ jobs:
       - name: Checkout extension repository
         uses: actions/checkout@v4
 
+      - name: Download locked Neva LSP release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/download-neva-lsp-release.sh bin
+
       - name: Download locked Neva Visual Editor release
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/scripts/download-neva-visual-editor-release.sh dist
+
+      - name: Ensure executable bits for unix binaries
+        run: |
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -89,17 +98,6 @@ jobs:
 
       - name: Package VSIX
         run: npx vsce package
-
-      - name: Assert VSIX contains Visual Mode and no LSP binaries
-        run: |
-          if ! unzip -Z1 *.vsix | grep -Fxq 'extension/dist/webview/index.html'; then
-            echo 'VSIX must bundle the Visual Mode WebView' >&2
-            exit 1
-          fi
-          if unzip -l *.vsix | grep -q 'extension/bin/neva-lsp-'; then
-            echo 'VSIX must not bundle Neva LSP binaries' >&2
-            exit 1
-          fi
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4

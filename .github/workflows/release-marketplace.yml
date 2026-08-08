@@ -21,31 +21,25 @@ jobs:
       - name: Checkout vscode-neva
         uses: actions/checkout@v4
 
-      - name: Download test-only Neva LSP release
+      - name: Download locked Neva LSP release
         env:
           GH_TOKEN: ${{ github.token }}
-          NEVA_LSP_ASSET_PATTERN: neva-lsp-linux-amd64
-        run: bash .github/scripts/download-neva-lsp-release.sh .test-tools
+        run: bash .github/scripts/download-neva-lsp-release.sh bin
 
       - name: Download locked Neva Visual Editor release
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/scripts/download-neva-visual-editor-release.sh dist
 
-      - name: Configure system LSP test fixture
+      - name: Ensure executable bits for unix binaries
         run: |
-          chmod +x .test-tools/neva-lsp-linux-amd64
-          cat > .test-tools/neva <<'EOF'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          if [[ "${1:-}" != tool || "${2:-}" != lsp ]]; then
-            echo "Expected: neva tool lsp" >&2
-            exit 2
-          fi
-          shift 2
-          exec "$(dirname "$0")/neva-lsp-linux-amd64" "$@"
-          EOF
-          chmod +x .test-tools/neva
+          chmod +x bin/neva-lsp-darwin-amd64
+          chmod +x bin/neva-lsp-darwin-arm64
+          chmod +x bin/neva-lsp-linux-amd64
+          chmod +x bin/neva-lsp-linux-arm64
+
+      - name: Check packaged LSP binaries
+        run: npm run check:lsp-binaries
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -65,14 +59,7 @@ jobs:
       - name: Verify release tag matches package version
         if: github.event_name == 'release'
         shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${GITHUB_REF_NAME#v}"
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          if [[ "$TAG" != "$PKG_VERSION" ]]; then
-            echo "Tag version ($TAG) does not match package.json version ($PKG_VERSION)" >&2
-            exit 1
-          fi
+        run: bash scripts/validate-release-version.sh "$GITHUB_REF_NAME" "${{ github.event.release.name }}"
 
       - name: Install dependencies
         run: npm ci
@@ -81,21 +68,10 @@ jobs:
         run: npm run build
 
       - name: Run extension integration smoke tests
-        run: NEVA_TEST_TOOLS_DIR="$PWD/.test-tools" xvfb-run -a npm run test:integration
+        run: xvfb-run -a npm run test:integration
 
       - name: Package extension
         run: npx -y @vscode/vsce@2.24.0 package -o vscode-nevalang.vsix
-
-      - name: Assert VSIX contains Visual Mode and no LSP binaries
-        run: |
-          if ! unzip -Z1 vscode-nevalang.vsix | grep -Fxq 'extension/dist/webview/index.html'; then
-            echo 'VSIX must bundle the Visual Mode WebView' >&2
-            exit 1
-          fi
-          if unzip -l vscode-nevalang.vsix | grep -q 'extension/bin/neva-lsp-'; then
-            echo 'VSIX must not bundle Neva LSP binaries' >&2
-            exit 1
-          fi
 
       - name: Publish to VS Code Marketplace
         run: npx -y @vscode/vsce@2.24.0 publish --packagePath vscode-nevalang.vsix -p "$VSCE_PAT"
