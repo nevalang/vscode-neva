@@ -70,6 +70,14 @@ Release flow:
 
 ## Release Notes
 
+### 0.7.17
+
+- Restored bundled, checksum-verified Neva LSP binaries so the extension works
+  immediately after installation without downloading tools at runtime.
+- Updated the bundled LSP to `lsp/v0.1.6`, which includes the Neva v0.41.0
+  formatter.
+- Updated the bundled Visual Mode WebView to `visual-editor/v0.1.1`.
+
 ### 0.7.10
 
 - Updated the bundled LSP to `lsp/v0.1.2` with diagnostics for unsaved edits.
