@@ -40,38 +40,6 @@ Basic snippets are available for core language constructs:
 
 `Neva: Open Visual Mode` opens the same read-only React editor as `neva-view`, directly beside the source file. It talks to the already-running language server, so it needs no separate HTTP server or browser process. Saving a `.neva` file refreshes its projection.
 
-## Contributing
-
-See [./Contributing.md](Contributing.md)
-
-### Open VSX
-
-Package: `npm run package:vsix`
-
-Publish (requires `OPEN_VSX_TOKEN`): `npm run publish:openvsx`
-
-### VS Code Marketplace (CI/CD)
-
-The repository includes automated publishing on GitHub Release:
-
-- Workflow: `.github/workflows/release-marketplace.yml`
-- Trigger: published GitHub release (or manual `workflow_dispatch`)
-- Behavior: downloads and verifies separately locked `neva-lsp` binaries and the shared visual-editor WebView bundle, packages extension, and publishes to Marketplace. `neva-view` is not part of this dependency graph.
-
-Required secret in GitHub repository settings:
-
-- `VSCE_PAT` - token with publish rights for publisher `nevalang`
-
-Release flow:
-
-1. Bump `package.json` to plain `MAJOR.MINOR.PATCH` (for example `0.7.17`) and commit.
-2. Create the git tag `v0.7.17` and GitHub Release with the exact name `v0.7.17`.
-3. Run `bash scripts/validate-release-version.sh v0.7.17 v0.7.17` locally.
-4. The workflow validates the naming contract, then publishes automatically.
-
-Release naming is intentionally strict: `vMAJOR.MINOR.PATCH` only. No
-prefixes, suffixes, prerelease labels, or build metadata.
-
 ## Release Notes
 
 ### 0.7.17
@@ -186,3 +154,35 @@ prefixes, suffixes, prerelease labels, or build metadata.
 ### 0.1.0
 
 - First release with textmate (regexp) based **syntax highlighting**.
+
+## Contributing
+
+See [./Contributing.md](Contributing.md)
+
+### Open VSX
+
+Package: `npm run package:vsix`
+
+Publish (requires `OPEN_VSX_TOKEN`): `npm run publish:openvsx`
+
+### VS Code Marketplace (CI/CD)
+
+The repository includes automated publishing on GitHub Release:
+
+- Workflow: `.github/workflows/release-marketplace.yml`
+- Trigger: published GitHub release (or manual `workflow_dispatch`)
+- Behavior: downloads and verifies separately locked `neva-lsp` binaries and the shared visual-editor WebView bundle, packages extension, and publishes to Marketplace. `neva-view` is not part of this dependency graph.
+
+Required secret in GitHub repository settings:
+
+- `VSCE_PAT` - token with publish rights for publisher `nevalang`
+
+Release flow:
+
+1. Bump `package.json` to plain `MAJOR.MINOR.PATCH` (for example `0.7.17`) and commit.
+2. Create the git tag `v0.7.17` and GitHub Release with the exact name `v0.7.17`.
+3. Run `bash scripts/validate-release-version.sh v0.7.17 v0.7.17` locally.
+4. The workflow validates the naming contract, then publishes automatically.
+
+Release naming is intentionally strict: `vMAJOR.MINOR.PATCH` only. No
+prefixes, suffixes, prerelease labels, or build metadata.
